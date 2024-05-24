@@ -1,0 +1,8 @@
+Hello , This game is a speedrunning 2D platformer game , Should be inspired by super meat boy and games alike..
+It is going to be using the SDL lib and should be coded in C++ ! 
+
+This is a desperate attempt at going back to coding as im (fucking pissed off and shit) only interested in coding 
+
+The concept is theres a player ( No character lore behind him ) being followed by an intruder , And you are suppose to escape him.
+
+The movement should be simple but i think the intruder AI is going to be a bit tidious , So hopefully i find enough papers and articles to help get my work done !!
