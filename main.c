@@ -13,6 +13,10 @@ SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 int windowWidth = 900;
 int windowHeight = 600;
+float windowWidthScale = 1;
+float windowHeightScale = 1;
+int gameWidth = 900;
+int gameHeight = 600;
 
 #define GRAVITY 500
 
@@ -52,6 +56,18 @@ struct LevelsList{
    char levelName[256];
    int levelNameSize;
 };
+struct Editor{
+  bool selected;
+  int typeSelected;
+  int indexSelected;
+  int transform;
+  bool typing;
+  bool saving;
+  char fileNameSave[256];
+  int fileNameSize;
+  int status;
+  bool unSelect;
+}editor;
 
 struct Level{
   char absolutePath[256];
@@ -86,6 +102,7 @@ struct App{
    bool inputChange;
    bool transition;
    int transitionInt;
+   int editorPlatformSize;
 }app;
 
 struct Button{
@@ -106,9 +123,9 @@ struct MapData{
    // for clarity these values that the camera will not follow if the player goes beyond them.
    int PBTimer;
    char mapName[256];
-   char creatorName[256];
+   
    int mapNameLen;
-   int creatorNameLen;
+   
    double xMin;
    double yMin;
    double xMax;
@@ -160,6 +177,7 @@ struct Platform{
    bool textureStretch;
    bool textureStretchPer;
    int platformType;
+   int textureInt;
 };
 
 struct KeyboardBind{
@@ -178,9 +196,12 @@ struct MouseBind{
    // 0 idle
    // 1 pressed
    // -1 released (status with one frame per click)
-
+   int oldX;
+   int oldY;
    int x;
    int y;
+   int dX;
+   int dY;
    int left;
    int right;
    bool middle;
@@ -203,6 +224,15 @@ void FapplyMovementGhost();
 void FGameRestart();
 void appendTransition(int from ,int to);
 void FDrawTransition();
+int len(char *a);
+void FwindowResize(){
+   SDL_GetWindowSize(window,&windowWidth,&windowHeight); 
+   windowHeightScale = (float)windowHeight/gameHeight;
+   windowWidthScale = (float)windowWidth/gameWidth;
+   if(app.status == 1){
+      FswitchAppStatus(app.status,1);
+   }
+}
 double min(double a, double b){
    return a < b ? a : b;
 }
@@ -257,10 +287,10 @@ int initVideo(){
    SDL_FreeSurface(surface_tileStart);
 
    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+   SDL_SetWindowResizable(window, SDL_TRUE);
    app.WINDOW_LOOP = true;
    return 0;
 }
-
 void FInput_Listener(){
    SDL_Event event;
    SDL_PollEvent(&event);
@@ -268,7 +298,38 @@ void FInput_Listener(){
    if (event.type == SDL_QUIT){
       app.WINDOW_LOOP = false;
    }
+   if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED){
+         FwindowResize();
+   }
    if (event.type == SDL_KEYDOWN){
+      if(editor.typing){
+         if(event.key.keysym.sym == SDLK_BACKSPACE){
+            if(editor.fileNameSize>0){
+            editor.fileNameSize--;
+            editor.fileNameSave[editor.fileNameSize] = '\0';
+            }  
+         }
+         else if((int)event.key.keysym.sym>=32){
+          editor.fileNameSave[editor.fileNameSize] = (char)event.key.keysym.sym;
+          editor.fileNameSize++;
+          editor.fileNameSave[editor.fileNameSize] = '\0';
+         }   
+
+         if((int)event.key.keysym.sym == 13){
+            if(editor.status == 0){
+               editor.saving = true;
+            }
+            else if (editor.status == 1){
+              char path[256];
+              sprintf(path,"levels/%s.txt\0",editor.fileNameSave);
+              for(int i = 0 ;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+               platforms[i].reserved = false;
+              }
+              FSetDataMap(path,len(path));
+              editor.typing = false;
+            }
+         }    
+      }
       switch(event.key.keysym.sym){
          case SDLK_UP:
          if(!key.up){app.inputChange = true;}
@@ -329,12 +390,26 @@ void FInput_Listener(){
           if(app.status == 0){
             appendTransition(app.status,4);
           }
-          
+          if(app.status == 1){
+            if(editor.typing){
+               editor.typing = false;
+            }
+            else{
+               appendTransition(app.status,4);
+            }
+          }
+          if(app.status == 2){
+            FswitchAppStatus(app.status,4);
+            app.fetchedList = false;
+          }
           break;
      } 
    }
    if(event.type == SDL_MOUSEMOTION){
     SDL_GetMouseState(&mouse.x,&mouse.y);
+    if(!mouse.right && !mouse.left){
+      SDL_GetMouseState(&mouse.oldX,&mouse.oldY);
+    }
    }
    if(mouse.left == -1){
       mouse.left = 0;
@@ -364,7 +439,6 @@ void FInput_Listener(){
       }
       if(event.button.button == SDL_BUTTON_RIGHT){
          mouse.right = -1;
-         
       }
    }
 }
@@ -516,10 +590,10 @@ void renderText(int stringCount,char *Text,int x ,int y, int width,int height,in
         num = 0;
         charValue += 32;
       }
-      else if (str[i]>= 48 && str[i]<= 58){
+      else if (str[i]>= 45 && str[i]<= 58){
         num = 1;
         cap = 0;
-        charValue += 49;
+        charValue += 52;
       }
       posX = charValue*40;
      
@@ -534,7 +608,6 @@ void renderText(int stringCount,char *Text,int x ,int y, int width,int height,in
    } 
     SDL_SetTextureAlphaMod(tex_font,255);
 }
-
 void FbuttonHover(){
   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
    if(buttons[i].reserved && buttons[i].hoverable){
@@ -542,8 +615,24 @@ void FbuttonHover(){
       int yMax = buttons[i].y+buttons[i].hoverHeight;
       int xMin = buttons[i].x;
       int xMax = buttons[i].x+buttons[i].hoverWidth;
-     
+      if(app.status == 1 && editor.selected){
+         if(editor.transform == 1 && i == 1){
+            buttons[i].hoverOpacity = 100;
+         }
+         else if(editor.transform == 0 && i == 2){
+            buttons[i].hoverOpacity = 100;
+         }
+         else if (editor.transform == 2 && i == 4){
+            buttons[i].hoverOpacity = 100;
+         }
+      }
+
       if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax){
+         if(app.status == 1){
+            if((!editor.selected && i != 0 && i != 5 && i != 7) || (editor.typeSelected == 0 && (i == 3 || i == 4 || i == 6 || i == 8))){
+               return;
+            }
+         }
          buttons[i].hoverOpacity += 1000*app.deltaTime;
          if(buttons[i].hoverOpacity >= 100){
             buttons[i].hoverOpacity = 100;
@@ -560,9 +649,58 @@ void FbuttonHover(){
       SDL_RenderFillRect(renderer,&(SDL_Rect){buttons[i].x-5,buttons[i].y-5,buttons[i].hoverWidth,buttons[i].hoverHeight});
    }
   }
-  SDL_SetRenderDrawColor(renderer,100,100,100,255);
 }
+void FSaveMap(){
+   SDL_SetRenderDrawColor(renderer,100,100,100,100);
+   SDL_RenderFillRect(renderer,&(SDL_Rect){30,100,windowWidth-60,150});
+   renderText(sizeof("Name file:"),"Name file:",35,170,sizeof("Name file:")*12,15,255,(int[3]){255,255,255});
+   renderText(editor.fileNameSize,editor.fileNameSave,45+sizeof("Name file:")*12,170,editor.fileNameSize*12,15,255,(int[3]){255,255,255});
+   if(editor.status == 0){
+      renderText(33,"Enter to save . Escape to cancel",45,210,33*12,15,255,(int[3]){255,255,255});
+   }
+   else if (editor.status == 1){
+      renderText(33,"Enter to load . Escape to cancel",45,210,33*12,15,255,(int[3]){255,255,255});
+   }
+   
 
+   if(editor.saving){
+      editor.typing = false;
+      char filePath[256];
+      sprintf(filePath,"levels/%s.txt",editor.fileNameSave);
+      FILE *file = fopen(filePath,"w");
+      char mapData[256];
+      char playerData[256];
+      sprintf(mapData,"m:%s,-1,-10000,-10000,10000,10000;\n\0",editor.fileNameSave);
+      sprintf(playerData,"p:%d,%d,%d,%d,%d;\n\0",(int)player.x,(int)player.y,(int)player.width,(int)player.width,(int)player.height);
+      fputs(mapData,file);
+      fputs(playerData,file);
+      for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+         if(platforms[i].reserved){
+            char* platformData = malloc(2000);
+            char slopeInv;
+            char textureStr;
+            char textureStrPer;
+          if(platforms[i].slopeInv){
+            slopeInv = 't';
+          }else{slopeInv = 'f';}
+          if(platforms[i].textureStretch){
+            textureStr = 't';
+          }else{textureStr = 'f';}
+          if(platforms[i].textureStretchPer){
+            textureStrPer = 't';
+          }else{textureStrPer = 'f';}    
+            sprintf(platformData,"%d:%d,%d,%d,%d,%f,%c,%d,%d,%c,%c,%d;\n\0",i,(int)platforms[i].x,(int)platforms[i].y,(int)platforms[i].width,(int)platforms[i].height,platforms[i].slope,slopeInv,(int)platforms[i].textureScale,(int)platforms[i].textureInt,textureStr,textureStrPer,platforms[i].platformType);
+            fputs(platformData,file);
+            free(platformData);
+         }
+      }
+      fputs("/",file);
+      fclose(file);
+      editor.typing = false;
+      editor.saving = false;
+   
+   }
+}
 void FlistLevels(){
    // copy pasted off of stackoverflow
   DIR *p;
@@ -684,25 +822,163 @@ void FswitchAppStatus(int from, int to){
       if(levelsList[i].reserved){
         buttons[i+1].reserved = true;
         buttons[i+1].x = 20;
-        buttons[i+1].y = 150+i*30;
+        buttons[i+1].y = 150+i*20;
         buttons[i+1].text = levelsList[i].levelName;
         buttons[i+1].textSize = levelsList[i].levelNameSize;
-        buttons[i+1].ButtonFontHeight = 20;
+        buttons[i+1].ButtonFontHeight = 15;
         buttons[i+1].hoverable = true;
-        buttons[i+1].ButtonFontWidth = 15;
+        buttons[i+1].ButtonFontWidth = 10;
         buttons[i+1].hoverHeight = buttons[i+1].ButtonFontHeight + 5;
         buttons[i+1].hoverWidth = 500; 
         
       }
-      
      }
      return;
    }
-}
+   if(to == 1){
+      if(from != 1){
+          for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+           platforms[i].reserved = false;
+          }
+      }
+  
+   player.x = 0;
+   player.y = 0;
+   player.width = 18;
+   player.height = 20;
+   camera.x = windowWidth/2;
+   camera.y = windowHeight/2;
+    
+    buttons[0].x = 30;
+    buttons[0].y = 15;
+    buttons[0].text = "Add Platform";
+    buttons[0].textSize = sizeof("Add Platform");
+    buttons[0].ButtonFontHeight = 20;
+    buttons[0].ButtonFontWidth = 15;
+    buttons[0].hoverOpacity = 0;
+    buttons[0].hoverable = true;
+    buttons[0].hoverWidth = buttons[0].textSize*buttons[0].ButtonFontWidth + 10;
+    buttons[0].hoverHeight = buttons[0].ButtonFontHeight + 5;
+    buttons[0].reserved = true;
 
+    buttons[1].x = windowWidth-135;
+    buttons[1].y = 50;
+    buttons[1].text = "Transform";
+    buttons[1].textSize = sizeof("Transform");
+    buttons[1].ButtonFontHeight = 15;
+    buttons[1].ButtonFontWidth = 10;
+    buttons[1].hoverOpacity = 0;
+    buttons[1].hoverable = true;
+    buttons[1].hoverWidth = buttons[1].textSize*buttons[1].ButtonFontWidth + 10;
+    buttons[1].hoverHeight = buttons[1].ButtonFontHeight + 5;
+    buttons[1].reserved = true;
+
+    buttons[2].x = windowWidth-135;
+    buttons[2].y = 75;
+    buttons[2].text = "Resize";
+    buttons[2].textSize = sizeof("Resize");
+    buttons[2].ButtonFontHeight = 15;
+    buttons[2].ButtonFontWidth = 10;
+    buttons[2].hoverOpacity = 0;
+    buttons[2].hoverable = true;
+    buttons[2].hoverWidth = buttons[2].textSize*buttons[2].ButtonFontWidth + 10;
+    buttons[2].hoverHeight = buttons[2].ButtonFontHeight + 5;
+    buttons[2].reserved = true;
+
+    buttons[3].x = windowWidth-140;
+    buttons[3].y = 230;
+    buttons[3].text = "Type:";
+    buttons[3].textSize = sizeof("Type:");
+    buttons[3].ButtonFontHeight = 15;
+    buttons[3].ButtonFontWidth = 10;
+    buttons[3].hoverOpacity = 0;
+    buttons[3].hoverable = true;
+    buttons[3].hoverWidth = buttons[3].textSize*buttons[3].ButtonFontWidth + 10;
+    buttons[3].hoverHeight = buttons[3].ButtonFontHeight + 5;
+    buttons[3].reserved = true;
+
+    buttons[4].x = windowWidth-140;
+    buttons[4].y = 250;
+    buttons[4].text = "Slope:";
+    buttons[4].textSize = sizeof("Slope:");
+    buttons[4].ButtonFontHeight = 15;
+    buttons[4].ButtonFontWidth = 10;
+    buttons[4].hoverOpacity = 0;
+    buttons[4].hoverable = true;
+    buttons[4].hoverWidth = buttons[4].textSize*buttons[4].ButtonFontWidth + 10;
+    buttons[4].hoverHeight = buttons[4].ButtonFontHeight + 5;
+    buttons[4].reserved = true;
+
+    buttons[5].x = windowWidth-140;
+    buttons[5].y = windowHeight-30;
+    buttons[5].text = "Save Map";
+    buttons[5].textSize = sizeof("Save Map");
+    buttons[5].ButtonFontHeight = 20;
+    buttons[5].ButtonFontWidth = 10;
+    buttons[5].hoverOpacity = 0;
+    buttons[5].hoverable = true;
+    buttons[5].hoverWidth = buttons[5].textSize*buttons[5].ButtonFontWidth + 10;
+    buttons[5].hoverHeight = buttons[5].ButtonFontHeight + 5;
+    buttons[5].reserved = true;
+     
+    buttons[6].x = windowWidth-140;
+    buttons[6].y = windowHeight-90;
+    buttons[6].text = "Delete";
+    buttons[6].textSize = sizeof("Delete");
+    buttons[6].ButtonFontHeight = 20;
+    buttons[6].ButtonFontWidth = 10;
+    buttons[6].hoverOpacity = 0;
+    buttons[6].hoverable = true;
+    buttons[6].hoverWidth = buttons[6].textSize*buttons[6].ButtonFontWidth + 10;
+    buttons[6].hoverHeight = buttons[6].ButtonFontHeight + 5;
+    buttons[6].reserved = true;
+
+    buttons[7].x = windowWidth-140;
+    buttons[7].y = windowHeight-60;
+    buttons[7].text = "Load Map";
+    buttons[7].textSize = sizeof("Load Map");
+    buttons[7].ButtonFontHeight = 20;
+    buttons[7].ButtonFontWidth = 10;
+    buttons[7].hoverOpacity = 0;
+    buttons[7].hoverable = true;
+    buttons[7].hoverWidth = buttons[7].textSize*buttons[7].ButtonFontWidth + 10;
+    buttons[7].hoverHeight = buttons[7].ButtonFontHeight + 5;
+    buttons[7].reserved = true;
+   
+    buttons[8].x = windowWidth-140;
+    buttons[8].y = 270;
+    buttons[8].text = "Texture: ";
+    buttons[8].textSize = sizeof("Texture: ");
+    buttons[8].ButtonFontHeight = 15;
+    buttons[8].ButtonFontWidth = 10;
+    buttons[8].hoverOpacity = 0;
+    buttons[8].hoverable = true;
+    buttons[8].hoverWidth = buttons[8].textSize*buttons[8].ButtonFontWidth + 10;
+    buttons[8].hoverHeight = buttons[8].ButtonFontHeight + 5;
+    buttons[8].reserved = true;
+
+    buttons[9].x = windowWidth-140;
+    buttons[9].y = 290;
+    buttons[9].text = "SlopeInv: ";
+    buttons[9].textSize = sizeof("SlopeInv: ");
+    buttons[9].ButtonFontHeight = 15;
+    buttons[9].ButtonFontWidth = 10;
+    buttons[9].hoverOpacity = 0;
+    buttons[9].hoverable = true;
+    buttons[9].hoverWidth = buttons[9].textSize*buttons[9].ButtonFontWidth + 10;
+    buttons[9].hoverHeight = buttons[9].ButtonFontHeight + 5;
+    buttons[9].reserved = true;
+
+    editor.transform = 1;
+    editor.selected = false;
+    editor.typeSelected = 0;
+    editor.indexSelected = 0;
+   }
+}
 void FDraw_Menu(){
+   
    SDL_RenderClear(renderer);
-   SDL_RenderCopy(renderer,tex_background,&(SDL_Rect){app.backgroundMoving,0,576,324},&(SDL_Rect){0,0,windowWidth-app.backgroundMoving*windowWidth/576,windowHeight});
+   SDL_RenderCopy(renderer,tex_background,&(SDL_Rect){app.backgroundMoving,0,576,324},&(SDL_Rect){0,0,(windowWidth-app.backgroundMoving*windowWidth/576),windowHeight});
    SDL_RenderCopy(renderer,tex_background,&(SDL_Rect){0,0,app.backgroundMoving,324},&(SDL_Rect){windowWidth-app.backgroundMoving*windowWidth/576,0,app.backgroundMoving*windowWidth/576,windowHeight});
    
    FbuttonHover();
@@ -713,11 +989,11 @@ void FDraw_Menu(){
          
          if(app.status == 2 && i > 0){
            if(!app.fetchedList){
-           char* PBTemp = FGetDataMap(levelsList[i-1].levelPath,"m",2,levelsList[i-1].levelNameSize);
+           char* PBTemp = FGetDataMap(levelsList[i-1].levelPath,"m",1,levelsList[i-1].levelNameSize);
            SDL_memcpy(levelsList[i-1].PB,PBTemp,9);
            free(PBTemp);
            }
-           renderText(9,msToTimer(atoi(levelsList[i-1].PB)),buttons[i].hoverWidth-70,buttons[i].y+3,(buttons[i].ButtonFontWidth-5)*9,buttons[i].ButtonFontHeight-5,255,(int[3]){255,255,255});
+           renderText(9,msToTimer(atoi(levelsList[i-1].PB)),buttons[i].hoverWidth-70,buttons[i].y,(buttons[i].ButtonFontWidth)*9,buttons[i].ButtonFontHeight,255,(int[3]){255,255,255});
          }
       }
    }
@@ -729,7 +1005,343 @@ void FDraw_Menu(){
    }
    renderText(sizeof("Made by mrGun3r"),"Made by mrGun3r",windowWidth-sizeof("Made by mrGun3r")*9,windowHeight - 15,sizeof("Made by mrGun3r")*9,15,255,(int[3]){220,220,220});
 }
+void FCameraControl(){
+  if(mouse.left && editor.selected){
+   mouse.dX = mouse.x - mouse.oldX;
+   mouse.dY = mouse.y - mouse.oldY;
+   if(SDL_abs(mouse.dX) >= 4 || SDL_abs(mouse.dY) >= 4){
+      editor.unSelect = false;
+   }
+   if(editor.typeSelected == 0){
+      if(editor.transform == 2){
+         editor.transform = 1;
+      }
+      if(editor.transform == 1){
+      player.x += (float)mouse.dX;
+      player.y += (float)mouse.dY;
+      }
+      else if (editor.transform == 0){
+      player.width += (float)mouse.dX;
+      player.height += (float)mouse.dY;
+      
+      if(player.width <= 5){
+         player.width=5;
+      }
+      if(player.height <= 5){
+         player.height = 5;
+      }
+      player.Owidth = player.width;
+      }
+      
+   }
+   else if (editor.typeSelected == 1){
+      if(editor.transform == 1){
+      platforms[editor.indexSelected].x += mouse.dX;
+      platforms[editor.indexSelected].y += mouse.dY; 
+      }
+      else if (editor.transform == 0){
+      platforms[editor.indexSelected].width += mouse.dX;
+      platforms[editor.indexSelected].height += mouse.dY; 
+      if(platforms[editor.indexSelected].width <= 5){
+         platforms[editor.indexSelected].width=5;
+      }
+      if(platforms[editor.indexSelected].height <= 5){
+         platforms[editor.indexSelected].height = 5;
+      }
+      }
+      else if (editor.transform == 2){
+         platforms[editor.indexSelected].slope += 0.01*mouse.dY; 
+         if(platforms[editor.indexSelected].slope > PI/2){
+            platforms[editor.indexSelected].slope = PI/2;
+         }
+         else if (platforms[editor.indexSelected].slope < -PI/2){
+             platforms[editor.indexSelected].slope = -PI/2;
+         }
+      }
+      
+   }
+   mouse.oldX = mouse.x;
+   mouse.oldY = mouse.y;
+  }
+  if(mouse.right){
+    mouse.dX = mouse.x - mouse.oldX;
+    mouse.dY = mouse.y - mouse.oldY;
+    camera.x += mouse.dX;
+    camera.y += mouse.dY;
+    mouse.oldX = mouse.x;
+    mouse.oldY = mouse.y;
+  }
+}
+void FDrawObjects(){
+   player.widthDraw = player.width;
+   player.heightDraw = player.height;
+   player.widthDraw  *= camera.scale;
+   player.heightDraw *= camera.scale;
+   player.xDraw      *= camera.scale;
+   player.yDraw      *= camera.scale;
 
+   player.xDraw += camera.x;
+   player.yDraw += camera.y;
+   SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){2,24,15,18},&(SDL_Rect){player.xDraw,player.yDraw,player.widthDraw,player.heightDraw},0,NULL,SDL_FLIP_NONE);
+
+
+   for (int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+      if(platforms[i].reserved){
+         // Camera offsetted data !
+         platforms[i].width  *= camera.scale;
+         platforms[i].height *= camera.scale;
+         platforms[i].x      *= camera.scale;
+         platforms[i].y      *= camera.scale;
+         platforms[i].x      += camera.x;
+         platforms[i].y      += camera.y;
+         SDL_SetRenderDrawColor(renderer,200,200,200,255);
+         FtexturePlatform(i);
+         // Reset data to normal map data!
+         platforms[i].x      -= camera.x;
+         platforms[i].y      -= camera.y;
+         platforms[i].x      /= camera.scale;
+         platforms[i].y      /= camera.scale;
+         platforms[i].width  /= camera.scale;
+         platforms[i].height /= camera.scale;
+         
+      }
+   }
+   if(editor.selected && editor.typeSelected == 1){
+             platforms[editor.indexSelected].width  *= camera.scale;
+             platforms[editor.indexSelected].height *= camera.scale;
+             platforms[editor.indexSelected].x      *= camera.scale;
+             platforms[editor.indexSelected].y      *= camera.scale;
+             platforms[editor.indexSelected].x      += camera.x;
+             platforms[editor.indexSelected].y      += camera.y;
+            SDL_SetRenderDrawColor(renderer,0,255,0,255);
+            SDL_RenderDrawRect(renderer,&(SDL_Rect){platforms[editor.indexSelected].x,platforms[editor.indexSelected].y-(platforms[editor.indexSelected].height*sin(platforms[editor.indexSelected].slope))*(platforms[editor.indexSelected].slope>=0),platforms[editor.indexSelected].width,platforms[editor.indexSelected].height+(platforms[editor.indexSelected].height*sin(platforms[editor.indexSelected].slope))*(platforms[editor.indexSelected].slope>=0)});
+
+            platforms[editor.indexSelected].x      -= camera.x;
+            platforms[editor.indexSelected].y      -= camera.y;
+            platforms[editor.indexSelected].x      /= camera.scale;
+            platforms[editor.indexSelected].y      /= camera.scale;
+            platforms[editor.indexSelected].width  /= camera.scale;
+            platforms[editor.indexSelected].height /= camera.scale;
+   }
+   if(editor.selected && editor.typeSelected == 0){
+      SDL_SetRenderDrawColor(renderer,0,255,0,255);
+      SDL_RenderDrawRect(renderer,&(SDL_Rect){player.xDraw,player.yDraw,player.widthDraw,player.heightDraw});
+   }
+   player.xDraw = player.x;
+   player.yDraw = player.y;
+}
+void FDraw_SideBar_Editor(){
+  if(editor.selected){
+   char Xvalue[10];
+   char Yvalue[10];
+   char Widthvalue[20];
+   char Heightvalue[20];
+   char type[5];
+   char slope[10];
+   char texture[5];
+   char SlopeInv[5];
+   if(editor.typeSelected == 0){
+      renderText(sizeof("Player"),"Player",windowWidth-125,10,sizeof("Player")*12,15,255,(int[3]){255,255,255});
+      sprintf(Xvalue,"x:%d\0",(int)player.x);
+      sprintf(Yvalue,"y:%d\0",(int)player.y);
+      sprintf(Widthvalue,"width:%d\0",(int)player.width);
+      sprintf(Heightvalue,"height:%d\0",(int)player.height);
+   }
+   if(editor.typeSelected == 1){
+      renderText(sizeof("Platform"),"Platform",windowWidth-125,10,sizeof("Platform")*12,15,255,(int[3]){255,255,255});
+      sprintf(Xvalue,"x:%d\0",(int)platforms[editor.indexSelected].x);
+      sprintf(Yvalue,"y:%d\0",(int)platforms[editor.indexSelected].y);
+      sprintf(Widthvalue,"width:%d\0",(int)platforms[editor.indexSelected].width);
+      sprintf(Heightvalue,"height:%d\0",(int)platforms[editor.indexSelected].height);
+      sprintf(type,"%d\0",(int)platforms[editor.indexSelected].platformType);
+      sprintf(slope,"%d\0",(int)(platforms[editor.indexSelected].slope*180/(2*PI)));
+      sprintf(texture,"%d\0",(int)platforms[editor.indexSelected].textureInt);
+      sprintf(SlopeInv,"%d\0",(int)platforms[editor.indexSelected].slopeInv);
+      renderText(len(type),type,windowWidth-70,232,len(type)*10,10,255,(int[3]){255,255,255});
+      renderText(len(slope),slope,windowWidth-70,252,len(slope)*10,10,255,(int[3]){255,255,255});
+      renderText(len(texture),texture,windowWidth-30,272,len(texture)*10,10,255,(int[3]){255,255,255});
+      renderText(len(SlopeInv),SlopeInv,windowWidth-30,292,len(SlopeInv)*10,10,255,(int[3]){255,255,255});
+   }
+    renderText(len(Xvalue),Xvalue,windowWidth-125,100,len(Xvalue)*12,15,255,(int[3]){255,255,255});
+    renderText(len(Yvalue),Yvalue,windowWidth-125,130,len(Yvalue)*12,15,255,(int[3]){255,255,255});
+    renderText(len(Widthvalue),Widthvalue,windowWidth-125,160,len(Widthvalue)*12,15,255,(int[3]){255,255,255});
+    renderText(len(Heightvalue),Heightvalue,windowWidth-125,190,len(Heightvalue)*12,15,255,(int[3]){255,255,255});
+
+    
+  }
+}
+void FDraw_Editor(){  
+   SDL_RenderClear(renderer);
+   SDL_RenderCopy(renderer,tex_background,&(SDL_Rect){app.backgroundMoving,0,576,324},&(SDL_Rect){0,0,(windowWidth-app.backgroundMoving*windowWidth/576),windowHeight});
+   SDL_RenderCopy(renderer,tex_background,&(SDL_Rect){0,0,app.backgroundMoving,324},&(SDL_Rect){windowWidth-app.backgroundMoving*windowWidth/576,0,app.backgroundMoving*windowWidth/576,windowHeight});
+   SDL_SetRenderDrawColor(renderer,210,210,210,255);
+   for(int i = (int)(camera.x-windowWidth/2)%20;i<windowWidth;i+=20*camera.scale){
+      SDL_RenderDrawLine(renderer,i,0,i,windowHeight);
+   }
+   for(int j =  (int)(camera.y-windowHeight/2)%20;j<windowHeight;j+=20*camera.scale){
+      SDL_RenderDrawLine(renderer,0,j,windowWidth,j);
+   }
+   FDrawObjects();
+   if(editor.typing){
+      FSaveMap();
+   }
+   SDL_SetRenderDrawColor(renderer,100,100,100,255);
+   SDL_RenderFillRect(renderer,&(SDL_Rect){0,0,windowWidth,50});
+   SDL_SetRenderDrawColor(renderer,20,20,20,255);
+   SDL_RenderDrawRect(renderer,&(SDL_Rect){0,0,windowWidth,50});
+   SDL_SetRenderDrawColor(renderer,100,100,100,255);
+   SDL_RenderFillRect(renderer,&(SDL_Rect){windowWidth-150,0,150,windowHeight});
+   SDL_SetRenderDrawColor(renderer,20,20,20,255);
+   SDL_RenderDrawRect(renderer,&(SDL_Rect){windowWidth-150,0,150,windowHeight});
+   FDraw_SideBar_Editor();
+   FbuttonHover();
+   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+      if(buttons[i].reserved){
+         if((i == 1 || i == 2 || i == 3 || i == 4 || i == 6 || i == 8 || i == 9) && !editor.selected){continue;}
+         if((i == 3 || i == 4 || i == 6 || i == 7 || i == 8 || i == 9) && editor.selected && editor.typeSelected != 1){continue;}
+         renderText(buttons[i].textSize,buttons[i].text,buttons[i].x,buttons[i].y,buttons[i].textSize*buttons[i].ButtonFontWidth,buttons[i].ButtonFontHeight,255,(int[3]){255,255,255});
+      }
+   }
+   char posX[10]; 
+   char posY[10];
+   sprintf(posX,"X:%d\0",mouse.x-(int)camera.x);
+   sprintf(posY,"Y:%d\0",mouse.y-(int)camera.y);
+   renderText(len(posX),posX,5,windowHeight-14,len(posX)*7,12,255,(int[3]){255,255,255});
+   renderText(len(posY),posY,len(posX)*7+15,windowHeight-14,len(posY)*7,12,255,(int[3]){255,255,255});
+   
+   
+
+}
+void FCheck_Select_Editor(){
+   int xMin = (player.x)*camera.scale+camera.x;
+   int xMax = (player.x+player.width)*camera.scale+camera.x;
+   int yMin = (player.y)*camera.scale+camera.y;
+   int yMax = (player.y+player.height)*camera.scale+camera.y; 
+      if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax){
+         editor.selected = true;
+         editor.typeSelected = 0;
+         editor.indexSelected = 0;
+         return;
+      }
+      if((mouse.y <= 100 && mouse.x > 0 && mouse.x < windowWidth-150) || (mouse.x > windowWidth-150)){return;}
+      for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+         if(platforms[i].reserved){
+            
+            int xMin = (platforms[i].x)*camera.scale+camera.x;
+            int xMax = (platforms[i].x+platforms[i].width)*camera.scale+camera.x;
+            int yMin = (platforms[i].y-platforms[i].height*SDL_abs(sin(platforms[i].slope))*(sin(platforms[i].slope)>=0))*camera.scale+camera.y;
+            int yMax = (platforms[i].y+platforms[i].height)*camera.scale+camera.y;
+         if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax){
+            editor.selected = true;
+            editor.typeSelected = 1;
+            editor.indexSelected = i;
+            return;
+         }
+         }
+      }
+      if(editor.unSelect){
+         editor.selected = false;
+      }
+      editor.unSelect = true;
+      return;
+}
+void FUpdate_Editor(){
+   if(!editor.typing){
+       FCameraControl();
+   }
+   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+    if(buttons[i].reserved){
+      int yMin = buttons[i].y;
+      int yMax = buttons[i].y+buttons[i].hoverHeight;
+      int xMin = buttons[i].x;
+      int xMax = buttons[i].x+buttons[i].hoverWidth;
+      
+      if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax && mouse.left == -1){
+        mouse.left = 0;
+       if(i == 0){
+         for(int j = 1 ;j<sizeof(platforms)/sizeof(platforms[0]);j++){
+            if(!platforms[j].reserved){
+               editor.selected = true;
+               editor.typeSelected = 1;
+               editor.indexSelected = j;
+            platforms[j].reserved = true;
+            platforms[j].x = windowWidth/2-camera.x;
+            platforms[j].y = windowHeight/2-camera.y;
+            platforms[j].width = 25;
+            platforms[j].height = 25;
+            platforms[j].slope = 0;
+            platforms[j].slopeInv = false;
+            platforms[j].texture = tex_tile;
+            platforms[j].textureScale = 50;
+            platforms[j].textureInt = 1;
+            platforms[j].textureStretch = false;
+            platforms[j].textureStretchPer = false;
+            break;
+            }  
+         }
+       } 
+       
+       if(i == 1 && editor.selected){
+         editor.transform = 1;
+       }  
+       else if (i == 2  && editor.selected){
+         editor.transform = 0;
+       }
+       else if(i == 3  && editor.selected){
+         platforms[editor.indexSelected].platformType = (platforms[editor.indexSelected].platformType + 1) % 3;
+       }
+       else if (i == 4  && editor.selected){
+         editor.transform = 2;
+       }
+       else if (i == 5){
+         editor.typing = true;
+         editor.status = 0;
+       }
+       else if (i == 6  && editor.selected){
+         platforms[editor.indexSelected].reserved = false;
+         editor.selected = false;
+       }
+       else if (i == 7){
+         editor.typing = true;
+         editor.status = 1;
+       }
+       else if (i == 8 && editor.selected){
+         platforms[editor.indexSelected].textureInt++;
+         platforms[editor.indexSelected].textureInt %= 7;
+         if(platforms[editor.indexSelected].textureInt == 0){
+            platforms[editor.indexSelected].texture = NULL;
+         }
+         if(platforms[editor.indexSelected].textureInt == 1){
+            platforms[editor.indexSelected].texture = tex_tile;
+         }
+         else if(platforms[editor.indexSelected].textureInt == 2){
+            platforms[editor.indexSelected].texture = tex_tile2;
+         }
+         else if(platforms[editor.indexSelected].textureInt == 3){
+            platforms[editor.indexSelected].texture = tex_tile3;
+         }
+         else if(platforms[editor.indexSelected].textureInt == 4){
+            platforms[editor.indexSelected].texture = tex_tile4;
+         }
+         else if(platforms[editor.indexSelected].textureInt == 5){
+            platforms[editor.indexSelected].texture = tex_tileStart;
+         }
+         else if(platforms[editor.indexSelected].textureInt == 6){
+            platforms[editor.indexSelected].texture = tex_tileBnW;
+         }
+       }
+       else if (i == 9){
+         platforms[editor.indexSelected].slopeInv = !platforms[editor.indexSelected].slopeInv;
+       }
+      }
+    }
+   }
+   if(mouse.left == -1){
+     FCheck_Select_Editor();
+   }
+
+
+}
 void FUpdate_Data_Menu(){
    app.backgroundMoving += 5*app.deltaTime;
    if(app.backgroundMoving >= 576){
@@ -745,18 +1357,22 @@ void FUpdate_Data_Menu(){
       if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax && mouse.left == -1){
         mouse.left = 0;
         if(app.status == 2 && i > 0){
-          FSetDataMap(levelsList[i-1].levelPath,levelsList[i-1].levelNameSize+12);
-          appendTransition(app.status,0);
+         for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+          platforms[i].reserved = false;
+         }
+         FSetDataMap(levelsList[i-1].levelPath,levelsList[i-1].levelNameSize+12);
+         appendTransition(app.status,0);
         }
         if(app.status == 4){
          // play button
          if(i == 0){
             FswitchAppStatus(app.status,2);
          }
-
+         // Editor
+         if(i == 1){
+            appendTransition(app.status,1);
+         }         
         }
-         
-         
       }
     }
    }
@@ -818,7 +1434,6 @@ void FDisplayHUD(){
    SDL_itoa((int)1/app.deltaTime,fps,10);
    renderText(len(fps),fps,200,500,30,30,255,(int[3]){200,200,200});
    renderText(mapData.mapNameLen,mapData.mapName,windowWidth-mapData.mapNameLen*12,5,mapData.mapNameLen*12,18,255,(int[3]){255,255,255});
-   renderText(mapData.creatorNameLen,mapData.creatorName,windowWidth-mapData.creatorNameLen*7,29,mapData.creatorNameLen*7,10,255,(int[3]){210,210,210});
     if(level.newRecord){
       renderText(sizeof("New Record"),"New Record",10+8*12,8,sizeof("New Record")*12,15,255,(int[3]){0,200,0});
    }
@@ -829,6 +1444,7 @@ void FDraw_Game(){
    ///// They are camera-manipulated data for only rendering purposes
   // Here lies transformed data
  /////-------------------------------START OF RENDERING
+ 
    camera.randValue += 1*app.deltaTime;
    //camera.scale = (2+sin(camera.randValue));
       
@@ -936,12 +1552,12 @@ void FDraw_Game(){
    }
    else{
       player.width = player.Owidth;
-   SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player.animationIndex) % 6 )*24,2,15,18},&(SDL_Rect){player.xDraw,player.yDraw,player.widthDraw,player.heightDraw},0,NULL,flip);
+      SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player.animationIndex) % 6 )*24,2,15,18},&(SDL_Rect){player.xDraw,player.yDraw,player.widthDraw,player.heightDraw},0,NULL,flip);
    }
    }
    else if ((int)player.jumpVelo == 0){
       player.width = player.Owidth;
-     SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player.idleIndex) % 2 )*24,24,15,18},&(SDL_Rect){player.xDraw,player.yDraw,player.widthDraw,player.heightDraw},0,NULL,flip);
+      SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player.idleIndex) % 2 )*24,24,15,18},&(SDL_Rect){player.xDraw,player.yDraw,player.widthDraw,player.heightDraw},0,NULL,flip);
    }
    else{
       player.width = player.Owidth;
@@ -996,7 +1612,7 @@ void FGameRestart(){
       }
       remove("levels/temp.txt");
       mapData.ghostEnd = false;
-      mapData.ghostNextInput = 0;
+      mapData.ghostNextInput = -10;
       mapData.fileadditionIndex = 0;
       mapData.ghostCurrentIndex = 0;
       level.Finished = false;
@@ -1180,7 +1796,7 @@ void FcheckPB(){
             TempBuffer[tempBufferSize+2]  = '\0';
             break;
          }
-         if(count == 2){
+         if(count == 1){
             if(buffer[i] == ','){
               SDL_memcpy(&TempBuffer[tempBufferSize],PBchar,(int)(SDL_log10(level.timer+1)) + 2);
               tempBufferSize += (int)(SDL_log10(level.timer+1) + 2);
@@ -1343,6 +1959,7 @@ void FapplyMovementGhost(){
       Ghostplayer.y = (float)atoi(pY);
       Ghostplayer.veloX = (float)atof(pvX);
       Ghostplayer.veloY = (float)atof(pvY);  
+
       free(up);
       free(left);
       free(right);
@@ -1399,6 +2016,10 @@ void FWindow_Loop(){
     if(app.status == 0){
       FUpdate_Data();
       FDraw_Game();
+    }
+    else if (app.status == 1){
+      FUpdate_Editor();
+      FDraw_Editor();
     }
     else{
       FUpdate_Data_Menu();
@@ -1458,6 +2079,7 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
        else if(atoi(importBuffer) == 6){
          texture = tex_tileBnW;
        }
+       platforms[ID].textureInt = atoi(importBuffer);
        platforms[ID].texture = texture;
       case 8:
        if(importBuffer[0] == 'f'){boolean = false;}
@@ -1506,41 +2128,37 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
          break;
       }
      }
-     else if(dataType == 2){
-     
+     else if(dataType == 2){    
       switch(data){
       case 0:
          SDL_memcpy(mapData.mapName,importBuffer,importBufferSize);
          mapData.mapNameLen = importBufferSize;
          break;
       case 1:
-        SDL_memcpy(mapData.creatorName,importBuffer,importBufferSize);
-         mapData.creatorNameLen = importBufferSize;
-         break;
-      case 2:
          mapData.PBTimer = atoi(importBuffer);
          break;
-      case 3:
+      case 2:
          mapData.xMin = atof(importBuffer);
          break;
-      case 4:
+      case 3:
          mapData.yMin = atof(importBuffer);
          break;
-      case 5:
+      case 4:
          mapData.xMax = atof(importBuffer);
          break;
-      case 6:
+      case 5:
          mapData.yMax = atof(importBuffer);
          break;
      }
      }
 }
 void FSetDataMap(char* path,int pathSize){
-   mapData.ghostNextInput = 0;
+   mapData.ghostNextInput = -10;
    mapData.fileadditionIndex = 0;
    mapData.ghostCurrentIndex = 0;
    SDL_memcpy(level.absolutePath,path,pathSize+7);
    FILE *fileMap = fopen(path,"r");
+   if(!fileMap){return;}
  
    char buffer[256];
    char importBuffer[256];
@@ -1581,7 +2199,7 @@ void FSetDataMap(char* path,int pathSize){
             DataImport = 0;
          }
          if(DataImport == 0){
-            ID = atof(importBufferShortened);
+            ID = atoi(importBufferShortened);
          }
          else{ID = -1;}
          free(importBufferShortened);
@@ -1692,6 +2310,7 @@ void FAppInit_Values(){
    // 2 => in level select
    // 3 => in settings
    // 4 => in Menu
+   app.editorPlatformSize = 0;
    app.fetchedList = false;
    app.status = 4;
    app.backgroundMoving = 0; 
@@ -1708,7 +2327,7 @@ void FAppInit_Values(){
    
    camera.x = 0;
    camera.y = 0;
-   camera.scale = 1.2;
+   camera.scale = 1;
    camera.randValue = 0;
    camera.freeCam = true;
    player.veloX = 0;
