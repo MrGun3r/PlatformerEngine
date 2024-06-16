@@ -66,5 +66,6 @@ int main(int argc,char *argv[]){
       FWindow_Loop();
    }
    remove("levels/temp.txt");
+   SDL_Quit();
    return 0;
 }

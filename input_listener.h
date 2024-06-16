@@ -137,4 +137,10 @@ void FInput_Listener(){
          mouse.right = -1;
       }
    }
+   if(event.type == SDL_MOUSEWHEEL){
+      mouse.wheel = event.wheel.y;
+   }
+   else {
+      mouse.wheel = 0;
+   }
 }

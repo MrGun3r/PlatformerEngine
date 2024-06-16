@@ -16,7 +16,7 @@ void FDraw_Menu(){
            SDL_memcpy(levelsList[i-1].PB,PBTemp,9);
            free(PBTemp);
            }
-           renderText(9,msToTimer(atoi(levelsList[i-1].PB)),buttons[i].hoverWidth-70,buttons[i].y,(buttons[i].ButtonFontWidth)*9,buttons[i].ButtonFontHeight,255,(int[3]){255,255,255});
+           renderText(9,msToTimer(atoi(levelsList[i-1].PB)),buttons[i].hoverWidth-70,buttons[i].y,(buttons[i].ButtonFontWidth)*9,buttons[i].ButtonFontHeight,255,200,(int[3]){255,255,255});
          }
          
       }
@@ -27,7 +27,7 @@ void FDraw_Menu(){
       SDL_SetRenderDrawColor(renderer,100,100,100,100);
       SDL_RenderFillRect(renderer,&(SDL_Rect){10,10,windowWidth-30,windowHeight-30});
    }
-   renderText(sizeof("Made by mrGun3r"),"Made by mrGun3r",windowWidth-sizeof("Made by mrGun3r")*9,windowHeight - 15,sizeof("Made by mrGun3r")*9,15,255,(int[3]){220,220,220});
+   renderText(sizeof("Made by mrGun3r"),"Made by mrGun3r",windowWidth-sizeof("Made by mrGun3r")*9,windowHeight - 15,sizeof("Made by mrGun3r")*9,15,255,200,(int[3]){220,220,220});
 }
 
 

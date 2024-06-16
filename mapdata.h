@@ -1,13 +1,13 @@
 void FSaveMap(){
    SDL_SetRenderDrawColor(renderer,100,100,100,100);
    SDL_RenderFillRect(renderer,&(SDL_Rect){30,100,windowWidth-60,150});
-   renderText(sizeof("Name file:"),"Name file:",35,170,sizeof("Name file:")*12,15,255,(int[3]){255,255,255});
-   renderText(editor.fileNameSize,editor.fileNameSave,45+sizeof("Name file:")*12,170,editor.fileNameSize*12,15,255,(int[3]){255,255,255});
+   renderText(sizeof("Name file:"),"Name file:",35,170,sizeof("Name file:")*12,15,255,200,(int[3]){255,255,255});
+   renderText(editor.fileNameSize,editor.fileNameSave,45+sizeof("Name file:")*12,170,editor.fileNameSize*12,15,255,200,(int[3]){255,255,255});
    if(editor.status == 0){
-      renderText(33,"Enter to save . Escape to cancel",45,210,33*12,15,255,(int[3]){255,255,255});
+      renderText(33,"Enter to save . Escape to cancel",45,210,33*12,15,255,200,(int[3]){255,255,255});
    }
    else if (editor.status == 1){
-      renderText(33,"Enter to load . Escape to cancel",45,210,33*12,15,255,(int[3]){255,255,255});
+      renderText(33,"Enter to load . Escape to cancel",45,210,33*12,15,255,200,(int[3]){255,255,255});
    }
    
    if(editor.saving){
@@ -39,11 +39,8 @@ void FSaveMap(){
           }else{slopeInv = 'f';}
           if(platforms[i].textureStretch){
             textureStr = 't';
-          }else{textureStr = 'f';}
-          if(platforms[i].textureStretchPer){
-            textureStrPer = 't';
-          }else{textureStrPer = 'f';}    
-            sprintf(platformData,"%d:%d,%d,%d,%d,%f,%c,%d,%d,%c,%c,%d;\n\0",i,(int)platforms[i].x,(int)platforms[i].y,(int)platforms[i].width,(int)platforms[i].height,platforms[i].slope,slopeInv,(int)platforms[i].textureScale,(int)platforms[i].textureInt,textureStr,textureStrPer,platforms[i].type);
+          }else{textureStr = 'f';}    
+            sprintf(platformData,"%d:%d,%d,%d,%d,%f,%c,%d,%d,%c,%d;\n\0",i,(int)platforms[i].x,(int)platforms[i].y,(int)platforms[i].width,(int)platforms[i].height,platforms[i].slope,slopeInv,(int)platforms[i].textureScale,(int)platforms[i].textureInt,textureStr,platforms[i].type);
             fputs(platformData,file);
             free(platformData);
          }
@@ -309,15 +306,17 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       case 8:
        if(importBuffer[0] == 'f'){boolean = false;}
        else{boolean = true;}
-       platforms[ID].textureStretchPer = boolean;
-       break;
-      case 9:
-       if(importBuffer[0] == 'f'){boolean = false;}
-       else{boolean = true;}
        platforms[ID].textureStretch = boolean;
        break;
-      case 10:
+      case 9:
        platforms[ID].type = atoi(importBuffer);
+       break;
+      case 10:
+       platforms[ID].textureOffsetX = atof(importBuffer);
+       
+       break;
+      case 11:
+       platforms[ID].textureOffsetY = atof(importBuffer);
        break;
        }
      }

@@ -64,7 +64,8 @@ void FswitchAppStatus(int from, int to){
    player[0].height = 20;
    camera.x = windowWidth/2;
    camera.y = windowHeight/2;
-
+   camera.scaleReal = 1;
+   camera.scale = 1;
     SetButton(true,0," ",70,10,30,true,-1,40,false);
     SetButtonIcon(0,tex_tile3,0,1,0,1);
     SetButton(false,1,"Translate",windowWidth-190,50,10,true,-1,-1,true);
@@ -85,10 +86,13 @@ void FswitchAppStatus(int from, int to){
     SetButton(true,14," ",220,10,30,true,-1,40,false);
     SetButtonIcon(14,tex_checkpoint,0,0.5,0,0.5);
 
+    SetButton(true,15,"+",windowWidth-220,windowHeight-15,10,true,-1,-1,false);
+    SetButton(true,16,"-",windowWidth-240,windowHeight-15,10,true,-1,-1,false);
+
     SetSlider(false,0,"Slope",windowWidth-190,250,10,true,-1,-1,false,-45,45,80,0);
     SetSlider(false,1,"Tex x",windowWidth-190,310,10,true,-1,-1,false,0,100,80,0);
     SetSlider(false,2,"Tex y",windowWidth-190,330,10,true,-1,-1,false,0,100,80,0);
-
+    SetSlider(false,3,"Tex Scale",windowWidth-190,350,10,true,-1,-1,false,10,150,60,10);
     editor.transform = 1;
     editor.selected = false;
     editor.typeSelected = 0;

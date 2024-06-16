@@ -1,33 +1,33 @@
 void FDisplayHUD(){
    char* timer = msToTimer((int)level.timer);
-   renderText(8,timer,5,5,8*12,20,255,(int[3]){255,255,255});
+   renderText(8,timer,5,5,8*12,20,255,200,(int[3]){255,255,255});
    free(timer);
    if(mapData.PBTimer>0){
      char* PBtimer = msToTimer(mapData.PBTimer);
-     renderText(sizeof("PB"),"PB",5,30,sizeof("PB")*7,10,255,(int[3]){200,0,0});
-     renderText(8,PBtimer,30,30,8*7,10,255,(int[3]){200,200,200});
+     renderText(sizeof("PB"),"PB",5,30,sizeof("PB")*7,10,255,200,(int[3]){200,0,0});
+     renderText(8,PBtimer,30,30,8*7,10,255,200,(int[3]){200,200,200});
      free(PBtimer);
    }
    char fps[5];
    SDL_itoa((int)1/app.deltaTime,fps,10);
-   renderText(len(fps),fps,200,500,30,30,255,(int[3]){200,200,200});
-   renderText(mapData.mapNameLen,mapData.mapName,windowWidth-mapData.mapNameLen*12,5,mapData.mapNameLen*12,18,255,(int[3]){255,255,255});
+   renderText(len(fps),fps,200,500,30,30,255,200,(int[3]){200,200,200});
+   renderText(mapData.mapNameLen,mapData.mapName,windowWidth-mapData.mapNameLen*12,5,mapData.mapNameLen*12,18,255,200,(int[3]){255,255,255});
     if(level.newRecord){
-      renderText(sizeof("New Record"),"New Record",10+8*12,8,sizeof("New Record")*12,15,255,(int[3]){0,200,0});
+      renderText(sizeof("New Record"),"New Record",10+8*12,8,sizeof("New Record")*12,15,255,200,(int[3]){0,200,0});
    }
 
    if(level.checkpointShowTimer>0){
       char* checkpointTimer = msToTimer((int)(level.checkpoints[level.checkpointCount-1]));
-      renderText(8,checkpointTimer,windowWidth/2-4*10,20,8*10,15,255,(int[3]){255,255,255});
+      renderText(8,checkpointTimer,windowWidth/2-4*10,20,8*10,15,255,200,(int[3]){255,255,255});
       if(mapData.ghostInGame){
       char* timeDiff = msToTimer((int)(SDL_abs(level.checkpoints[level.checkpointCount-1]-level.LastCheckpointTimer)));
       if(level.checkpoints[level.checkpointCount-1]<level.LastCheckpointTimer){
-       renderText(1,"-",windowWidth/2-4*8-8,40,8,15,255,(int[3]){0,0,255});    
-       renderText(8,timeDiff,windowWidth/2-4*8,40,8*8,15,255,(int[3]){0,0,255});    
+       renderText(1,"-",windowWidth/2-4*8-8,40,8,15,255,200,(int[3]){0,0,255});    
+       renderText(8,timeDiff,windowWidth/2-4*8,40,8*8,15,255,200,(int[3]){0,0,255});    
       }
       else {
-       renderText(1,"+",windowWidth/2-4*8-8,40,8,12,255,(int[3]){255,0,0});    
-       renderText(8,timeDiff,windowWidth/2-4*8,40,8*8,12,255,(int[3]){255,0,0});    
+       renderText(1,"+",windowWidth/2-4*8-8,40,8,12,255,200,(int[3]){255,0,0});    
+       renderText(8,timeDiff,windowWidth/2-4*8,40,8*8,12,255,200,(int[3]){255,0,0});    
       }
        
    }

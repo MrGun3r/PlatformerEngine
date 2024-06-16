@@ -54,6 +54,9 @@ struct Camera{
    double x;
    double y;
    double scale;
+   double xReal;
+   double yReal;
+   double scaleReal;
    double randValue;
    bool freeCam;
 } camera;
@@ -176,7 +179,6 @@ struct Platform{
    double textureScale;
    SDL_Texture* texture;
    bool textureStretch;
-   bool textureStretchPer;
    double textureOffsetX;
    double textureOffsetY;
    int textureInt;
@@ -212,7 +214,7 @@ struct MouseBind{
    int left;
    int right;
    bool middle;
-   int roll;
+   int wheel;
 } mouse;
 
 // Allocate buffers for the data

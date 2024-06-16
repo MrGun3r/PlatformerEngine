@@ -62,9 +62,9 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
 
 // Rendering 
 void FtexturePlatform(int platformID);
-void renderText(int stringCount,char *Text,int x ,int y, int width,int height,int opacity,int color[3]);
+void renderText(int stringCount,char *Text,int x ,int y, int width,int height,int opacity,int shadowOpacity,int color[3]);
 void FGUIHover();
-
+SDL_Texture* CreateRepeatedTexture(SDL_Renderer* renderer, SDL_Texture* originalTexture, int width, int height,double scale,double offsetX,double offsetY);
 // GUI
 void SetButton(bool reserved,int i,char* Text,double x,double y,int textFont,bool hoverable,int hoverWidth,int hoverHeight,bool highlight);
 void SetButtonIcon(int i,SDL_Texture* texture,double u1,double u2,double v1,double v2);
@@ -91,7 +91,7 @@ void FTransformState(); // transforms an object or a camera view
 void FDrawObjects();
 void FDraw_Editor();
 void FSaveMap();
-void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type);
+void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY);
 void editorShowButtons();
 void addTrigger(int x,int y,double width,double height,int Type);
 void FInfoBox();

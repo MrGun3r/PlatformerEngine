@@ -1,5 +1,5 @@
 
-void renderText(int stringCount,char *Text,int x ,int y, int width,int height,int opacity,int color[3]){
+void renderText(int stringCount,char *Text,int x ,int y, int width,int height,int opacity,int shadowOpacity,int color[3]){
   // DEALS WITH TEXT AS WELL AS NUMBERS
   
   char str[stringCount];
@@ -9,7 +9,6 @@ void renderText(int stringCount,char *Text,int x ,int y, int width,int height,in
   int posX;
   int cap;
   int num;
-  SDL_SetTextureAlphaMod(tex_font,opacity); 
   // OUTLINE --> TEXT (order of rendering)   
   int outLineOffset = 2;
     // {text}
@@ -29,7 +28,7 @@ void renderText(int stringCount,char *Text,int x ,int y, int width,int height,in
       }
       posX = charValue*40;
      
-    SDL_SetTextureAlphaMod(tex_font,max(0,opacity-150));
+    SDL_SetTextureAlphaMod(tex_font,max(0,shadowOpacity));
     SDL_SetTextureColorMod( tex_font, 0,0,0);
     SDL_RenderCopy(renderer,tex_font,&(SDL_Rect){posX,80*cap+150*num,40,70-(6*cap)}
                                     ,&(SDL_Rect){x-outLineOffset+i*(width/stringCount),y-outLineOffset,width/stringCount,height});
@@ -116,7 +115,7 @@ void renderButtons(){
         SDL_RenderDrawRect(renderer,&(SDL_Rect){buttons[i].x,buttons[i].y+2,buttons[i].ButtonFontWidth,buttons[i].ButtonFontWidth});
         offset = buttons[i].ButtonFontWidth + 7;
       }
-      renderText(buttons[i].textSize,buttons[i].text,buttons[i].x+offset,buttons[i].y,buttons[i].textSize*buttons[i].ButtonFontWidth,buttons[i].ButtonFontHeight,255,(int[3]){255,255,255});
+      renderText(buttons[i].textSize,buttons[i].text,buttons[i].x+offset,buttons[i].y,buttons[i].textSize*buttons[i].ButtonFontWidth,buttons[i].ButtonFontHeight,255,200,(int[3]){255,255,255});
     }
   }
 }
@@ -140,7 +139,7 @@ void renderSliders(){
         offset = sliders[i].ButtonFontWidth + 10;
       }
 
-      renderText(sliders[i].textSize,sliders[i].text,(int)sliders[i].x+offset,sliders[i].y,sliders[i].textSize*sliders[i].ButtonFontWidth,sliders[i].ButtonFontHeight,255,(int[3]){255,255,255});
+      renderText(sliders[i].textSize,sliders[i].text,(int)sliders[i].x+offset,sliders[i].y,sliders[i].textSize*sliders[i].ButtonFontWidth,sliders[i].ButtonFontHeight,255,200,(int[3]){255,255,255});
    
       SDL_SetRenderDrawColor(renderer,200,200,200,255);
       SDL_RenderFillRect(renderer,&(SDL_Rect){(int)sliders[i].x+offset+sliders[i].textSize*sliders[i].ButtonFontWidth+5,(int)sliders[i].y+sliders[i].ButtonFontHeight/3,(int)sliders[i].sliderLength,5});
