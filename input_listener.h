@@ -83,10 +83,13 @@ void FInput_Listener(){
           break;
          case SDLK_ESCAPE:
           player[0].keys.escape = false;
-          if(app.status == 0){
-            appendTransition(app.status,4);
+          if(app.status == 0){ 
+            
+            
+               appendTransition(app.status,4);
+            
           }
-          if(app.status == 1){
+          else if(app.status == 1){
             if(editor.typing){
                editor.typing = false;
             }
@@ -94,7 +97,7 @@ void FInput_Listener(){
                appendTransition(app.status,4);
             }
           }
-          if(app.status == 2){
+          else if(app.status == 2){
             FswitchAppStatus(app.status,4);
             app.fetchedList = false;
           }

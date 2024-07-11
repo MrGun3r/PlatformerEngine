@@ -3,6 +3,7 @@ void FSaveMap(){
    SDL_RenderFillRect(renderer,&(SDL_Rect){30,100,windowWidth-60,150});
    renderText(sizeof("Name file:"),"Name file:",35,170,sizeof("Name file:")*12,15,255,200,(int[3]){255,255,255});
    renderText(editor.fileNameSize,editor.fileNameSave,45+sizeof("Name file:")*12,170,editor.fileNameSize*12,15,255,200,(int[3]){255,255,255});
+   renderText(1,"-",55+(sizeof("Name file:")+editor.fileNameSize)*12,170,12,15,255,200,(int[3]){255,255,255});
    if(editor.status == 0){
       renderText(33,"Enter to save . Escape to cancel",45,210,33*12,15,255,200,(int[3]){255,255,255});
    }
@@ -12,21 +13,14 @@ void FSaveMap(){
    
    if(editor.saving){
       editor.typing = false;
-      printf("boo");
       char filePath[256];
       sprintf(filePath,"levels/%s.txt",editor.fileNameSave);
       FILE *file = fopen(filePath,"w");
-      char mapData[256];
+      char mapDatal[256];
       char playerData[256];
-      int checkPointsCount = 0;
-      for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
-       if(platforms[i].reserved && platforms[i].type == 2){
-         checkPointsCount++;
-       }
-      }
-      sprintf(mapData,"m:%s,-1,-10000,-10000,10000,10000,%d;\n\0",editor.fileNameSave,checkPointsCount);
-      sprintf(playerData,"p:%d,%d,%d,%d,%d;\n\0",(int)player[0].x,(int)player[0].y,(int)player[0].width,(int)player[0].width,(int)player[0].height);
-      fputs(mapData,file);
+      sprintf(mapDatal,"m:%s,-1,%d,%d,%d,%d,%s,%d;\n\0",editor.fileNameSave,(int)mapData.xMin,(int)mapData.yMin,(int)mapData.xMax,(int)mapData.yMax,backgrounds[app.backgroundInt].textureName,(int)app.backgroundOpacity);
+      sprintf(playerData,"p:%d,%d,%d,%d;\n\0",(int)player[0].x,(int)player[0].y,(int)player[0].width,(int)player[0].height);
+      fputs(mapDatal,file);
       fputs(playerData,file);
       for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
          if(platforms[i].reserved){
@@ -40,7 +34,7 @@ void FSaveMap(){
           if(platforms[i].textureStretch){
             textureStr = 't';
           }else{textureStr = 'f';}    
-            sprintf(platformData,"%d:%d,%d,%d,%d,%f,%c,%d,%d,%c,%d;\n\0",i,(int)platforms[i].x,(int)platforms[i].y,(int)platforms[i].width,(int)platforms[i].height,platforms[i].slope,slopeInv,(int)platforms[i].textureScale,(int)platforms[i].textureInt,textureStr,platforms[i].type);
+            sprintf(platformData,"%d:%d,%d,%d,%d,%f,%c,%d,%s,%c,%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)platforms[i].x,(int)platforms[i].y,(int)platforms[i].width,(int)platforms[i].height,platforms[i].slope,slopeInv,(int)platforms[i].textureScale,textures[(int)platforms[i].textureInt].textureName,textureStr,platforms[i].type,(int)platforms[i].textureOffsetX,(int)platforms[i].textureOffsetY,platforms[i].collidable,(int)platforms[i].opacity,(int)platforms[i].red,(int)platforms[i].green,(int)platforms[i].blue);
             fputs(platformData,file);
             free(platformData);
          }
@@ -52,6 +46,32 @@ void FSaveMap(){
             fputs(triggerData,file);
             free(triggerData);
          }
+      }
+      for(int i = 0;i<sizeof(light)/sizeof(light[0]);i++){
+        if(light[i].reserved){
+            char* lightData = malloc(2000);   
+            sprintf(lightData,"l%d:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)light[i].x,(int)light[i].y,(int)light[i].size,(int)light[i].rotation,(int)light[i].angle,(int)light[i].brightness,(int)light[i].visibility,(int)light[i].red,(int)light[i].green,(int)light[i].blue);
+            fputs(lightData,file);
+            free(lightData);
+         } 
+      }
+      for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
+        if(displacement[i].reserved){
+            char* displacementData = malloc(2000);   
+            sprintf(displacementData,"d%d:%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)displacement[i].x,(int)displacement[i].y,(int)displacement[i].width,(int)displacement[i].height,(int)displacement[i].type,(int)displacement[i].powerType,(int)displacement[i].power);
+
+            fputs(displacementData,file);
+            free(displacementData);
+         } 
+      }
+      for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
+        if(deathbox[i].reserved){
+            char* deathboxData = malloc(2000);   
+            sprintf(deathboxData,"k%d:%d,%d,%d,%d;\n\0",i,(int)deathbox[i].x,(int)deathbox[i].y,(int)deathbox[i].width,(int)deathbox[i].height);
+
+            fputs(deathboxData,file);
+            free(deathboxData);
+         } 
       }
       fputs("/",file);
       fclose(file);
@@ -105,7 +125,7 @@ char* FGetDataMap(char* path,char* type,int dataType,int fileNameSize){
    while(fgets(buffer,256,fileMap) && !finished){   
     int count = 0;
     for(int i = 0;i<256;i++){
-      if(typeFound && count == dataType && buffer[i] != ','){
+      if(typeFound && count == dataType && buffer[i] != ',' && buffer[i] != ';'){
          exportBuffer[exportBufferSize] = buffer[i];
          exportBufferSize++;
       }
@@ -166,8 +186,25 @@ void FSetDataMap(char* path,int pathSize){
    mapData.ghostNextInput = -10;
    mapData.fileadditionIndex = 0;
    mapData.ghostCurrentIndex = 0;
-   
-   
+   camera.scale = 1;
+   camera.x = 0;camera.y = 0;
+
+   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+      triggers[i].reserved = false;
+   }
+   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+      platforms[i].reserved = false;
+   }
+   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+      light[i].reserved = false;
+   }
+   for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
+      displacement[i].reserved = false;
+   }
+    for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
+      deathbox[i].reserved = false;
+   }
+
    // Read from txt file Map Data
 
    SDL_memcpy(level.absolutePath,path,pathSize+7);
@@ -212,6 +249,18 @@ void FSetDataMap(char* path,int pathSize){
             // Trigger
             DataImport = 3;
          }
+         else if (importBufferShortened[0] == 'l'){
+            // Light
+            DataImport = 4;
+         }
+         else if (importBufferShortened[0] == 'd'){
+            // Displacement
+            DataImport = 5;
+         }
+         else if (importBufferShortened[0] == 'k'){
+            // DeathBox
+            DataImport = 6;
+         }
          else{
             // platforms
             DataImport = 0;
@@ -219,9 +268,8 @@ void FSetDataMap(char* path,int pathSize){
          if(DataImport == 0){
             ID = atoi(importBufferShortened);
          }
-         else if(DataImport == 3){
+         else if(DataImport == 3 || DataImport == 4 || DataImport == 5 || DataImport == 6){
             ID = atoi(&importBufferShortened[1]);
-
          }
          else{ID = -1;}
          free(importBufferShortened);
@@ -250,6 +298,17 @@ void FSetDataMap(char* path,int pathSize){
     mapData.ghostInGame = true; 
    }
    fclose(fileMap);
+   if(app.status == 1){
+      app.backgroundInt = FindBackgroundInt(FGetDataMap(level.absolutePath,"m",6,len(level.absolutePath)));
+      app.backgroundOpacity = atoi(FGetDataMap(level.absolutePath,"m",7,len(level.absolutePath)));
+   }
+   int checkPointsCount = 0;
+   for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+       if(platforms[i].reserved && platforms[i].type == 2){
+         checkPointsCount++;
+       }
+      }
+      level.checkpointsSize = checkPointsCount; 
 
 }
 
@@ -283,26 +342,8 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
        platforms[ID].textureScale = atof(importBuffer);
        break;
       case 7:
-       if(atoi(importBuffer) == 1){
-         texture = tex_tile;
-       }
-       else if(atoi(importBuffer) == 2){
-         texture = tex_tile2;
-       }
-       else if(atoi(importBuffer) == 3){
-         texture = tex_tile3;
-       }
-       else if(atoi(importBuffer) == 4){
-         texture = tex_tile4;
-       }
-       else if(atoi(importBuffer) == 5){
-         texture = tex_tileStart;
-       }
-       else if(atoi(importBuffer) == 6){
-         texture = tex_tileBnW;
-       }
-       platforms[ID].textureInt = atoi(importBuffer);
-       platforms[ID].texture = texture;
+       platforms[ID].textureInt = FindTextureInt(importBuffer);  
+       platforms[ID].texture = textures[platforms[ID].textureInt].texture;
       case 8:
        if(importBuffer[0] == 'f'){boolean = false;}
        else{boolean = true;}
@@ -317,6 +358,21 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
        break;
       case 11:
        platforms[ID].textureOffsetY = atof(importBuffer);
+       break;
+      case 12:
+       platforms[ID].collidable = (bool)atoi(importBuffer);
+       break;
+      case 13:
+       platforms[ID].opacity = atof(importBuffer);
+       break;
+      case 14:
+       platforms[ID].red = atof(importBuffer);
+       break;
+      case 15:
+       platforms[ID].green = atof(importBuffer);
+       break;
+      case 16:
+       platforms[ID].blue = atof(importBuffer);
        break;
        }
      }
@@ -340,17 +396,12 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       case 2:
          player[0].Owidth = atof(importBuffer);
          player[1].Owidth = atof(importBuffer);
-         break;
-      case 3:
          player[0].width = atof(importBuffer);
          player[1].width = atof(importBuffer);
          break;
-      case 4:
+      case 3:
          player[0].height = atof(importBuffer);
          player[1].height = atof(importBuffer);
-         break;
-      case 5:
-         level.checkpointsSize = atoi(importBuffer);
          break;
       }
      }
@@ -396,5 +447,74 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
          triggers[ID].triggerType = atoi(importBuffer);
          break;
      }
+     }
+     else if (dataType == 4){
+      light[ID].reserved = true;
+      
+      switch(data){
+      case 0:
+         light[ID].x = atof(importBuffer);
+         break;
+      case 1:
+         light[ID].y = atof(importBuffer);
+         break;
+      case 2:
+         light[ID].size = atof(importBuffer);
+         break;
+      case 3:
+         light[ID].rotation = atof(importBuffer);
+         break;
+      case 4:
+         light[ID].angle = atof(importBuffer);
+         break;
+      case 5:
+         light[ID].brightness = atof(importBuffer);
+         break;
+      case 6:
+         light[ID].visibility = atof(importBuffer);
+         break;
+      case 7:
+         light[ID].red = atof(importBuffer);
+         break;
+      case 8:
+         light[ID].green = atof(importBuffer);
+         break;
+      case 9:
+         light[ID].blue = atof(importBuffer);
+         break;
+     }
+     }
+     else if (dataType == 5){
+      displacement[ID].reserved = true;
+      switch(data){
+      case 0: 
+         displacement[ID].x = atof(importBuffer);
+      case 1: 
+         displacement[ID].y = atof(importBuffer);
+      case 2: 
+         displacement[ID].width = atof(importBuffer);
+      case 3: 
+         displacement[ID].height = atof(importBuffer);
+      case 4: 
+         displacement[ID].type = atoi(importBuffer);
+      case 5: 
+         displacement[ID].powerType = atoi(importBuffer);
+      case 6: 
+         displacement[ID].power = atof(importBuffer);
+      } 
+     }
+     else if (dataType == 6){
+      deathbox[ID].reserved = true;
+      switch(data){
+      case 0: 
+         deathbox[ID].x = atof(importBuffer);
+      case 1: 
+         deathbox[ID].y = atof(importBuffer);
+      case 2: 
+         deathbox[ID].width = atof(importBuffer);
+      case 3: 
+         deathbox[ID].height = atof(importBuffer);   
+      }
+          
      }
 }

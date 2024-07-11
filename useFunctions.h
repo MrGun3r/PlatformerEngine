@@ -24,6 +24,16 @@ bool FCompareStrings(char* a,char* b){
   }
 
 }
+char* FlowerCase(char* text,int textSize){
+   char* returnText = malloc(textSize+1);
+   for(int i = 0;i<textSize+1;i++){
+      if(text[i] >= 65 && text[i] <= 90){
+         returnText[i] = (char)((int)text[i] + 32);
+      }
+      else{returnText[i] = text[i];}
+   }
+   return returnText;
+}
 
 char* msToTimer(int ms){
    char *timer = malloc(9);
@@ -53,4 +63,6 @@ void FdeltaTime(){
    app.deltaTime =      ((double)(SDL_GetTicks()-app.WINDOW_TICKS))/1000;
    app.deltaTimeGhost = ((double)(SDL_GetTicks()-app.WINDOW_TICKS))/1000;
    app.WINDOW_TICKS = SDL_GetTicks();
+
+    
 }

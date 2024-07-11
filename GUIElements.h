@@ -30,6 +30,11 @@ void SetButtonIcon(int i,SDL_Texture* texture,double u1,double u2,double v1,doub
     buttons[i].v2 = v2;
 }
 
+void ChangeButtonPosition(int i,double x,double y){
+    buttons[i].x = x;
+    buttons[i].y = y;
+}
+
 void SetSlider(bool reserved,int i,char* Text,double x,double y,int textFont,bool hoverable,int hoverWidth,int hoverHeight,bool highlight,double sliderMin,double sliderMax,double sliderLength,double defaultValue){
     sliders[i].iconTexture = NULL;
     sliders[i].x = x;
@@ -58,10 +63,14 @@ void SetSlider(bool reserved,int i,char* Text,double x,double y,int textFont,boo
     sliders[i].highlight = highlight;
 
 }
-
+void ChangeSliderPosition(int i,double x,double y){
+    sliders[i].x = x;
+    sliders[i].y = y;
+}
 void Update_Slider(){
     for(int i = 0;i<sizeof(sliders)/sizeof(sliders[0]);i++){
         if(sliders[i].reserved){
+            SDL_itoa(sliders[i].sliderValue,sliders[i].value,10);
             int offset = 0;
             if(sliders[i].iconTexture){
              offset = sliders[i].ButtonFontWidth+sliders[i].textSize*sliders[i].ButtonFontWidth;
@@ -70,7 +79,6 @@ void Update_Slider(){
                 double sliderRatio = (mouse.x - (sliders[i].x+offset+sliders[i].textSize*sliders[i].ButtonFontWidth+5))/sliders[i].sliderLength;
                 sliderRatio = min(max(sliderRatio,0),1);
                 sliders[i].sliderValue = sliders[i].sliderMinValue*(1-sliderRatio) + sliders[i].sliderMaxValue*sliderRatio;
-
             }
             
         }

@@ -1,15 +1,15 @@
 void FDraw_Menu(){
    
    SDL_RenderClear(renderer);
-   SDL_RenderCopy(renderer,tex_background,&(SDL_Rect){app.backgroundMoving,0,576,324},&(SDL_Rect){0,0,(windowWidth-app.backgroundMoving*windowWidth/576),windowHeight});
-   SDL_RenderCopy(renderer,tex_background,&(SDL_Rect){0,0,app.backgroundMoving,324},&(SDL_Rect){windowWidth-app.backgroundMoving*windowWidth/576,0,app.backgroundMoving*windowWidth/576,windowHeight});
+   DrawBackground();
+
+   // Draw HUD
+   SDL_SetRenderTarget(renderer,HUDLayer);
    
    FGUIHover();
-   
+   renderButtons();
    for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
       if(buttons[i].reserved){
-         renderButtons();
-
          if(app.status == 2 && i > 0){
            if(!app.fetchedList){
            char* PBTemp = FGetDataMap(levelsList[i-1].levelPath,"m",1,levelsList[i-1].levelNameSize);
@@ -18,9 +18,10 @@ void FDraw_Menu(){
            }
            renderText(9,msToTimer(atoi(levelsList[i-1].PB)),buttons[i].hoverWidth-70,buttons[i].y,(buttons[i].ButtonFontWidth)*9,buttons[i].ButtonFontHeight,255,200,(int[3]){255,255,255});
          }
-         
       }
    }
+   
+   
    
    if(app.status == 2){
       app.fetchedList = true;
@@ -28,8 +29,8 @@ void FDraw_Menu(){
       SDL_RenderFillRect(renderer,&(SDL_Rect){10,10,windowWidth-30,windowHeight-30});
    }
    renderText(sizeof("Made by mrGun3r"),"Made by mrGun3r",windowWidth-sizeof("Made by mrGun3r")*9,windowHeight - 15,sizeof("Made by mrGun3r")*9,15,255,200,(int[3]){220,220,220});
+   SDL_SetRenderTarget(renderer,backgroundLayer);
 }
-
 
 void FUpdate_Data_Menu(){
    app.backgroundMoving += 5*app.deltaTime;
@@ -51,6 +52,7 @@ void FUpdate_Data_Menu(){
          }
          FSetDataMap(levelsList[i-1].levelPath,levelsList[i-1].levelNameSize+12);
          appendTransition(app.status,0);
+         break;
         }
         if(app.status == 4){
          // play button

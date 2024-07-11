@@ -46,7 +46,7 @@ void FGUIHover(){
       int yMax = buttons[i].y+buttons[i].hoverHeight;
       int xMin = buttons[i].x;
       int xMax = buttons[i].x+buttons[i].hoverWidth;
-     if(!buttons[i] .highlight){
+     if(!buttons[i].highlight){
       if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax){
          buttons[i].hoverOpacity += 1000*app.deltaTime;
          if(buttons[i].hoverOpacity >= 100){
@@ -116,6 +116,7 @@ void renderButtons(){
         offset = buttons[i].ButtonFontWidth + 7;
       }
       renderText(buttons[i].textSize,buttons[i].text,buttons[i].x+offset,buttons[i].y,buttons[i].textSize*buttons[i].ButtonFontWidth,buttons[i].ButtonFontHeight,255,200,(int[3]){255,255,255});
+      renderText(len(buttons[i].value),buttons[i].value,buttons[i].x+offset+5+buttons[i].textSize*buttons[i].ButtonFontWidth,buttons[i].y,len(buttons[i].value)*buttons[i].ButtonFontWidth,buttons[i].ButtonFontHeight,255,200,(int[3]){255,255,255});
     }
   }
 }
@@ -140,8 +141,11 @@ void renderSliders(){
       }
 
       renderText(sliders[i].textSize,sliders[i].text,(int)sliders[i].x+offset,sliders[i].y,sliders[i].textSize*sliders[i].ButtonFontWidth,sliders[i].ButtonFontHeight,255,200,(int[3]){255,255,255});
-   
+
+      renderText(len(sliders[i].value),sliders[i].value,sliders[i].x+offset+10+sliders[i].textSize*sliders[i].ButtonFontWidth + sliders[i].sliderLength,sliders[i].y,len(sliders[i].value)*sliders[i].ButtonFontWidth,sliders[i].ButtonFontHeight,255,200,(int[3]){255,255,255});
+
       SDL_SetRenderDrawColor(renderer,200,200,200,255);
+
       SDL_RenderFillRect(renderer,&(SDL_Rect){(int)sliders[i].x+offset+sliders[i].textSize*sliders[i].ButtonFontWidth+5,(int)sliders[i].y+sliders[i].ButtonFontHeight/3,(int)sliders[i].sliderLength,5});
       
       SDL_SetRenderDrawColor(renderer,100,100,255,255);

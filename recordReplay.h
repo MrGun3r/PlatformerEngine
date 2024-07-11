@@ -27,14 +27,13 @@ void FaddReplay(bool checkpoint){
       if(checkpoint){
          char checkpointStr[256];
          sprintf(checkpointStr,"c%d:%d;\n\0",level.checkpointCount-1,level.checkpoints[level.checkpointCount-1]);
-         printf("%s",checkpointStr);
+         
          fputs(checkpointStr,fileMapNew);
 
          char type[10];
          sprintf(type,"c%d",level.checkpointCount-1);
          level.LastCheckpointTimer = atoi(FGetDataMap(level.absolutePath,type,0,len(level.absolutePath)));
       }
-        
       fclose(fileMapNew);
       break;
    }
