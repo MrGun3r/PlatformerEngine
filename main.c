@@ -17,21 +17,30 @@ void FAppInit_Values(){
       sliders[i].reserved = false;
       SDL_memcpy(sliders[i].value,"\0",1);
    }
+   for(int i = 0 ;i<sizeof(knobs)/sizeof(knobs[0]);i++){
+      knobs[i].reserved = false;
+      knobs[i].knobCoef = 1;
+      SDL_memcpy(sliders[i].value,"\0",1);
+   }
    app.status = 4;
-   app.editorPlatformSize = 0;
    app.fetchedList = false;
    app.backgroundMoving = 0; 
    app.transition = false;
    app.transitionInt = 0;
+   
    SDL_memcpy(app.backgroundName,"background\0",len("background\0"));
-   FswitchAppStatus(0,4);
-
+   if(CheckUsernameProfile()){
+      FswitchAppStatus(0,4);
+   }
+   else{
+      FswitchAppStatus(0,5);
+   }
    level.timer = 0;
    level.tempFileMade = false;
    level.keyInputsSize = 0;
    level.Finished = false;
    level.Started = false;
-   
+   app.textboxSelected = -1;
    camera.x = 0;
    camera.y = 0;
    camera.scale = 1;
@@ -50,7 +59,7 @@ void FAppInit_Values(){
 void FWindow_Loop(){
    
    while(app.WINDOW_LOOP){
-        
+      
       if(!app.transition){
          FInput_Listener();
       }
@@ -65,7 +74,8 @@ void FWindow_Loop(){
       SDL_SetRenderTarget(renderer,lightLayer2);
       SDL_RenderClear(renderer);
       SDL_SetRenderTarget(renderer,backgroundLayer);
-
+      
+      
     if(app.status == 0){
       FUpdate_Data();
       FDraw_Game();
@@ -83,7 +93,10 @@ void FWindow_Loop(){
     FdeltaTime();
     // Light
     DrawLight(app.backgroundOpacity);
-
+    
+    SDL_SetRenderTarget(renderer,HUDLayer);
+     SDL_SetRenderDrawColor(renderer,100,100,100,255);
+   SDL_RenderFillRect(renderer,&(SDL_Rect){mouse.x,mouse.y,10,10});
    // compositing resultLayer
     SDL_SetRenderTarget(renderer,resultLayer);
     
@@ -93,11 +106,14 @@ void FWindow_Loop(){
     SDL_RenderCopy(renderer,HUDLayer,NULL,NULL);
 
    // adding to window
+   int offset = 0;
+   int windowGameHeight = ((double)gameHeight/(double)gameWidth)*windowWidth;
+   if(windowHeight > windowGameHeight){
+      offset = (windowHeight-windowGameHeight)/2;
+   }
     SDL_SetRenderTarget(renderer,NULL);
-    SDL_RenderCopy(renderer,resultLayer,NULL,NULL);
+    SDL_RenderCopy(renderer,resultLayer,NULL,&(SDL_Rect){0,offset,windowWidth,min(windowHeight,windowGameHeight)});
     SDL_RenderPresent(renderer);
-    
-    
    }
 }
 

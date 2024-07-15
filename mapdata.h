@@ -1,40 +1,20 @@
 void FSaveMap(){
-   SDL_SetRenderDrawColor(renderer,100,100,100,100);
-   SDL_RenderFillRect(renderer,&(SDL_Rect){30,100,windowWidth-60,150});
-   renderText(sizeof("Name file:"),"Name file:",35,170,sizeof("Name file:")*12,15,255,200,(int[3]){255,255,255});
-   renderText(editor.fileNameSize,editor.fileNameSave,45+sizeof("Name file:")*12,170,editor.fileNameSize*12,15,255,200,(int[3]){255,255,255});
-   renderText(1,"-",55+(sizeof("Name file:")+editor.fileNameSize)*12,170,12,15,255,200,(int[3]){255,255,255});
-   if(editor.status == 0){
-      renderText(33,"Enter to save . Escape to cancel",45,210,33*12,15,255,200,(int[3]){255,255,255});
-   }
-   else if (editor.status == 1){
-      renderText(33,"Enter to load . Escape to cancel",45,210,33*12,15,255,200,(int[3]){255,255,255});
-   }
    
-   if(editor.saving){
-      editor.typing = false;
+   
       char filePath[256];
-      sprintf(filePath,"levels/%s.txt",editor.fileNameSave);
+      sprintf(filePath,"levels/%s.txt",textbox[0].textContent);
       FILE *file = fopen(filePath,"w");
       char mapDatal[256];
       char playerData[256];
-      sprintf(mapDatal,"m:%s,-1,%d,%d,%d,%d,%s,%d;\n\0",editor.fileNameSave,(int)mapData.xMin,(int)mapData.yMin,(int)mapData.xMax,(int)mapData.yMax,backgrounds[app.backgroundInt].textureName,(int)app.backgroundOpacity);
+      sprintf(mapDatal,"m:%s,-1,%d,%d,%d,%d,%s,%d;\n\0",textbox[0].textContent,(int)mapData.xMin,(int)mapData.yMin,(int)mapData.xMax,(int)mapData.yMax,backgrounds[app.backgroundInt].textureName,(int)app.backgroundOpacity);
       sprintf(playerData,"p:%d,%d,%d,%d;\n\0",(int)player[0].x,(int)player[0].y,(int)player[0].width,(int)player[0].height);
       fputs(mapDatal,file);
       fputs(playerData,file);
-      for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+      for(int i = 1;i<sizeof(platforms)/sizeof(platforms[1]);i++){
          if(platforms[i].reserved){
             char* platformData = malloc(2000);
-            char slopeInv;
-            char textureStr;
-            char textureStrPer;
-          if(platforms[i].slopeInv){
-            slopeInv = 't';
-          }else{slopeInv = 'f';}
-          if(platforms[i].textureStretch){
-            textureStr = 't';
-          }else{textureStr = 'f';}    
-            sprintf(platformData,"%d:%d,%d,%d,%d,%f,%c,%d,%s,%c,%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)platforms[i].x,(int)platforms[i].y,(int)platforms[i].width,(int)platforms[i].height,platforms[i].slope,slopeInv,(int)platforms[i].textureScale,textures[(int)platforms[i].textureInt].textureName,textureStr,platforms[i].type,(int)platforms[i].textureOffsetX,(int)platforms[i].textureOffsetY,platforms[i].collidable,(int)platforms[i].opacity,(int)platforms[i].red,(int)platforms[i].green,(int)platforms[i].blue);
+ 
+            sprintf(platformData,"%d:%d,%d,%d,%d,%f,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)platforms[i].x,(int)platforms[i].y,(int)platforms[i].width,(int)platforms[i].height,platforms[i].slope,(int)platforms[i].slopeInv,(int)platforms[i].textureScale,textures[(int)platforms[i].textureInt].textureName,(int)platforms[i].textureStretch,platforms[i].type,(int)platforms[i].textureOffsetX,(int)platforms[i].textureOffsetY,platforms[i].collidable,(int)platforms[i].opacity,(int)platforms[i].red,(int)platforms[i].green,(int)platforms[i].blue,(int)platforms[i].textureAnimationTime,(int)platforms[i].moveAngle,(int)platforms[i].moveModule,(int)platforms[i].moveTime);
             fputs(platformData,file);
             free(platformData);
          }
@@ -42,7 +22,7 @@ void FSaveMap(){
       for(int i = 0;i<sizeof(triggers)/sizeof(triggers[0]);i++){
          if(triggers[i].reserved){
             char* triggerData = malloc(2000);   
-            sprintf(triggerData,"t%d:%d,%d,%d,%d,%d;\n\0",i,(int)triggers[i].x,(int)triggers[i].y,(int)triggers[i].width,(int)triggers[i].height,(int)triggers[i].triggerType);
+            sprintf(triggerData,"t%d:%d,%d,%d,%d,%d,%d;\n\0",i,(int)triggers[i].x,(int)triggers[i].y,(int)triggers[i].width,(int)triggers[i].height,(int)triggers[i].triggerType,(int)triggers[i].opacity);
             fputs(triggerData,file);
             free(triggerData);
          }
@@ -58,7 +38,7 @@ void FSaveMap(){
       for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
         if(displacement[i].reserved){
             char* displacementData = malloc(2000);   
-            sprintf(displacementData,"d%d:%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)displacement[i].x,(int)displacement[i].y,(int)displacement[i].width,(int)displacement[i].height,(int)displacement[i].type,(int)displacement[i].powerType,(int)displacement[i].power);
+            sprintf(displacementData,"d%d:%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)displacement[i].x,(int)displacement[i].y,(int)displacement[i].width,(int)displacement[i].height,(int)displacement[i].type,(int)displacement[i].powerType,(int)displacement[i].power,(int)displacement[i].opacity);
 
             fputs(displacementData,file);
             free(displacementData);
@@ -67,7 +47,7 @@ void FSaveMap(){
       for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
         if(deathbox[i].reserved){
             char* deathboxData = malloc(2000);   
-            sprintf(deathboxData,"k%d:%d,%d,%d,%d;\n\0",i,(int)deathbox[i].x,(int)deathbox[i].y,(int)deathbox[i].width,(int)deathbox[i].height);
+            sprintf(deathboxData,"k%d:%d,%d,%d,%d,%d;\n\0",i,(int)deathbox[i].x,(int)deathbox[i].y,(int)deathbox[i].width,(int)deathbox[i].height,(int)deathbox[i].opacity);
 
             fputs(deathboxData,file);
             free(deathboxData);
@@ -75,10 +55,6 @@ void FSaveMap(){
       }
       fputs("/",file);
       fclose(file);
-      editor.typing = false;
-      editor.saving = false;
-   
-   }
 }
 
 
@@ -320,9 +296,11 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
      switch(data){
       case 0:
        platforms[ID].x = atof(importBuffer);
+       platforms[ID].spawnX = atof(importBuffer);
        break;
       case 1:
        platforms[ID].y = atof(importBuffer);
+       platforms[ID].spawnY = atof(importBuffer);
        break;
       case 2:
        platforms[ID].width = atof(importBuffer);
@@ -334,27 +312,28 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
        platforms[ID].slope = atof(importBuffer);
        break;
       case 5: 
-       if(importBuffer[0] == 'f'){boolean = false;}
-       else{boolean = true;}
-       platforms[ID].slopeInv = boolean;
+       platforms[ID].slopeInv = atoi(importBuffer);
        break;
       case 6:
        platforms[ID].textureScale = atof(importBuffer);
        break;
       case 7:
+      if(FCompareStrings(importBuffer,"None\0")){
+         platforms[ID].textureInt = 0;
+         platforms[ID].texture = NULL;
+      }
+      else {
        platforms[ID].textureInt = FindTextureInt(importBuffer);  
        platforms[ID].texture = textures[platforms[ID].textureInt].texture;
+      }
       case 8:
-       if(importBuffer[0] == 'f'){boolean = false;}
-       else{boolean = true;}
-       platforms[ID].textureStretch = boolean;
+       platforms[ID].textureStretch = atoi(importBuffer);
        break;
       case 9:
        platforms[ID].type = atoi(importBuffer);
        break;
       case 10:
        platforms[ID].textureOffsetX = atof(importBuffer);
-       
        break;
       case 11:
        platforms[ID].textureOffsetY = atof(importBuffer);
@@ -373,6 +352,18 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
        break;
       case 16:
        platforms[ID].blue = atof(importBuffer);
+       break;
+      case 17:
+       platforms[ID].textureAnimationTime = atoi(importBuffer);
+       break;
+      case 18:
+       platforms[ID].moveAngle = atoi(importBuffer);
+       break;
+      case 19:
+       platforms[ID].moveModule = atoi(importBuffer);
+       break;
+      case 20:
+       platforms[ID].moveTime = atoi(importBuffer);
        break;
        }
      }
@@ -446,6 +437,9 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       case 4:
          triggers[ID].triggerType = atoi(importBuffer);
          break;
+      case 5:
+         triggers[ID].opacity = atof(importBuffer);
+         break;
      }
      }
      else if (dataType == 4){
@@ -501,6 +495,8 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
          displacement[ID].powerType = atoi(importBuffer);
       case 6: 
          displacement[ID].power = atof(importBuffer);
+      case 7: 
+         displacement[ID].opacity = atof(importBuffer);
       } 
      }
      else if (dataType == 6){
@@ -514,6 +510,8 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
          deathbox[ID].width = atof(importBuffer);
       case 3: 
          deathbox[ID].height = atof(importBuffer);   
+      case 4: 
+         deathbox[ID].opacity = atof(importBuffer);   
       }
           
      }

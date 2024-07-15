@@ -3,8 +3,8 @@ void DrawBackground(){
    int textureWidth = backgrounds[app.backgroundInt].textureWidth;
    int textureHeight = backgrounds[app.backgroundInt].textureHeight;
   
-   SDL_RenderCopy(renderer,backgrounds[app.backgroundInt].texture,&(SDL_Rect){app.backgroundMoving,0,textureWidth,textureHeight},&(SDL_Rect){0,0,windowWidth-app.backgroundMoving*windowWidth/textureWidth,windowHeight});
-   SDL_RenderCopy(renderer,backgrounds[app.backgroundInt].texture,&(SDL_Rect){0,0,app.backgroundMoving,textureHeight},&(SDL_Rect){windowWidth-app.backgroundMoving*windowWidth/textureWidth,0,app.backgroundMoving*windowWidth/textureWidth,windowHeight});
+   SDL_RenderCopy(renderer,backgrounds[app.backgroundInt].texture,&(SDL_Rect){app.backgroundMoving,0,textureWidth,textureHeight},&(SDL_Rect){0,0,gameWidth-app.backgroundMoving*gameWidth/textureWidth,gameHeight});
+   SDL_RenderCopy(renderer,backgrounds[app.backgroundInt].texture,&(SDL_Rect){0,0,app.backgroundMoving,textureHeight},&(SDL_Rect){gameWidth-app.backgroundMoving*gameWidth/textureWidth,0,app.backgroundMoving*gameWidth/textureWidth,gameHeight});
    
 }
 

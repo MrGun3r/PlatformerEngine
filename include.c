@@ -13,12 +13,24 @@
 #define GRAVITY 500
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
-int windowWidth = 900;
-int windowHeight = 600;
+
+
 float windowWidthScale = 1;
 float windowHeightScale = 1;
-int gameWidth = 900;
-int gameHeight = 600;
+
+
+/// Window size (Actual window size , Window Size will be resizable as desired)
+
+int windowWidth = 800;
+int windowHeight = 450;
+
+/// Game Size (Meaning The size of the textures layers , Game size will have decrete values to chosen)
+
+
+int gameWidth = 640;
+int gameHeight = 480;
+
+
 
 // Texture and surface tiles
 
@@ -36,6 +48,8 @@ SDL_Surface* surface_displacement = NULL;
 SDL_Texture* tex_displacement = NULL;
 SDL_Surface* surface_skull = NULL;
 SDL_Texture* tex_skull = NULL;
+SDL_Surface* surface_coin = NULL;
+SDL_Texture* tex_coin = NULL;
 
 // Game window Textures
 SDL_Texture* backgroundLayer = NULL;
@@ -72,6 +86,7 @@ int FindBackgroundInt(char *backgroundName);
 
 // Rendering 
 void FtexturePlatform(int platformID);
+void FtextureQuad(double x,double y,double width,double height,SDL_Texture* texture,double opacity,int rotationAngle);
 void renderText(int stringCount,char *Text,int x ,int y, int width,int height,int opacity,int shadowOpacity,int color[3]);
 void FGUIHover();
 SDL_Texture* CreateRepeatedTexture(SDL_Renderer* renderer, SDL_Texture* originalTexture, int n);
@@ -81,7 +96,12 @@ void DrawBackground();
 void SetButton(bool reserved,int i,char* Text,double x,double y,int textFont,bool hoverable,int hoverWidth,int hoverHeight,bool highlight);
 void SetButtonIcon(int i,SDL_Texture* texture,double u1,double u2,double v1,double v2);
 void SetSlider(bool reserved,int i,char* Text,double x,double y,int textFont,bool hoverable,int hoverWidth,int hoverHeight,bool highlight,double sliderMin,double sliderMax,double sliderLength,double defaultValue);
+void SetTextBox(bool reserved,int i,char* textName,double x,double y,double font,double hoverLength);
 void Update_Slider();
+void Update_Knobs();
+void Update_TextBox();
+void SetKnobCoef(int i,double Coef);
+void SetKnob(bool reserved,int i,char* Text,double x,double y,int textFont,bool hoverable,double knobMin,double knobMax,double defaultValue);
 void ChangeSliderPosition(int i,double x,double y);
 void ChangeButtonPosition(int i,double x,double y);
 
@@ -91,6 +111,11 @@ void FapplyText();
 // Movement
 void FapplyMovementGhost();
 void FPlayer_Movement();
+
+// Profile setup
+void SetUsernameProfile();
+bool CheckUsernameProfile();
+
 
 
 // App change state
@@ -106,13 +131,13 @@ void FTransformState(); // transforms an object or a camera view
 void FDrawObjects();
 void FDraw_Editor();
 void FSaveMap();
-void addDisplacement(double x, double y, double width,double height,double type,double power,double powerType);
-void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity);
+void addDisplacement(double x, double y, double width,double height,double type,double power,double powerType,double opacity);
+void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity,double moveAngle,double moveModule,double moveTime,double animation);
 void addParticle(double x,double y,double size,double red,double green,double blue);
 void editorShowButtons();
-void addTrigger(int x,int y,double width,double height,int Type);
-void addLight(double x,double y,double size);
-void addDeathBox(double x, double y, double width,double height);
+void addTrigger(int x,int y,double width,double height,int Type,double opacity);
+void addLight(double x,double y,double size,double red,double green,double blue,double visibility,double brightness);
+void addDeathBox(double x, double y, double width,double height,double opacity);
 void FInfoBox();
 
 // In Game functions
@@ -162,3 +187,4 @@ void FWindow_Loop();
 #include "draw.h"
 #include "initTexture.h"
 #include "particles.h"
+#include "profile.h"

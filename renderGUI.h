@@ -46,6 +46,7 @@ void FGUIHover(){
       int yMax = buttons[i].y+buttons[i].hoverHeight;
       int xMin = buttons[i].x;
       int xMax = buttons[i].x+buttons[i].hoverWidth;
+      
      if(!buttons[i].highlight){
       if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax){
          buttons[i].hoverOpacity += 1000*app.deltaTime;
@@ -93,6 +94,66 @@ void FGUIHover(){
       SDL_SetRenderDrawColor(renderer,255,255,255,(int)(sliders[i].hoverOpacity));
      
       SDL_RenderFillRect(renderer,&(SDL_Rect){sliders[i].x-5,sliders[i].y-5,sliders[i].hoverWidth+sliders[i].sliderLength+10,sliders[i].hoverHeight});
+   }
+  }
+
+  for(int i = 0;i<sizeof(knobs)/sizeof(knobs[0]);i++){
+   if(knobs[i].reserved && knobs[i].hoverable){
+      int yMin = knobs[i].y;
+      int yMax = knobs[i].y+knobs[i].hoverHeight+10;
+      int xMin = knobs[i].x;
+      int xMax = knobs[i].x+knobs[i].hoverWidth+knobs[i].ButtonFontWidth*len(knobs[i].value)+30;
+     
+      if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax){
+         knobs[i].hoverOpacity += 1000*app.deltaTime;
+         if(knobs[i].hoverOpacity >= 100){
+            knobs[i].hoverOpacity = 100;
+         }
+        
+      }
+      else{
+         knobs[i].hoverOpacity -= 1000*app.deltaTime;
+         if(knobs[i].hoverOpacity < 0){
+            knobs[i].hoverOpacity = 0;
+         }
+      }
+      
+      SDL_SetRenderDrawColor(renderer,255,255,255,(int)(knobs[i].hoverOpacity));
+     
+      SDL_RenderFillRect(renderer,&(SDL_Rect){knobs[i].x-5,knobs[i].y-5,knobs[i].hoverWidth+knobs[i].ButtonFontWidth*len(knobs[i].value)+30,knobs[i].hoverHeight+10});
+   }
+  }
+  for(int i = 0;i<sizeof(textbox)/sizeof(textbox[0]);i++){
+   if(textbox[i].reserved){
+      int yMin = textbox[i].y;
+      int yMax = textbox[i].y+textbox[i].font*1.5+10;
+      int xMin = textbox[i].x;
+      int xMax = textbox[i].x+textbox[i].hoverLength;
+      
+      if(i == app.textboxSelected){
+        textbox[i].hoverOpacity = 100;
+      }
+
+      else if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax){
+         textbox[i].hoverOpacity += 1000*app.deltaTime;
+         if(textbox[i].hoverOpacity >= 100){
+            textbox[i].hoverOpacity = 100;
+         }
+        
+      }
+      else{
+         textbox[i].hoverOpacity -= 1000*app.deltaTime;
+         if(textbox[i].hoverOpacity < 0){
+            textbox[i].hoverOpacity = 0;
+         }
+      }
+      
+      SDL_SetRenderDrawColor(renderer,255,255,255,(int)(textbox[i].hoverOpacity));
+     
+      SDL_RenderFillRect(renderer,&(SDL_Rect){textbox[i].x-5,textbox[i].y-5,textbox[i].hoverLength,textbox[i].font*1.5+10});
+      if(i == app.textboxSelected){
+        renderText(1,"-",textbox[i].x+(len(textbox[i].textBoxName)+textbox[i].textContentSize)*textbox[i].font+5,textbox[i].y+5,12,15,255*(1+sin(textbox[i].blink))/2,255*(1+sin(textbox[i].blink))/2,(int[3]){255,255,255});
+      }
    }
   }
 }
@@ -150,6 +211,42 @@ void renderSliders(){
       
       SDL_SetRenderDrawColor(renderer,100,100,255,255);
       SDL_RenderFillRect(renderer,&(SDL_Rect){(int)sliders[i].x+offset+sliders[i].textSize*sliders[i].ButtonFontWidth+sliders[i].sliderLength*(sliders[i].sliderValue-sliders[i].sliderMinValue)/(sliders[i].sliderMaxValue-sliders[i].sliderMinValue) + 2.5,(int)sliders[i].y+sliders[i].ButtonFontHeight/3-2,5,9});
+    }
+  }
+}
+
+void renderKnobs(){
+  for(int i = 0;i<sizeof(knobs)/sizeof(knobs[0]);i++){
+    if(knobs[i].reserved){
+      int offset = 0;
+      if(knobs[i].iconTexture != NULL){
+        SDL_Vertex vertices[] = 
+          {
+          {{knobs[i].x, knobs[i].y+2}, {255, 255, 255, 255}, {knobs[i].u1, knobs[i].v1}},
+          {{knobs[i].x+knobs[i].ButtonFontWidth, knobs[i].y+2}, {255, 255, 255, 255}, {knobs[i].u2, knobs[i].v1}},
+          {{knobs[i].x+knobs[i].ButtonFontWidth, knobs[i].y+2+knobs[i].ButtonFontWidth}, {255, 255, 255, 255}, {knobs[i].u2, knobs[i].v2}},
+          {{knobs[i].x, knobs[i].y+knobs[i].ButtonFontWidth+2}, {255, 255, 255, 255}, {knobs[i].u1, knobs[i].v2}}
+          };
+          
+        SDL_RenderGeometry(renderer, knobs[i].iconTexture,vertices, 4, (int[6]){1,2,3,0,1,3}, 6);
+        SDL_SetRenderDrawColor(renderer,0,0,0,255);
+        SDL_RenderDrawRect(renderer,&(SDL_Rect){knobs[i].x,knobs[i].y+2,knobs[i].ButtonFontWidth,knobs[i].ButtonFontWidth});
+        offset = knobs[i].ButtonFontWidth + 7;
+      }
+      renderText(knobs[i].textSize,knobs[i].text,knobs[i].x+offset,knobs[i].y,knobs[i].textSize*knobs[i].ButtonFontWidth,knobs[i].ButtonFontHeight,255,200,(int[3]){255,255,255});
+
+      renderText(len(knobs[i].value),knobs[i].value,knobs[i].x+offset+25+knobs[i].textSize*knobs[i].ButtonFontWidth,knobs[i].y,len(knobs[i].value)*knobs[i].ButtonFontWidth,knobs[i].ButtonFontHeight,255,200,(int[3]){255,255,255});
+    }
+  }
+}
+
+
+
+void renderTextBox(){
+  for(int i = 0;i<sizeof(textbox)/sizeof(textbox[0]);i++){
+    if(textbox[i].reserved){
+      renderText(len(textbox[i].textBoxName),textbox[i].textBoxName,textbox[i].x,textbox[i].y,len(textbox[i].textBoxName)*textbox[i].font,textbox[i].font*1.5,255,200,(int[3]){255,255,255});
+      renderText(len(textbox[i].textContent),textbox[i].textContent,textbox[i].x+len(textbox[i].textBoxName)*textbox[i].font,textbox[i].y,len(textbox[i].textContent)*textbox[i].font,textbox[i].font*1.5,255,200,(int[3]){255,255,255});
     }
   }
 }

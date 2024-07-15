@@ -9,10 +9,10 @@ void FDisplayHUD(){
      renderText(8,PBtimer,30,30,8*7,10,255,200,(int[3]){200,200,200});
      free(PBtimer);
    }
-   renderText(mapData.mapNameLen,mapData.mapName,windowWidth-mapData.mapNameLen*12,5,mapData.mapNameLen*12,18,255,200,(int[3]){255,255,255});
+   renderText(mapData.mapNameLen,mapData.mapName,gameWidth-mapData.mapNameLen*12,5,mapData.mapNameLen*12,18,255,200,(int[3]){255,255,255});
    char* checkpointsLeft = malloc(20);
    sprintf(checkpointsLeft,"%d/%d\0",level.checkpointCount,level.checkpointsSize);
-   renderText(len(checkpointsLeft),checkpointsLeft,windowWidth-len(checkpointsLeft)*12,30,len(checkpointsLeft)*12,15,255,200,(int[3]){255,255,255});
+   renderText(len(checkpointsLeft),checkpointsLeft,gameWidth-len(checkpointsLeft)*12,30,len(checkpointsLeft)*12,15,255,200,(int[3]){255,255,255});
    free(checkpointsLeft);
    if(level.newRecord){
       renderText(sizeof("New Record"),"New Record",10+8*12,8,sizeof("New Record")*12,15,255,200,(int[3]){0,200,0});
@@ -20,16 +20,16 @@ void FDisplayHUD(){
 
    if(level.checkpointShowTimer>0){
       char* checkpointTimer = msToTimer((int)(level.checkpoints[level.checkpointCount-1]));
-      renderText(8,checkpointTimer,windowWidth/2-4*10,20,8*10,15,255,200,(int[3]){255,255,255});
+      renderText(8,checkpointTimer,gameWidth/2-4*10,20,8*10,15,255,200,(int[3]){255,255,255});
       if(mapData.ghostInGame){
       char* timeDiff = msToTimer((int)(SDL_abs(level.checkpoints[level.checkpointCount-1]-level.LastCheckpointTimer)));
       if(level.checkpoints[level.checkpointCount-1]<level.LastCheckpointTimer){
-       renderText(1,"-",windowWidth/2-4*8-8,40,8,15,255,200,(int[3]){0,0,255});    
-       renderText(8,timeDiff,windowWidth/2-4*8,40,8*8,15,255,200,(int[3]){0,0,255});    
+       renderText(1,"-",gameWidth/2-4*8-8,40,8,15,255,200,(int[3]){0,0,255});    
+       renderText(8,timeDiff,gameWidth/2-4*8,40,8*8,15,255,200,(int[3]){0,0,255});    
       }
       else {
-       renderText(1,"+",windowWidth/2-4*8-8,40,8,12,255,200,(int[3]){255,0,0});    
-       renderText(8,timeDiff,windowWidth/2-4*8,40,8*8,12,255,200,(int[3]){255,0,0});    
+       renderText(1,"+",gameWidth/2-4*8-8,40,8,12,255,200,(int[3]){255,0,0});    
+       renderText(8,timeDiff,gameWidth/2-4*8,40,8*8,12,255,200,(int[3]){255,0,0});    
       }      
    }
    }
@@ -43,24 +43,25 @@ void FDraw_Game(){
    ///// They are camera-manipulated data for only rendering purposes
   // Here lies transformed data
  /////-------------------------------START OF RENDERING
-   //    camera.scale = (2+sin(camera.randValue));
+
+       camera.scale = 1.5;
    if(!camera.freeCam){
-     camera.x = windowWidth/2-player[0].x-player[0].width/2;
-     camera.y = windowHeight/2-player[0].y-player[0].height/2; 
+     camera.x = gameWidth/2-player[0].x-player[0].width/2;
+     camera.y = gameHeight/2-player[0].y-player[0].height/2; 
    }
    else{
-     camera.x += (-player[0].x-player[0].width/2+windowWidth/2 - camera.x)*10*app.deltaTime;
-     camera.y += (-player[0].y-player[0].height/2+windowHeight/2 - camera.y)*10*app.deltaTime;
+     camera.x += (-player[0].x-player[0].width/2+gameWidth/2 - camera.x)*10*app.deltaTime;
+     camera.y += (-player[0].y-player[0].height/2+gameHeight/2 - camera.y)*10*app.deltaTime;
    } 
-   if (camera.x > mapData.xMax - windowWidth + player[0].width/2){
-       camera.x = mapData.xMax - windowWidth + player[0].width/2;
+   if (camera.x > mapData.xMax - gameWidth + player[0].width/2){
+       camera.x = mapData.xMax - gameWidth + player[0].width/2;
    }
    if (camera.x < mapData.xMin + player[0].width/2){
        camera.x = mapData.xMin + player[0].width/2;    
    }
 
-   if (camera.y > mapData.yMax - windowHeight + player[0].height/2){
-       camera.y = mapData.yMax - windowHeight + player[0].height/2;
+   if (camera.y > mapData.yMax - gameHeight + player[0].height/2){
+       camera.y = mapData.yMax - gameHeight + player[0].height/2;
    }
    if (camera.y < mapData.yMin + player[0].height/2){
        camera.y = mapData.yMin + player[0].height/2;    
@@ -81,15 +82,15 @@ void FDraw_Game(){
          particles[i].sizeDraw = particles[i].size*camera.scale;
          particles[i].xDraw  += camera.x;
          particles[i].yDraw  += camera.y;
-         particles[i].xDraw  = windowWidth/2 + (particles[i].xDraw - windowWidth/2) * camera.scale;
-         particles[i].yDraw  = windowHeight/2 + (particles[i].yDraw - windowHeight/2) * camera.scale;
+         particles[i].xDraw  = gameWidth/2 + (particles[i].xDraw - gameWidth/2) * camera.scale;
+         particles[i].yDraw  = gameHeight/2 + (particles[i].yDraw - gameHeight/2) * camera.scale;
          SDL_SetRenderDrawColor(renderer,particles[i].red,particles[i].green,particles[i].blue,255);
          // Render Particle
          SDL_RenderFillRect(renderer,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw});
       }
    }
 
-
+   
     // Draw platforms
    for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       if(platforms[i].reserved){
@@ -101,8 +102,8 @@ void FDraw_Game(){
          platforms[i].heightDraw = platforms[i].height*camera.scale;
          platforms[i].xDraw  += camera.x;
          platforms[i].yDraw  += camera.y;
-         platforms[i].xDraw  = windowWidth/2 + (platforms[i].xDraw - windowWidth/2) * camera.scale;
-         platforms[i].yDraw  = windowHeight/2 + (platforms[i].yDraw - windowHeight/2) * camera.scale;
+         platforms[i].xDraw  = gameWidth/2 + (platforms[i].xDraw - gameWidth/2) * camera.scale;
+         platforms[i].yDraw  = gameHeight/2 + (platforms[i].yDraw - gameHeight/2) * camera.scale;
          // Add texture to platform
          FtexturePlatform(i);
       }
@@ -121,8 +122,8 @@ void FDraw_Game(){
        player[i].heightDraw *= camera.scale;
        player[i].xDraw += camera.x;
        player[i].yDraw += camera.y;
-       player[i].xDraw = windowWidth/2 + (player[i].xDraw - windowWidth/2) * camera.scale;
-       player[i].yDraw = windowHeight/2 + (player[i].yDraw - windowHeight/2) * camera.scale;
+       player[i].xDraw = gameWidth/2 + (player[i].xDraw - gameWidth/2) * camera.scale;
+       player[i].yDraw = gameHeight/2 + (player[i].yDraw - gameHeight/2) * camera.scale;
       if(i > 0){
          SDL_SetTextureAlphaMod(tex_player,100);
       }
@@ -173,26 +174,11 @@ void FDraw_Game(){
         displacement[i].heightDraw = displacement[i].height*camera.scale;
         displacement[i].xDraw  += camera.x;
         displacement[i].yDraw  += camera.y;
-        displacement[i].xDraw  = windowWidth/2 + (displacement[i].xDraw - windowWidth/2) * camera.scale;
-        displacement[i].yDraw  = windowHeight/2 + (displacement[i].yDraw - windowHeight/2) * camera.scale;
+        displacement[i].xDraw  = gameWidth/2 + (displacement[i].xDraw - gameWidth/2) * camera.scale;
+        displacement[i].yDraw  = gameHeight/2 + (displacement[i].yDraw - gameHeight/2) * camera.scale;
          
-         SDL_SetTextureAlphaMod(tex_displacement,100);
-         for(int j = 0;j<displacement[i].widthDraw;j += 25*camera.scale){
-            for(int k = 0;k<displacement[i].heightDraw;k += 25*camera.scale){
-               int u;int v;
-               if(j > displacement[i].widthDraw-25*camera.scale){u = (-j+displacement[i].widthDraw);}
-               else{u = 25*camera.scale;}
-               if(k > displacement[i].heightDraw-25*camera.scale){v = (-k+displacement[i].heightDraw);}
-               else{v = 25*camera.scale;}
-               
-               SDL_RenderCopyEx(renderer,tex_displacement,
-               NULL,
-               &(SDL_Rect){displacement[i].xDraw+j,displacement[i].yDraw+k,u,v},displacement[i].type*(-90),NULL,SDL_FLIP_NONE);
-            }
-         }
+         FtextureQuad(displacement[i].xDraw,displacement[i].yDraw,displacement[i].widthDraw,displacement[i].heightDraw,tex_displacement,displacement[i].opacity,displacement[i].type);
          SDL_SetTextureAlphaMod(tex_displacement,255);
-         SDL_SetRenderDrawColor(renderer,0,0,0,255);
-         SDL_RenderDrawRect(renderer,&(SDL_Rect){displacement[i].xDraw,displacement[i].yDraw,displacement[i].widthDraw,displacement[i].heightDraw});
       }
    }
    for(int i = 1;i<sizeof(triggers)/sizeof(triggers[0]);i++){
@@ -203,35 +189,19 @@ void FDraw_Game(){
          triggers[i].width  *= camera.scale;
          triggers[i].height *= camera.scale;
       
-         triggers[i].x      -= windowWidth/2;
-         triggers[i].y      -= windowHeight/2;
+         triggers[i].x      -= gameWidth/2;
+         triggers[i].y      -= gameHeight/2;
          triggers[i].x      *= camera.scale;
          triggers[i].y      *= camera.scale;
-         triggers[i].x      += windowWidth/2;
-         triggers[i].y      += windowHeight/2;
+         triggers[i].x      += gameWidth/2;
+         triggers[i].y      += gameHeight/2;
          
 
-         SDL_SetTextureAlphaMod(tex_trigger,100);
-         for(int j = 0;j<triggers[i].width;j += 25){
-            for(int k = 0;k<triggers[i].height;k += 25){
-               int u;int v;
-               if(j > triggers[i].width-25){u = (-j+triggers[i].width);}
-               else{u = 25;}
-               if(k > triggers[i].height-25){v = (-k+triggers[i].height);}
-               else{v = 25;}
-               
-               SDL_RenderCopy(renderer,tex_trigger,
-               NULL,
-               &(SDL_Rect){triggers[i].x+j,triggers[i].y+k,u,v});
-            }
-         }
-         SDL_SetTextureAlphaMod(tex_trigger,255);
-         SDL_SetRenderDrawColor(renderer,0,0,0,255);
-         SDL_RenderDrawRect(renderer,&(SDL_Rect){triggers[i].x,triggers[i].y,triggers[i].width,triggers[i].height});
+         FtextureQuad(triggers[i].xDraw,triggers[i].yDraw,triggers[i].widthDraw,triggers[i].heightDraw,tex_trigger,triggers[i].opacity,0);
          
          // Reset data to normal map data!
-         triggers[i].x = (triggers[i].x-windowWidth/2)/camera.scale  + windowWidth/2;
-         triggers[i].y = (triggers[i].y-windowHeight/2)/camera.scale + windowHeight/2;
+         triggers[i].x = (triggers[i].x-gameWidth/2)/camera.scale  + gameWidth/2;
+         triggers[i].y = (triggers[i].y-gameHeight/2)/camera.scale + gameHeight/2;
  
          triggers[i].width  /= camera.scale;
          triggers[i].height /= camera.scale;
@@ -247,8 +217,8 @@ void FDraw_Game(){
       light[i].sizeDraw = light[i].size*camera.scale;
       light[i].xDraw  += camera.x;
       light[i].yDraw  += camera.y;
-      light[i].xDraw  = windowWidth/2 + (light[i].xDraw - windowWidth/2) * camera.scale;
-      light[i].yDraw  = windowHeight/2 + (light[i].yDraw - windowHeight/2) * camera.scale;
+      light[i].xDraw  = gameWidth/2 + (light[i].xDraw - gameWidth/2) * camera.scale;
+      light[i].yDraw  = gameHeight/2 + (light[i].yDraw - gameHeight/2) * camera.scale;
    }
 
    for (int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
@@ -260,26 +230,10 @@ void FDraw_Game(){
          deathbox[i].heightDraw = deathbox[i].height*camera.scale;
          deathbox[i].xDraw  += camera.x;
          deathbox[i].yDraw  += camera.y;
-         deathbox[i].xDraw  = windowWidth/2 + (deathbox[i].xDraw - windowWidth/2) * camera.scale;
-         deathbox[i].yDraw  = windowHeight/2 + (deathbox[i].yDraw - windowHeight/2) * camera.scale;
+         deathbox[i].xDraw  = gameWidth/2 + (deathbox[i].xDraw - gameWidth/2) * camera.scale;
+         deathbox[i].yDraw  = gameHeight/2 + (deathbox[i].yDraw - gameHeight/2) * camera.scale;
          
-         SDL_SetTextureAlphaMod(tex_skull,100);
-         for(int j = 0;j<deathbox[i].widthDraw;j += 25*camera.scale){
-            for(int k = 0;k<deathbox[i].heightDraw;k += 25*camera.scale){
-               int u;int v;
-               if(j > deathbox[i].widthDraw-25*camera.scale){u = (-j+deathbox[i].widthDraw);}
-               else{u = 25*camera.scale;}
-               if(k > deathbox[i].heightDraw-25*camera.scale){v = (-k+deathbox[i].heightDraw);}
-               else{v = 25*camera.scale;}
-               
-               SDL_RenderCopy(renderer,tex_skull,
-               NULL,
-               &(SDL_Rect){deathbox[i].xDraw+j,deathbox[i].yDraw+k,u,v});
-            }
-         }
-         SDL_SetTextureAlphaMod(tex_skull,255);
-         SDL_SetRenderDrawColor(renderer,0,0,0,255);
-         SDL_RenderDrawRect(renderer,&(SDL_Rect){deathbox[i].xDraw,deathbox[i].yDraw,deathbox[i].widthDraw,deathbox[i].heightDraw});
+         FtextureQuad(deathbox[i].xDraw,deathbox[i].yDraw,deathbox[i].widthDraw,deathbox[i].heightDraw,tex_skull,deathbox[i].opacity,0);
    }
    }
    FDisplayHUD();
@@ -323,7 +277,61 @@ void FUpdate_Data(){
    player[1].onWall = false;
    
    for (int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
-      if (platforms[i].reserved && (platforms[i].collidable || platforms[i].type != 0)){
+      if(platforms[i].reserved){
+     // Texture Animation
+      if(platforms[i].textureAnimationTime >= 1){
+         platforms[i].textureAnimationTimer += 1000*app.deltaTime;
+         if(platforms[i].textureAnimationTimer > platforms[i].textureAnimationTime){
+            platforms[i].textureAnimationInt++;
+            platforms[i].textureAnimationInt = (int)platforms[i].textureAnimationInt % ((int)textures[platforms[i].textureInt].textureAnimationSize);
+            platforms[i].textureAnimationTimer = 0;
+         }
+      }
+      else{
+        platforms[i].textureAnimationInt = 0; 
+        platforms[i].textureAnimationTimer = 0;
+      }
+      // Texture Animation
+        
+       
+
+
+      // Platform Movement
+         // Check if platform reached destination
+         if(platforms[i].moveDistance >= platforms[i].moveModule){
+            platforms[i].moveDistance = 0;
+            platforms[i].moveType++;platforms[i].moveType = platforms[i].moveType %2; 
+            if(platforms[i].moveType == 0){
+               platforms[i].x = platforms[i].spawnX;
+               platforms[i].y = platforms[i].spawnY;
+            } 
+            else if(platforms[i].moveType == 1){
+               platforms[i].x = platforms[i].spawnX + platforms[i].moveModule*cos(platforms[i].moveAngle*(2*PI)/360);
+               platforms[i].y = platforms[i].spawnY + platforms[i].moveModule*sin(platforms[i].moveAngle*(2*PI)/360);
+            } 
+         }
+
+      if(level.Started){
+       int platformSpeed = 1000*platforms[i].moveModule/(platforms[i].moveTime)*app.deltaTime;
+      platforms[i].moveDistance += platformSpeed;
+      if(platforms[i].moveType == 0){
+         platforms[i].x += platformSpeed*cos(platforms[i].moveAngle*(2*PI)/360);
+         platforms[i].y += platformSpeed*sin(platforms[i].moveAngle*(2*PI)/360);
+         
+      }
+      else if(platforms[i].moveType == 1){
+         platforms[i].x -= platformSpeed*cos(platforms[i].moveAngle*(2*PI)/360);
+         platforms[i].y -= platformSpeed*sin(platforms[i].moveAngle*(2*PI)/360);
+      }  
+      }
+      
+
+      
+      
+
+
+      // Player Platform Collision
+      if((platforms[i].collidable || platforms[i].type != 0)){
       if(FCheck_Collision(player[1],i) && platforms[i].collidable){
          FCollision_Response(&player[1],i);
       }
@@ -347,6 +355,9 @@ void FUpdate_Data(){
                level.keyInputsSize = 0;
          }
       }
+      }
+      // Player Platform Collision
+      
     } 
    }
    // Player displacement
@@ -427,7 +438,11 @@ void FGameRestart(){
       }
       for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
         if(platforms[i].reserved){
+         platforms[i].x = platforms[i].spawnX;
+         platforms[i].y = platforms[i].spawnY;
          platforms[i].platformUsed = false;  
+         platforms[i].moveDistance = 0;
+         platforms[i].moveType = 0;
         }        
       }
       remove("levels/temp.txt");

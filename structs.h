@@ -4,6 +4,8 @@ struct Texture{
    char textureName[256];
    SDL_Texture* texture;
    int SizeScale;
+   int textureSize;
+   int textureAnimationSize;
 };
 
 struct Background{
@@ -25,6 +27,7 @@ struct LevelsList{
 
 
 struct Light{
+   double editorSelectionTime;
    bool reserved;
    
    double x;
@@ -46,17 +49,23 @@ struct Light{
 
 };
 
+struct Profile{
+   char username[256];
+   int coins;
+   int experience;
+};
+
 struct Editor{
   bool selected;
   int typeSelected;
   int indexSelected;
   int transform;
-  bool typing;
   bool saving;
   char fileNameSave[256];
   int fileNameSize;
   int status;
   bool unSelect;
+  int platformPageSelect;
 }editor;
 
 struct Level{
@@ -111,10 +120,16 @@ struct App{
    bool inputChange;
    bool transition;
    int transitionInt;
-   int editorPlatformSize;
+   
    char backgroundName[256];
    int backgroundInt;
    double backgroundOpacity;
+   int textboxSelected;
+
+   int listStartIndex;
+   int listLength;
+   int listLengthMax;
+
 }app;
 
 struct Button{
@@ -136,7 +151,49 @@ struct Button{
   bool hoverable;
   bool highlight;
   char value[256];
+
 };
+
+struct Knob{
+  bool reserved;
+  double x;
+  double y;
+  SDL_Texture* iconTexture;
+  double u1;
+  double u2;
+  double v1;
+  double v2;
+  char* text;
+  int textSize;
+  double ButtonFontHeight;
+  double ButtonFontWidth;
+  double hoverWidth;
+  double hoverHeight;
+  double hoverOpacity;
+  bool hoverable;
+  
+  double knobValue;
+  double knobMax;
+  double knobMin; 
+
+  double knobCoef;
+
+  char value[256];
+};
+
+struct TextBox{
+   bool reserved;
+   double x;
+   double y;
+   double font;
+   char textBoxName[256];
+   char textContent[256];
+   double hoverLength;
+   double hoverOpacity;
+   int textContentSize;
+   double blink;
+};
+
 
 struct Slider{
   bool reserved;
@@ -183,6 +240,7 @@ struct MapData{
 
 } mapData;
 struct Players {
+   double editorSelectionTime;
     double spawnX;
     double spawnY;
     double x;
@@ -234,6 +292,7 @@ struct Particle{
 };
 
 struct DeathBox{
+   double editorSelectionTime;
    bool reserved;
    double x;
    double y;
@@ -243,9 +302,13 @@ struct DeathBox{
    double height;
    double widthDraw;
    double heightDraw;
+   double opacity;
 
 };
+
+
 struct Displacement{
+   double editorSelectionTime;
    bool reserved;
    double x;
    double y;
@@ -258,11 +321,15 @@ struct Displacement{
    int type;
    int powerType;
    double power;
+   double opacity;
 };
 
 
 struct Platform{
+   double editorSelectionTime;
    bool reserved;
+   double spawnX;
+   double spawnY;
    double x;
    double y;
    double xDraw;
@@ -286,9 +353,21 @@ struct Platform{
    double red;
    double green;
    double blue;
+    
+   double textureAnimationInt;
+   double textureAnimationTime;
+   double textureAnimationTimer;
+
+   double moveAngle;
+   double moveModule;
+   double moveTime;
+   int moveType;
+   double moveDistance;
+   
 };
 
 struct Trigger{
+   double editorSelectionTime;
    bool reserved;
    double x;
    double y;
@@ -299,6 +378,7 @@ struct Trigger{
    double width;
    double height;
    int triggerType;
+   double opacity;
 
    // 0 Camera Switch
    // 1 CheckPoint
@@ -326,6 +406,7 @@ struct MouseBind{
 struct Players player[2];
 struct Platform platforms[100];
 struct Button buttons[100];
+struct Knob knobs[50];
 struct LevelsList levelsList[256];
 struct Trigger triggers[100];
 struct Slider sliders[100];
@@ -335,3 +416,5 @@ struct Light light[100];
 struct Particle particles[200];
 struct Displacement displacement[100];
 struct DeathBox deathbox[100];
+struct TextBox textbox[20];
+struct Profile profile;

@@ -48,8 +48,11 @@ void FtexturePlatform(int platformID){
   // Texturing currently uses CPU , Which is stupidily inefficient , Waiting for SDL to add Texture UV Wrapping...
 
      setTexturePlatform(platformID);
-     
-     
+     double textureInt = platforms[platformID].textureAnimationInt;
+     double textureSize = textures[platforms[platformID].textureInt].textureAnimationSize;
+     double textureStart = textureInt/textureSize;
+
+
      if(!platforms[platformID].textureStretch){
     double textureScale = platforms[platformID].textureScale*camera.scale;
        
@@ -88,12 +91,14 @@ void FtexturePlatform(int platformID){
            double yTexture2 = (points[2].y-j)/textureScale;
            double xTexture0 = (points[0].x-i)/textureScale;
            double xTexture1 = (points[1].x-i)/textureScale;
-          
+           
            yTexture0 = max(min(yTexture0,1),0);
            yTexture1 = max(min(yTexture1,1),0);
            yTexture2 = max(min(yTexture2,1),0);
-           xTexture0 = max(min(xTexture0,1),0);
-           xTexture1 = max(min(xTexture1,1),0);
+           xTexture0 = max(min(xTexture0/textureSize+textureStart,1),textureStart);
+           xTexture1 = max(min(xTexture1/textureSize+textureStart,1),textureStart);
+
+
            SDL_Vertex vertex_1 = {{(int)points[0].x, (int)points[0].y}, {(int)platforms[platformID].red, (int)platforms[platformID].green, (int)platforms[platformID].blue, (int)platforms[platformID].opacity}, {xTexture0, yTexture0}};
            SDL_Vertex vertex_2 = {{(int)points[1].x, (int)points[1].y}, {(int)platforms[platformID].red, (int)platforms[platformID].green, (int)platforms[platformID].blue, (int)platforms[platformID].opacity}, {xTexture1, yTexture1}};
            SDL_Vertex vertex_3 = {{(int)points[2].x, (int)points[2].y}, {(int)platforms[platformID].red, (int)platforms[platformID].green, (int)platforms[platformID].blue, (int)platforms[platformID].opacity}, {xTexture1, yTexture2}};
@@ -130,10 +135,10 @@ void FtexturePlatform(int platformID){
            // wrap
            points[4].x = points[0].x;
            points[4].y = points[0].y;
-           SDL_Vertex vertex_1 = {{(int)points[0].x, (int)points[0].y}, {255, 255, 255, (int)platforms[platformID].opacity}, {0,0}};
-           SDL_Vertex vertex_2 = {{(int)points[1].x, (int)points[1].y}, {255, 255, 255, (int)platforms[platformID].opacity}, {1,0}};
-           SDL_Vertex vertex_3 = {{(int)points[2].x, (int)points[2].y}, {255, 255, 255, (int)platforms[platformID].opacity}, {1,1}};
-           SDL_Vertex vertex_4 = {{(int)points[3].x, (int)points[3].y}, {255, 255, 255, (int)platforms[platformID].opacity}, {0,1}}; 
+           SDL_Vertex vertex_1 = {{(int)points[0].x, (int)points[0].y}, {(int)platforms[platformID].red, (int)platforms[platformID].green, (int)platforms[platformID].blue, (int)platforms[platformID].opacity}, {textureStart,0}};
+           SDL_Vertex vertex_2 = {{(int)points[1].x, (int)points[1].y}, {(int)platforms[platformID].red, (int)platforms[platformID].green, (int)platforms[platformID].blue, (int)platforms[platformID].opacity}, {1/textureSize + textureStart,0}};
+           SDL_Vertex vertex_3 = {{(int)points[2].x, (int)points[2].y}, {(int)platforms[platformID].red, (int)platforms[platformID].green, (int)platforms[platformID].blue, (int)platforms[platformID].opacity}, {1/textureSize + textureStart,1}};
+           SDL_Vertex vertex_4 = {{(int)points[3].x, (int)points[3].y}, {(int)platforms[platformID].red, (int)platforms[platformID].green, (int)platforms[platformID].blue, (int)platforms[platformID].opacity}, {textureStart,1}}; 
     
            SDL_Vertex vertices[] = {
              vertex_1,
@@ -150,4 +155,63 @@ void FtexturePlatform(int platformID){
     
    return; 
 }
+
+
+void FtextureQuad(double x,double y,double width,double height,SDL_Texture* texture,double opacity,int rotationAngle){
+
+   // Rotation Angle
+   /// angle = 90*rotationAngle;
+   // rotationAngle = {0,1,2,3};
+  
+  // Texturing currently uses CPU , Which is stupidily inefficient , Waiting for SDL to add Texture UV Wrapping..  
+       rotationAngle = rotationAngle % 4;
+       for(double i = x;i < x + width;i+=25*camera.scale){
+        for(double j = y;j<y+height;j+=25*camera.scale){
+          SDL_Point points[5]; 
+           // upper left
+           points[0].x = max(i,x);
+           points[0].y = max(j,y);
+           // upper right
+           points[1].x = min(i+25*camera.scale,x+width);
+           points[1].y = max(j,y);
+           // lower right
+           points[2].x = min(i+25*camera.scale,x+width);
+           points[2].y = min(max(j+25*camera.scale,y),y+height);
+           // lower left
+           points[3].x = max(i,x);
+           points[3].y = min(max(j+25*camera.scale,y),y+height);
+           
+           // wrap
+           points[4].x = points[0].x;
+           points[4].y = points[0].y;
+            
+           
+
+
+           SDL_Vertex vertex_1 = {{(int)points[0].x, (int)points[0].y}, {255,255,255, opacity}, {1*(rotationAngle == 1 || rotationAngle == 2), 1*(rotationAngle == 1 || rotationAngle == 2)}};
+           SDL_Vertex vertex_2 = {{(int)points[1].x, (int)points[1].y}, {255,255,255, opacity}, {1*(rotationAngle == 0 || rotationAngle == 1), 1*(rotationAngle == 2 || rotationAngle == 3)}};
+           SDL_Vertex vertex_3 = {{(int)points[2].x, (int)points[2].y}, {255,255,255, opacity}, {1*(rotationAngle == 0 || rotationAngle == 3), 1*(rotationAngle == 0 || rotationAngle == 3)}};
+           SDL_Vertex vertex_4 = {{(int)points[3].x, (int)points[3].y}, {255,255,255, opacity}, {1*(rotationAngle == 2 || rotationAngle == 3), 1*(rotationAngle == 0 || rotationAngle == 1)}}; 
+    
+           SDL_Vertex vertices[] = {
+             vertex_1,
+             vertex_2,
+             vertex_3,
+             vertex_4  
+           };
+           
+           SDL_RenderGeometry(renderer, texture, vertices, 4, (int[6]){1,2,3,0,1,3}, 6);
+        }
+        }
+     
+   return; 
+}
+
+
+
+
+
+
+
+
 

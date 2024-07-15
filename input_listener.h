@@ -9,22 +9,21 @@ void FInput_Listener(){
          FwindowResize();
    }
    if (event.type == SDL_KEYDOWN){
-      if(editor.typing){
+      if(app.textboxSelected >= 0){
          if(event.key.keysym.sym == SDLK_BACKSPACE){
-            if(editor.fileNameSize>0){
-            editor.fileNameSize--;
-            editor.fileNameSave[editor.fileNameSize] = '\0';
+            if(textbox[app.textboxSelected].textContentSize>0){
+            textbox[app.textboxSelected].textContentSize--;
+            textbox[app.textboxSelected].textContent[textbox[app.textboxSelected].textContentSize] = '\0';
             }  
          }
          else if((int)event.key.keysym.sym>=32){
-          editor.fileNameSave[editor.fileNameSize] = (char)event.key.keysym.sym;
-          editor.fileNameSize++;
-          editor.fileNameSave[editor.fileNameSize] = '\0';
-         }   
-
-         if((int)event.key.keysym.sym == 13){
+          textbox[app.textboxSelected].textContent[textbox[app.textboxSelected].textContentSize] = (char)event.key.keysym.sym;
+          textbox[app.textboxSelected].textContentSize++;
+          textbox[app.textboxSelected].textContent[textbox[app.textboxSelected].textContentSize] = '\0';
+      }
+      if((int)event.key.keysym.sym == 13){
             FapplyText();
-         }    
+           } 
       }
       switch(event.key.keysym.sym){
          case SDLK_UP:
@@ -84,18 +83,16 @@ void FInput_Listener(){
          case SDLK_ESCAPE:
           player[0].keys.escape = false;
           if(app.status == 0){ 
-            
-            
                appendTransition(app.status,4);
-            
           }
           else if(app.status == 1){
-            if(editor.typing){
-               editor.typing = false;
+            if(editor.status >= 0){
+               editor.status = -1;
             }
-            else{
+            else {
                appendTransition(app.status,4);
             }
+               
           }
           else if(app.status == 2){
             FswitchAppStatus(app.status,4);
@@ -103,12 +100,6 @@ void FInput_Listener(){
           }
           break;
      } 
-   }
-   if(event.type == SDL_MOUSEMOTION){
-    SDL_GetMouseState(&mouse.x,&mouse.y);
-    if(!mouse.right && !mouse.left){
-      SDL_GetMouseState(&mouse.oldX,&mouse.oldY);
-    }
    }
    if(mouse.left == -1){
       mouse.left = 0;
@@ -139,6 +130,18 @@ void FInput_Listener(){
       if(event.button.button == SDL_BUTTON_RIGHT){
          mouse.right = -1;
       }
+   }
+   // Mouse Handling
+   mouse.oldX = mouse.x;
+   mouse.oldY = mouse.y;
+   if(event.type == SDL_MOUSEMOTION){
+   int windowGameHeight = ((double)gameHeight/(double)gameWidth)*windowWidth;
+   
+    SDL_GetMouseState(&mouse.x,&mouse.y);
+    mouse.y -= (windowHeight-windowGameHeight)/2*(windowHeight>windowGameHeight);
+    mouse.x *= (double)(gameWidth)/(double)(windowWidth);
+    mouse.y *= (double)(gameHeight)/(double)(windowHeight - (windowHeight-windowGameHeight)*(windowHeight>windowGameHeight));
+    
    }
    if(event.type == SDL_MOUSEWHEEL){
       mouse.wheel = event.wheel.y;

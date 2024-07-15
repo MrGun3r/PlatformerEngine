@@ -1,7 +1,11 @@
 void FLoadTextures(){    
+  textures[0].reserved = true;
+  SDL_memcpy(textures[0].textureName,"None\0",5);
    for(int i = 0;i<sizeof(textures)/sizeof(textures[0]);i++){
       textures[i].texture = NULL;
       textures[i].SizeScale = 1;
+      textures[i].textureAnimationSize = 1;
+      textures[i].textureSize = 500;
    }
 
    surface_player = IMG_Load("assets/player/player.png");
@@ -39,14 +43,15 @@ void FLoadTextures(){
          SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer,texture_Surface); 
          textures[index].texture = texture;
          textures[index].reserved = true;
+         int textureWidth;
+         SDL_QueryTexture(textures[index].texture,NULL,NULL,&textureWidth,&textures[index].textureSize);
+         textures[index].textureAnimationSize = textureWidth/textures[index].textureSize;
          index++;
          SDL_FreeSurface(texture_Surface);
       }
     }
     (void) closedir (p);
   }
-  textures[0].reserved = true;
-  SDL_memcpy(textures[0].textureName,"None\0",5);
 /////////
  
 }
@@ -63,12 +68,13 @@ void FLoadBackgrounds(){
    surface_displacement = IMG_Load("assets/editor/displacement.png");
    surface_light = IMG_Load("assets/light/light.png");
    surface_skull = IMG_Load("assets/editor/skull.png");
+   surface_coin = IMG_Load("assets/editor/coin.png");
 
-   backgroundLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, windowWidth, windowHeight);
-   lightLayer      = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, windowWidth, windowHeight);
-   lightLayer2     = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, windowWidth, windowHeight);
-   resultLayer     = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, windowWidth, windowHeight);
-   HUDLayer     = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, windowWidth, windowHeight);
+   backgroundLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
+   lightLayer      = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
+   lightLayer2     = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
+   resultLayer     = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
+   HUDLayer        = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
    
 
    tex_light = SDL_CreateTextureFromSurface(renderer,surface_light);
@@ -78,6 +84,7 @@ void FLoadBackgrounds(){
    tex_bulb = SDL_CreateTextureFromSurface(renderer,surface_bulb);
    tex_displacement = SDL_CreateTextureFromSurface(renderer,surface_displacement);
    tex_skull = SDL_CreateTextureFromSurface(renderer,surface_skull);
+   tex_coin = SDL_CreateTextureFromSurface(renderer,surface_coin);
  
    SDL_FreeSurface(surface_font);
    SDL_FreeSurface(surface_trigger);
@@ -85,6 +92,9 @@ void FLoadBackgrounds(){
    SDL_FreeSurface(surface_bulb);
    SDL_FreeSurface(surface_displacement);
    SDL_FreeSurface(surface_light);
+   SDL_FreeSurface(surface_skull);
+   SDL_FreeSurface(surface_coin);
+
 
   DIR *p;
   struct dirent *pp;     
