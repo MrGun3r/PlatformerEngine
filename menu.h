@@ -7,11 +7,12 @@ void FDraw_Menu(){
    SDL_SetRenderTarget(renderer,HUDLayer);
    FGUIHover();
    renderButtons();
+   renderSliders();
    renderTextBox();
  
    
-   if(app.status == 4 || app.status == 2){
-      SDL_SetRenderDrawColor(renderer,100,100,100,200);
+   if(app.status == 6 || app.status == 4 || app.status == 2 || app.status == 7){
+   SDL_SetRenderDrawColor(renderer,100,100,100,200);
    SDL_RenderFillRect(renderer,&(SDL_Rect){0,0,gameWidth,75});
    SDL_RenderCopy(renderer,tex_player,&(SDL_Rect){2,0,16,16},&(SDL_Rect){5,5,40,40});
    SDL_SetRenderDrawColor(renderer,0,0,0,255);
@@ -23,6 +24,7 @@ void FDraw_Menu(){
    
    char coins[256];
    sprintf(coins,"%d\0",profile.coins);
+   
    renderText(len(coins),coins,gameWidth-10*len(coins)-10,10,10*len(coins),15,255,200,(int[3]){255,255,255});   
 
    int level = log2(profile.experience+2);
@@ -50,21 +52,17 @@ void FDraw_Menu(){
          }
       }
    }
-   
-   
-   
-   if(app.status == 2){
+   if(app.status == 2 || app.status == 6){
       app.fetchedList = true;
       SDL_SetRenderDrawColor(renderer,100,100,100,100);
       SDL_RenderFillRect(renderer,&(SDL_Rect){10,100,gameWidth-30,gameHeight-130});
    }
-   //renderText(sizeof("Made by mrGun3r"),"Made by mrGun3r",gameWidth-sizeof("Made by mrGun3r")*9,gameHeight - 15,sizeof("Made by mrGun3r")*9,15,255,200,(int[3]){220,220,220});
    SDL_SetRenderTarget(renderer,backgroundLayer);
 }
 
 void FUpdate_Data_Menu(){
-    
    Update_TextBox();
+   Update_Slider();
    app.backgroundMoving += 5*app.deltaTime;
    if(app.backgroundMoving >= 576){
       app.backgroundMoving = 0;
@@ -107,17 +105,54 @@ void FUpdate_Data_Menu(){
         if(app.status == 4){
          // play button
          if(i == 0){
-            FswitchAppStatus(app.status,2);
+            FswitchAppStatus(app.status,7);
          }
          // Editor
-         if(i == 1){
+         else if(i == 1){
             appendTransition(app.status,1);
-         }         
+         }
+         // Settings
+         else if (i == 2){
+            FswitchAppStatus(app.status,6);
+         }
+         else if (i == 3){
+            app.WINDOW_LOOP = false;
+         }
+
         }
         else if (app.status == 5){
             if(i == 0){
                SetUsernameProfile();
             }
+        }
+        else if (app.status == 6){
+         if (i == 1){
+            // change resolution
+            app.resolutionInt++;
+            app.resolutionInt=app.resolutionInt%6;
+            sprintf(buttons[1].value,"%dx%d",app.resolutions[app.resolutionInt][0],app.resolutions[app.resolutionInt][1]);
+            
+         }
+         else if (i == 2){
+            // apply
+            app.resolutionUsed = app.resolutionInt;
+            gameResolutionChange();
+            
+         }
+         else if (i == 3){
+            
+            app.showFPS = !app.showFPS;
+            sprintf(buttons[3].value,"%d",app.showFPS);
+         }
+        }
+        else if (app.status == 7){
+         if(i == 0){
+           // Campaign
+           appendTransition(app.status,8);
+         }
+         else if(i == 1){
+            FswitchAppStatus(app.status,2);
+         }
         }
       }
     }

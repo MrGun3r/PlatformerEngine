@@ -20,11 +20,11 @@ void FPlayer_Movement(){
    player[i].idleIndex += 2*app.deltaTime;
 
    if(SDL_abs(player[i].veloX) > 10 && player[i].onPlatform && player[i].particleTimer > 50 + rand()%100){
-       addParticle(player[i].x+player[i].width/2-5,player[i].y+player[i].height-5,10,200,200,200);
+       addParticle(player[i].x+player[i].width/2-5,player[i].y+player[i].height-5,10,200,200,200,rand()%360);
        player[i].particleTimer = 0;
    }
    else if (SDL_abs(player[i].veloY)> 10 && player[i].onWall && player[i].particleTimer > 50 + rand()%100){
-       addParticle(player[i].x+(player[i].width)*(player[i].direction>0)-5,player[i].y,10,200,200,200);
+       addParticle(player[i].x+(player[i].width)*(player[i].onWall<0)-5,player[i].y,10,200,200,200,rand()%360);
        player[i].particleTimer = 0;
    }
 

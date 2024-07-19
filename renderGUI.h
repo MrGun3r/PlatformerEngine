@@ -65,8 +65,9 @@ void FGUIHover(){
       
       SDL_SetRenderDrawColor(renderer,255,255,255,(int)(buttons[i].hoverOpacity));
      
-      SDL_RenderFillRect(renderer,&(SDL_Rect){buttons[i].x-5,buttons[i].y-5,buttons[i].hoverWidth,buttons[i].hoverHeight});
-   }
+      SDL_RenderFillRect(renderer,&(SDL_Rect){buttons[i].x-5,buttons[i].y-5,(buttons[i].hoverWidth),buttons[i].hoverHeight});
+      
+   }  
   }
 
   for(int i = 0;i<sizeof(sliders)/sizeof(sliders[0]);i++){
@@ -172,8 +173,8 @@ void renderButtons(){
           };
           
         SDL_RenderGeometry(renderer, buttons[i].iconTexture,vertices, 4, (int[6]){1,2,3,0,1,3}, 6);
-        SDL_SetRenderDrawColor(renderer,0,0,0,255);
-        SDL_RenderDrawRect(renderer,&(SDL_Rect){buttons[i].x,buttons[i].y+2,buttons[i].ButtonFontWidth,buttons[i].ButtonFontWidth});
+        //SDL_SetRenderDrawColor(renderer,0,0,0,255);
+        //SDL_RenderDrawRect(renderer,&(SDL_Rect){buttons[i].x,buttons[i].y+2,buttons[i].ButtonFontWidth,buttons[i].ButtonFontWidth});
         offset = buttons[i].ButtonFontWidth + 7;
       }
       renderText(buttons[i].textSize,buttons[i].text,buttons[i].x+offset,buttons[i].y,buttons[i].textSize*buttons[i].ButtonFontWidth,buttons[i].ButtonFontHeight,255,200,(int[3]){255,255,255});

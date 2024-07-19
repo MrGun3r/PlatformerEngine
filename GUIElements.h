@@ -10,7 +10,7 @@ void SetButton(bool reserved,int i,char* Text,double x,double y,int textFont,boo
     buttons[i].hoverable = true;
     // Fill all text
     if(hoverWidth < 0){
-        hoverWidth = buttons[i].textSize*buttons[i].ButtonFontWidth + 10;
+        hoverWidth = (buttons[i].textSize)*buttons[i].ButtonFontWidth + 5*(buttons[i].textSize>0);
     }
     if(hoverHeight < 0){
         hoverHeight = buttons[i].ButtonFontHeight + 5;
@@ -20,6 +20,7 @@ void SetButton(bool reserved,int i,char* Text,double x,double y,int textFont,boo
     buttons[i].reserved = reserved;
     buttons[i].highlight = highlight;
     
+    
 }
 
 void SetButtonIcon(int i,SDL_Texture* texture,double u1,double u2,double v1,double v2){
@@ -28,11 +29,17 @@ void SetButtonIcon(int i,SDL_Texture* texture,double u1,double u2,double v1,doub
     buttons[i].u2 = u2;
     buttons[i].v1 = v1;
     buttons[i].v2 = v2;
+    buttons[i].hoverWidth += buttons[i].ButtonFontWidth + 10;
 }
 
 void ChangeButtonPosition(int i,double x,double y){
     buttons[i].x = x;
     buttons[i].y = y;
+}
+
+void ChangeKnobPosition(int i,double x,double y){
+    knobs[i].x = x;
+    knobs[i].y = y;
 }
 
 void SetSlider(bool reserved,int i,char* Text,double x,double y,int textFont,bool hoverable,int hoverWidth,int hoverHeight,bool highlight,double sliderMin,double sliderMax,double sliderLength,double defaultValue){

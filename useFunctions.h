@@ -42,7 +42,7 @@ char* msToTimer(int ms){
    timer[7] = (char)(mSeconds1+48);
    int mSeconds2 = (ms/100) % 10;
    timer[6] = (char)(mSeconds2+48);
-   timer[5] = ':';
+   timer[5] = '.';
    // Seconds
    int Seconds1 = (ms/1000) % 10;
    timer[4] = (char)(Seconds1+48);
@@ -60,7 +60,6 @@ char* msToTimer(int ms){
 
 
 void FdeltaTime(){
-   app.deltaTime =      ((double)(SDL_GetTicks()-app.WINDOW_TICKS))/1000;
-   app.deltaTimeGhost = ((double)(SDL_GetTicks()-app.WINDOW_TICKS))/1000;
+   app.deltaTime = ((double)(SDL_GetTicks()-app.WINDOW_TICKS))/1000;
    app.WINDOW_TICKS = SDL_GetTicks();    
 }

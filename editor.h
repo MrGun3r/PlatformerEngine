@@ -30,7 +30,6 @@
 
 
 void FUpdate_Editor(){
-   
      // Update Selection
      if(player[0].editorSelectionTime <= 1000){
       player[0].editorSelectionTime += 1000*app.deltaTime;
@@ -67,7 +66,7 @@ void FUpdate_Editor(){
     Update_Slider();
     Update_Knobs();
     Update_TextBox();
-   camera.scale += (camera.scaleReal - camera.scale)*app.deltaTime*5;
+    camera.scale += (camera.scaleReal - camera.scale)*app.deltaTime*5;
    
    if(mouse.wheel == 1){
       camera.scaleReal *= 1.2;
@@ -113,7 +112,7 @@ void FUpdate_Editor(){
       if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax && mouse.left == -1){
         mouse.left = 0;
        if(i == 0){
-         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,FindTextureInt("stone"),0,50,0,0,false,true,255,0,0,100,0);
+         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,FindTextureInt("stone"),0,50,0,0,false,true,255,0,0,100,0,255,255,255);
        } 
        if(i == 1 && editor.selected){
          editor.transform = 1;
@@ -168,13 +167,13 @@ void FUpdate_Editor(){
          // Copy Object
          if(editor.typeSelected == 1){
             if(platforms[editor.indexSelected].type == 0){
-               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,0,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].moveAngle,platforms[editor.indexSelected].moveModule,platforms[editor.indexSelected].moveTime,platforms[editor.indexSelected].textureAnimationTime);
+               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,0,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].moveAngle,platforms[editor.indexSelected].moveModule,platforms[editor.indexSelected].moveTime,platforms[editor.indexSelected].textureAnimationTime,platforms[editor.indexSelected].red,platforms[editor.indexSelected].green,platforms[editor.indexSelected].blue);
             }
             else if (platforms[editor.indexSelected].type == 1){
-               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,1,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].moveAngle,platforms[editor.indexSelected].moveModule,platforms[editor.indexSelected].moveTime,platforms[editor.indexSelected].textureAnimationTime);
+               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,1,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].moveAngle,platforms[editor.indexSelected].moveModule,platforms[editor.indexSelected].moveTime,platforms[editor.indexSelected].textureAnimationTime,platforms[editor.indexSelected].red,platforms[editor.indexSelected].green,platforms[editor.indexSelected].blue);
             }
             else if (platforms[editor.indexSelected].type == 2){
-               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,2,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].moveAngle,platforms[editor.indexSelected].moveModule,platforms[editor.indexSelected].moveTime,platforms[editor.indexSelected].textureAnimationTime);
+               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,2,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].moveAngle,platforms[editor.indexSelected].moveModule,platforms[editor.indexSelected].moveTime,platforms[editor.indexSelected].textureAnimationTime,platforms[editor.indexSelected].red,platforms[editor.indexSelected].green,platforms[editor.indexSelected].blue);
             }
 
          }
@@ -198,16 +197,20 @@ void FUpdate_Editor(){
        else if (i == 11){
          editor.typeSelected = -1;
          editor.selected = true;
+         sliders[6].sliderValue = app.backgroundOpacity;
+         sliders[15].sliderValue = editor.GameScale*100;
+         knobs[3].knobValue = mapData.xMax;
+         knobs[4].knobValue = mapData.yMax;
          editorShowButtons();
        }
        else if (i == 12){
          addTrigger(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,255);
        }
        else if (i == 13){
-         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,-1,1,50,0,0,false,true,255,0,0,255,0);
+         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,-1,1,50,0,0,false,true,255,0,0,255,0,255,255,255);
        }
        else if (i == 14){
-         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,-1,2,50,0,0,false,true,255,0,0,255,0);
+         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,-1,2,50,0,0,false,true,255,0,0,255,0,255,255,255);
        }
        else if (i == 15){
          camera.scaleReal *= 1.2;
@@ -285,7 +288,10 @@ void FUpdate_Editor(){
    mapData.xMax = knobs[3].knobValue;
    mapData.yMin = -knobs[4].knobValue;
    mapData.yMax = knobs[4].knobValue;
+   editor.StarTime = knobs[7].knobValue;
+   editor.StarTimeMs = knobs[6].knobValue;
    app.backgroundOpacity = sliders[6].sliderValue;
+   editor.GameScale = sliders[15].sliderValue/100;
  }
  else if (editor.typeSelected == 2){
    triggers[editor.indexSelected].opacity = sliders[14].sliderValue;
@@ -397,7 +403,8 @@ void addDeathBox(double x, double y, double width,double height,double opacity){
    editorShowButtons();
 }
 
-void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity,double moveAngle,double moveModule,double moveTime,double animation){
+void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity,double moveAngle,double moveModule,double moveTime,double animation
+,double red,double green,double blue){
    for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       if(!platforms[i].reserved){
         editor.selected = true;
@@ -419,6 +426,10 @@ void addPlatform(int x,int y,double width,double height,double slope,bool slopeI
         platforms[i].moveModule = moveModule;
         platforms[i].moveTime = moveTime;
         platforms[i].textureAnimationTime = animation;
+        
+        platforms[i].red = red;
+        platforms[i].green = green;
+        platforms[i].blue = blue;
 
         knobs[0].knobValue = 50;
         if(type == 1){platforms[i].textureInt = FindTextureInt("check");platforms[i].type = 1;}
@@ -438,9 +449,9 @@ void addPlatform(int x,int y,double width,double height,double slope,bool slopeI
         sliders[17].sliderValue = moveModule;
         sliders[18].sliderValue = moveTime;
 
-        sliders[10].sliderValue = 255;
-        sliders[11].sliderValue = 255;
-        sliders[12].sliderValue = 255;
+        sliders[10].sliderValue = red;
+        sliders[11].sliderValue = green;
+        sliders[12].sliderValue = blue;
 
         
         break;
@@ -484,14 +495,18 @@ void editorShowButtons(){
       if(editor.typeSelected == -1){
         knobs[3].reserved = true;
         knobs[4].reserved = true;
+        knobs[6].reserved = true;
+        knobs[7].reserved = true;
         sliders[6].reserved = true;
         buttons[18].reserved = true;
+        sliders[15].reserved = true;
         return;
       } 
       buttons[1].reserved = true;
       buttons[2].reserved = true;
       buttons[5].reserved = true;
       buttons[9].reserved = true;
+
       if(editor.typeSelected == 0){
             // Nothing so far
       }
@@ -520,20 +535,30 @@ void editorShowButtons(){
          
          ChangeSliderPosition(1,sliders[1].x,260);
          ChangeSliderPosition(2,sliders[2].x,280);
-        // ChangeSliderPosition(3,knobs[0].x,300);
-
+         ChangeKnobPosition(0,knobs[0].x,240);
          ChangeSliderPosition(10,sliders[10].x,380);
          ChangeSliderPosition(11,sliders[11].x,400);
          ChangeSliderPosition(12,sliders[12].x,420);
-
+         ChangeButtonPosition(24,buttons[24].x,300);
          ChangeButtonPosition(17,buttons[17].x,320);
+         ChangeKnobPosition(5,knobs[5].x,360);
+         ChangeKnobPosition(2,knobs[2].x,440);
+         ChangeSliderPosition(17,sliders[17].x,460);
+         ChangeSliderPosition(18,sliders[18].x,480);
 
          }
          else if(platforms[editor.indexSelected].type == 1 || platforms[editor.indexSelected].type == 2){
-            ChangeSliderPosition(1,sliders[1].x,210);
-            ChangeSliderPosition(2,sliders[2].x,230);
-          //  ChangeSliderPosition(3,sliders[3].x,250); 
-            ChangeButtonPosition(17,buttons[17].x,270); 
+            ChangeSliderPosition(1,sliders[1].x,180);
+            ChangeSliderPosition(2,sliders[2].x,200);
+            ChangeKnobPosition(0,knobs[0].x,220); 
+            ChangeButtonPosition(17,buttons[17].x,240); 
+            ChangeButtonPosition(24,buttons[24].x,260);
+            ChangeSliderPosition(14,sliders[14].x,280);
+
+            ChangeKnobPosition(5,knobs[5].x,300);
+            ChangeKnobPosition(2,knobs[2].x,320);
+            ChangeSliderPosition(17,sliders[17].x,340);
+            ChangeSliderPosition(18,sliders[18].x,360);
          }
       }
       else if (editor.typeSelected == 2){
@@ -1027,8 +1052,8 @@ void FTransformState(){
          buttons[4].highlight = false;
       }
       if(editor.transform == 1){
-      player[0].x += (float)mouse.dX/camera.scale;
-      player[0].y += (float)mouse.dY/camera.scale;
+      player[0].x += (float)mouse.dX/(camera.scale*editor.gridMove);
+      player[0].y += (float)mouse.dY/(camera.scale*editor.gridMove);
       }
       else if (editor.transform == 0){
       player[0].width += (float)(mouse.dX+mouse.dY)/(2*camera.scale);
@@ -1145,22 +1170,7 @@ void FTransformState(){
 
 
 void FDrawObjects(){
-  
-   player[0].xDraw = player[0].x;
-   player[0].yDraw = player[0].y;
-   player[0].widthDraw = player[0].width;
-   player[0].heightDraw = player[0].height;
-   player[0].widthDraw  *= camera.scale;
-   player[0].heightDraw *= camera.scale;
-   player[0].xDraw += camera.x;
-   player[0].yDraw += camera.y;
-   player[0].xDraw = gameWidth/2 + (player[0].xDraw - gameWidth/2) * camera.scale;
-   player[0].yDraw = gameHeight/2 + (player[0].yDraw - gameHeight/2) * camera.scale;
    
-   
-   SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){2,24,15,18},&(SDL_Rect){player[0].xDraw,player[0].yDraw,player[0].widthDraw,player[0].heightDraw},0,NULL,SDL_FLIP_NONE);
-
-
    for (int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       if(platforms[i].reserved){
          // Camera offsetted data !
@@ -1194,6 +1204,20 @@ void FDrawObjects(){
                  
       }
    }
+
+   player[0].xDraw = player[0].x;
+   player[0].yDraw = player[0].y;
+   player[0].widthDraw = player[0].width;
+   player[0].heightDraw = player[0].height;
+   player[0].widthDraw  *= camera.scale;
+   player[0].heightDraw *= camera.scale;
+   player[0].xDraw += camera.x;
+   player[0].yDraw += camera.y;
+   player[0].xDraw = gameWidth/2 + (player[0].xDraw - gameWidth/2) * camera.scale;
+   player[0].yDraw = gameHeight/2 + (player[0].yDraw - gameHeight/2) * camera.scale;
+   
+   
+   SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){2,24,15,18},&(SDL_Rect){player[0].xDraw,player[0].yDraw,player[0].widthDraw,player[0].heightDraw},0,NULL,SDL_FLIP_NONE);
 
    for (int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
       if(deathbox[i].reserved){

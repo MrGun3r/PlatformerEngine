@@ -1,12 +1,10 @@
 void FSaveMap(){
-   
-   
       char filePath[256];
       sprintf(filePath,"levels/%s.txt",textbox[0].textContent);
       FILE *file = fopen(filePath,"w");
       char mapDatal[256];
       char playerData[256];
-      sprintf(mapDatal,"m:%s,-1,%d,%d,%d,%d,%s,%d;\n\0",textbox[0].textContent,(int)mapData.xMin,(int)mapData.yMin,(int)mapData.xMax,(int)mapData.yMax,backgrounds[app.backgroundInt].textureName,(int)app.backgroundOpacity);
+      sprintf(mapDatal,"m:%s,-1,%d,%d,%d,%d,%s,%d,%f,%d;\n\0",textbox[0].textContent,(int)mapData.xMin,(int)mapData.yMin,(int)mapData.xMax,(int)mapData.yMax,backgrounds[app.backgroundInt].textureName,(int)app.backgroundOpacity,(double)editor.GameScale,(int)(editor.StarTimeMs*10+editor.StarTime*1000));
       sprintf(playerData,"p:%d,%d,%d,%d;\n\0",(int)player[0].x,(int)player[0].y,(int)player[0].width,(int)player[0].height);
       fputs(mapDatal,file);
       fputs(playerData,file);
@@ -133,6 +131,7 @@ char* FGetDataMap(char* path,char* type,int dataType,int fileNameSize){
 void FSetDataMap(char* path,int pathSize){
    // This function will load upon starting a map
    // Hard coded set values
+   
    player[0].veloX = 0;
    player[0].veloY = 0;
    player[0].accX = 0;
@@ -165,13 +164,13 @@ void FSetDataMap(char* path,int pathSize){
    camera.scale = 1;
    camera.x = 0;camera.y = 0;
 
-   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+   for(int i = 0;i<sizeof(triggers)/sizeof(triggers[0]);i++){
       triggers[i].reserved = false;
    }
-   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+   for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       platforms[i].reserved = false;
    }
-   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+   for(int i = 0;i<sizeof(light)/sizeof(light[0]);i++){
       light[i].reserved = false;
    }
    for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
@@ -417,6 +416,17 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       case 5:
          mapData.yMax = atof(importBuffer);
          break;
+      case 8:
+         camera.scaleReal = atof(importBuffer);
+         editor.GameScale = camera.scaleReal;
+         camera.scaleReal *= (double)gameWidth/(double)1920;
+         level.cameraScaleStart = camera.scaleReal;
+
+         break;
+      case 9:
+        level.StarTime = atoi(importBuffer);
+        printf("%d\n",level.StarTime);
+        break;
      }
      }
      else if (dataType == 3){

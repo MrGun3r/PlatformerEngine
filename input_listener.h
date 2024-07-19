@@ -5,6 +5,9 @@ void FInput_Listener(){
    if (event.type == SDL_QUIT){
       app.WINDOW_LOOP = false;
    }
+   if(app.transition){
+      return;
+   }
    if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED){
          FwindowResize();
    }
@@ -81,9 +84,10 @@ void FInput_Listener(){
           player[0].keys.r = false;
           break;
          case SDLK_ESCAPE:
+         app.textboxSelected = -1;
           player[0].keys.escape = false;
           if(app.status == 0){ 
-               appendTransition(app.status,4);
+               level.Paused = !level.Paused;
           }
           else if(app.status == 1){
             if(editor.status >= 0){
@@ -92,11 +96,21 @@ void FInput_Listener(){
             else {
                appendTransition(app.status,4);
             }
-               
+            editorShowButtons();
           }
           else if(app.status == 2){
-            FswitchAppStatus(app.status,4);
+            FswitchAppStatus(app.status,7);
             app.fetchedList = false;
+          }
+          else if (app.status == 6){
+            FswitchAppStatus(app.status,4);
+            app.resolutionInt = app.resolutionUsed;
+          }
+          else if(app.status == 7){
+            FswitchAppStatus(app.status,4);
+          }
+          else if(app.status == 8){
+            appendTransition(app.status,7);
           }
           break;
      } 

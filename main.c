@@ -9,6 +9,7 @@ void FAppInit_Values(){
    // 2 => in level select
    // 3 => in settings
    // 4 => in Menu
+   
    for(int i = 0 ;i<sizeof(buttons)/sizeof(buttons[0]);i++){
       buttons[i].reserved = false;
       SDL_memcpy(buttons[i].value,"\0",1);
@@ -22,19 +23,33 @@ void FAppInit_Values(){
       knobs[i].knobCoef = 1;
       SDL_memcpy(sliders[i].value,"\0",1);
    }
+  // Resolutions
+
+  app.resolutions[0][0] = 640;
+  app.resolutions[0][1] = 480;
+  app.resolutions[1][0] = 800;
+  app.resolutions[1][1] = 600;
+  app.resolutions[2][0] = 1024;
+  app.resolutions[2][1] = 720;
+  app.resolutions[3][0] = 1280;
+  app.resolutions[3][1] = 1080;
+  app.resolutions[4][0] = 1366;
+  app.resolutions[4][1] = 768;
+  app.resolutions[5][0] = 1920;
+  app.resolutions[5][1] = 1080;
+
+   app.resolutionInt = 2;
+   app.resolutionUsed = 2;
+   gameWidth = app.resolutions[2][0];
+   gameHeight = app.resolutions[2][1];
+
+
    app.status = 4;
    app.fetchedList = false;
    app.backgroundMoving = 0; 
    app.transition = false;
    app.transitionInt = 0;
    
-   SDL_memcpy(app.backgroundName,"background\0",len("background\0"));
-   if(CheckUsernameProfile()){
-      FswitchAppStatus(0,4);
-   }
-   else{
-      FswitchAppStatus(0,5);
-   }
    level.timer = 0;
    level.tempFileMade = false;
    level.keyInputsSize = 0;
@@ -48,11 +63,6 @@ void FAppInit_Values(){
    camera.freeCam = true;
    app.backgroundInt = 1;
 
-   SDL_SetTextureBlendMode(backgroundLayer, SDL_BLENDMODE_BLEND);
-   SDL_SetTextureBlendMode(lightLayer, SDL_BLENDMODE_MOD);
-   SDL_SetTextureBlendMode(lightLayer2, SDL_BLENDMODE_ADD);
-   SDL_SetTextureBlendMode(HUDLayer, SDL_BLENDMODE_BLEND);
-   SDL_SetTextureBlendMode(resultLayer,SDL_BLENDMODE_ADD);
 }
 
 
@@ -60,9 +70,9 @@ void FWindow_Loop(){
    
    while(app.WINDOW_LOOP){
       
-      if(!app.transition){
+   
          FInput_Listener();
-      }
+      
       // Clear all textures.
       SDL_SetRenderDrawColor(renderer, 0,0,0,0);
       SDL_RenderClear(renderer);
@@ -83,6 +93,10 @@ void FWindow_Loop(){
     else if (app.status == 1){
       FUpdate_Editor();
       FDraw_Editor();
+    }
+    else if (app.status == 8){
+     FUpdate_Campaign();
+     FDraw_Campaign();
     }
     else{
       FUpdate_Data_Menu();
@@ -119,7 +133,6 @@ void FWindow_Loop(){
 
 int main(int argc,char *argv[]){
    if (initVideo() == 0){
-      FAppInit_Values();
       FWindow_Loop();
    }
    remove("levels/temp.txt");

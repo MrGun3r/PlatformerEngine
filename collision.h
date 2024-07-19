@@ -39,6 +39,7 @@ void FCollision_Response(struct Players *Player,int platformID){
             if(!Player->ghost){
                if(!level.Finished && platforms[platformID].type == 1 && level.checkpointCount >= level.checkpointsSize){
                 level.Finished = true;
+                camera.scaleReal = 5;
                 FcheckPB();
                 }
              else if (platforms[platformID].type == 2 && !platforms[platformID].platformUsed){

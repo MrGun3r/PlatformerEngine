@@ -25,10 +25,8 @@ int windowWidth = 800;
 int windowHeight = 450;
 
 /// Game Size (Meaning The size of the textures layers , Game size will have decrete values to chosen)
-
-
-int gameWidth = 640;
-int gameHeight = 480;
+int gameWidth;
+int gameHeight;
 
 
 
@@ -50,6 +48,16 @@ SDL_Surface* surface_skull = NULL;
 SDL_Texture* tex_skull = NULL;
 SDL_Surface* surface_coin = NULL;
 SDL_Texture* tex_coin = NULL;
+SDL_Surface* surface_star = NULL;
+SDL_Texture* tex_star = NULL;
+SDL_Surface* surface_tools = NULL;
+SDL_Texture* tex_tools = NULL;
+SDL_Surface* surface_trophy = NULL;
+SDL_Texture* tex_trophy = NULL;
+SDL_Surface* surface_blank = NULL;
+SDL_Texture* tex_blank = NULL;
+SDL_Surface* surface_water = NULL;
+SDL_Texture* tex_water = NULL;
 
 // Game window Textures
 SDL_Texture* backgroundLayer = NULL;
@@ -104,6 +112,7 @@ void SetKnobCoef(int i,double Coef);
 void SetKnob(bool reserved,int i,char* Text,double x,double y,int textFont,bool hoverable,double knobMin,double knobMax,double defaultValue);
 void ChangeSliderPosition(int i,double x,double y);
 void ChangeButtonPosition(int i,double x,double y);
+void ChangeKnobPosition(int i,double x,double y);
 
 // Text
 void FapplyText();
@@ -116,7 +125,10 @@ void FPlayer_Movement();
 void SetUsernameProfile();
 bool CheckUsernameProfile();
 
+// Campaign
 
+void FDraw_Campaign();
+void FUpdate_Campaign();
 
 // App change state
 void FswitchAppStatus(int from, int to);
@@ -132,8 +144,8 @@ void FDrawObjects();
 void FDraw_Editor();
 void FSaveMap();
 void addDisplacement(double x, double y, double width,double height,double type,double power,double powerType,double opacity);
-void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity,double moveAngle,double moveModule,double moveTime,double animation);
-void addParticle(double x,double y,double size,double red,double green,double blue);
+void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity,double moveAngle,double moveModule,double moveTime,double animation,double red,double green,double blue);
+void addParticle(double x,double y,double size,double red,double green,double blue,double angle);
 void editorShowButtons();
 void addTrigger(int x,int y,double width,double height,int Type,double opacity);
 void addLight(double x,double y,double size,double red,double green,double blue,double visibility,double brightness);
@@ -188,3 +200,4 @@ void FWindow_Loop();
 #include "initTexture.h"
 #include "particles.h"
 #include "profile.h"
+#include "campaign.h"

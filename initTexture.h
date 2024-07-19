@@ -62,20 +62,30 @@ void FLoadBackgrounds(){
    }
 
    surface_player = IMG_Load("assets/player/player.png");
-   surface_font = IMG_Load("assets/fonts/font_atlas.png");
+   surface_font = IMG_Load("assets/fonts/font-2.png");
    surface_trigger = IMG_Load("assets/editor/flag.png");
    surface_bulb = IMG_Load("assets/editor/bulb.png");
    surface_displacement = IMG_Load("assets/editor/displacement.png");
    surface_light = IMG_Load("assets/light/light.png");
    surface_skull = IMG_Load("assets/editor/skull.png");
    surface_coin = IMG_Load("assets/editor/coin.png");
+   surface_star = IMG_Load("assets/editor/star.png");
+   surface_tools = IMG_Load("assets/editor/tools.png");
+   surface_trophy = IMG_Load("assets/editor/trophy.png");
+   surface_blank  = IMG_Load("assets/editor/cloud.png");
+   surface_water  = IMG_Load("assets/editor/water.png");
 
    backgroundLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
    lightLayer      = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
    lightLayer2     = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
    resultLayer     = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
    HUDLayer        = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
-   
+    
+   SDL_SetTextureBlendMode(backgroundLayer, SDL_BLENDMODE_BLEND);
+   SDL_SetTextureBlendMode(lightLayer, SDL_BLENDMODE_MOD);
+   SDL_SetTextureBlendMode(lightLayer2, SDL_BLENDMODE_ADD);
+   SDL_SetTextureBlendMode(HUDLayer, SDL_BLENDMODE_BLEND);
+   SDL_SetTextureBlendMode(resultLayer,SDL_BLENDMODE_ADD);
 
    tex_light = SDL_CreateTextureFromSurface(renderer,surface_light);
    tex_font = SDL_CreateTextureFromSurface(renderer,surface_font);
@@ -85,6 +95,12 @@ void FLoadBackgrounds(){
    tex_displacement = SDL_CreateTextureFromSurface(renderer,surface_displacement);
    tex_skull = SDL_CreateTextureFromSurface(renderer,surface_skull);
    tex_coin = SDL_CreateTextureFromSurface(renderer,surface_coin);
+   tex_star = SDL_CreateTextureFromSurface(renderer,surface_star);
+   tex_tools = SDL_CreateTextureFromSurface(renderer,surface_tools);
+   tex_trophy = SDL_CreateTextureFromSurface(renderer,surface_trophy);
+   tex_blank = SDL_CreateTextureFromSurface(renderer,surface_blank);
+   tex_water = SDL_CreateTextureFromSurface(renderer,surface_water);
+ 
  
    SDL_FreeSurface(surface_font);
    SDL_FreeSurface(surface_trigger);
@@ -94,7 +110,11 @@ void FLoadBackgrounds(){
    SDL_FreeSurface(surface_light);
    SDL_FreeSurface(surface_skull);
    SDL_FreeSurface(surface_coin);
-
+   SDL_FreeSurface(surface_star);
+   SDL_FreeSurface(surface_tools);
+   SDL_FreeSurface(surface_trophy);
+   SDL_FreeSurface(surface_blank);
+   SDL_FreeSurface(surface_water);
 
   DIR *p;
   struct dirent *pp;     

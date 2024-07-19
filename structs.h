@@ -66,6 +66,10 @@ struct Editor{
   int status;
   bool unSelect;
   int platformPageSelect;
+  double GameScale;
+  double StarTime;
+  double StarTimeMs;
+  double gridMove;
 }editor;
 
 struct Level{
@@ -84,6 +88,12 @@ struct Level{
   int checkpointsSize;
   int checkpointShowTimer;
   int LastCheckpointTimer;
+  double resetTransition;
+  double endTransition;
+  double cameraScaleStart;
+  int StarTime;
+  double endShowCoins;
+
 } level;
 
 struct KeyboardBind{
@@ -113,13 +123,12 @@ struct App{
    int status;
    int statusTo;
    double deltaTime;
-   double deltaTimeGhost;
    double WINDOW_TICKS;
    bool WINDOW_LOOP;
    bool fetchedList;
    bool inputChange;
    bool transition;
-   int transitionInt;
+   double transitionInt;
    
    char backgroundName[256];
    int backgroundInt;
@@ -129,6 +138,16 @@ struct App{
    int listStartIndex;
    int listLength;
    int listLengthMax;
+
+
+   int resolutions[6][2];
+   int resolutionInt;
+   int resolutionUsed;
+
+   double musicVolume;
+   double sfxVolume;
+
+   bool showFPS;
 
 }app;
 
@@ -289,6 +308,8 @@ struct Particle{
    double red;
    double green;
    double blue;
+
+   double rotation;
 };
 
 struct DeathBox{

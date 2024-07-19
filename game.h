@@ -1,8 +1,37 @@
 void FDisplayHUD(){
    SDL_SetRenderTarget(renderer,HUDLayer);
-   char* timer = msToTimer((int)level.timer);
-   renderText(8,timer,5,5,8*12,20,255,200,(int[3]){255,255,255});
-   free(timer);
+   if(level.Paused){
+    buttons[0].reserved = true;
+    buttons[1].reserved = true;
+    buttons[2].reserved = true;
+   SDL_SetRenderDrawColor(renderer,200,200,200,150);
+   SDL_RenderFillRect(renderer,&(SDL_Rect){gameWidth/2 - 150,gameHeight/2 - 150,300,300});
+   }
+   else{
+    buttons[0].reserved = false;
+    buttons[1].reserved  = false;
+    buttons[2].reserved  = false; 
+   }
+   if(level.Finished){
+      buttons[3].reserved = true;
+      buttons[4].reserved = true;
+      SDL_SetRenderDrawColor(renderer,100,100,100,200);
+      SDL_RenderFillRect(renderer,&(SDL_Rect){0,0,gameWidth*level.endTransition,100});
+      SDL_RenderFillRect(renderer,&(SDL_Rect){gameWidth,gameHeight,-gameWidth*level.endTransition,-100});
+   }
+   else{
+      buttons[3].reserved = false;
+      buttons[4].reserved = false;
+   }
+   if(app.showFPS){
+      char FPS[30];
+      sprintf(FPS,"%d FPS\0",(int)(1/app.deltaTime));
+      renderText(len(FPS),FPS,5,40,8*len(FPS),10,255,200,(int[3]){255,255,255});
+   }
+   if(!level.Finished){
+      char* timer = msToTimer((int)level.timer);
+      renderText(8,timer,5,5,8*12,20,255,200,(int[3]){255,255,255});
+      free(timer);
    if(mapData.PBTimer>0){
      char* PBtimer = msToTimer(mapData.PBTimer);
      renderText(sizeof("PB"),"PB",5,30,sizeof("PB")*7,10,255,200,(int[3]){200,0,0});
@@ -14,9 +43,7 @@ void FDisplayHUD(){
    sprintf(checkpointsLeft,"%d/%d\0",level.checkpointCount,level.checkpointsSize);
    renderText(len(checkpointsLeft),checkpointsLeft,gameWidth-len(checkpointsLeft)*12,30,len(checkpointsLeft)*12,15,255,200,(int[3]){255,255,255});
    free(checkpointsLeft);
-   if(level.newRecord){
-      renderText(sizeof("New Record"),"New Record",10+8*12,8,sizeof("New Record")*12,15,255,200,(int[3]){0,200,0});
-   }
+
 
    if(level.checkpointShowTimer>0){
       char* checkpointTimer = msToTimer((int)(level.checkpoints[level.checkpointCount-1]));
@@ -33,18 +60,76 @@ void FDisplayHUD(){
       }      
    }
    }
+   }
+   else {
+    renderText(sizeof("Level Complete"),"Level Complete",gameWidth/2 - 12*sizeof("Level Complete")/2,20,12*sizeof("Level Complete"),15,255,200,(int[3]){255,255,255});
+    
+    char* timer = msToTimer((int)level.timer);
+    renderText(8,timer,15,15,8*12,20,255,200,(int[3]){255,255,255});
+    free(timer);
+    
+    if(level.newRecord){
+      renderText(sizeof("New Record"),"New Record",gameWidth/2 - 12*sizeof("New Record")/2,45,sizeof("New Record")*12,15,255,200,(int[3]){0,200,0});
+     }
+     char* timerStarTime = msToTimer((int)level.StarTime);
+     SDL_RenderCopy(renderer,tex_star,NULL,&(SDL_Rect){10,42,18,18});   
+     renderText(8,timerStarTime,30,45,8*10,16,255,200,(int[3]){255,255,0});
+     free(timerStarTime);
+
+
+     char coins[256];
+     sprintf(coins,"%d\0",profile.coins);
+     SDL_RenderCopy(renderer,tex_coin,NULL,&(SDL_Rect){gameWidth-35-10*len(coins),level.endShowCoins-90,20,20}); 
+     renderText(len(coins),coins,gameWidth-10*len(coins)-10,level.endShowCoins-90,10*len(coins),15,255,200,(int[3]){255,255,255});  
+     
+     if(mapData.PBTimer>0){
+     char* PBtimer = msToTimer(mapData.PBTimer);
+     SDL_RenderCopy(renderer,tex_trophy,NULL,&(SDL_Rect){10,72,18,18});
+     renderText(8,PBtimer,30,72,8*10,16,255,200,(int[3]){200,200,200});
+     free(PBtimer);
+     }
+  
+   }
+   
+   SDL_SetRenderDrawColor(renderer,0,0,0,max(level.resetTransition,0));
+   SDL_RenderFillRect(renderer,&(SDL_Rect){0,0,gameWidth,gameHeight});
+   renderButtons();
+   FGUIHover();
    SDL_SetRenderTarget(renderer,backgroundLayer);
 }
 
+void Check_Buttons(){
+   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+      if(buttons[i].reserved){
+      int yMin = buttons[i].y;
+      int yMax = buttons[i].y+buttons[i].hoverHeight;
+      int xMin = buttons[i].x;
+      int xMax = buttons[i].x+buttons[i].hoverWidth;   
+       
+      if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax && mouse.left == -1){
+         if(i == 1){
+            level.Paused = false;
+         }  
+         else if(i == 2){
+            appendTransition(app.status,4);
+         }
+         else if(i == 3){
+            printf("what");
+            FGameRestart();
+         }
+      }
+      }
+   }
+}
 
 void FDraw_Game(){
 
    ///// The data used in the function is transformed to fit the camera's requirements 
    ///// They are camera-manipulated data for only rendering purposes
-  // Here lies transformed data
- /////-------------------------------START OF RENDERING
+   // Here lies transformed data
+   /////-------------------------------START OF RENDERING
 
-       camera.scale = 1.5;
+       
    if(!camera.freeCam){
      camera.x = gameWidth/2-player[0].x-player[0].width/2;
      camera.y = gameHeight/2-player[0].y-player[0].height/2; 
@@ -73,6 +158,24 @@ void FDraw_Game(){
    SDL_RenderClear(renderer);
    DrawBackground();
    
+
+    // Draw platforms
+   for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+      if(platforms[i].reserved && !platforms[i].collidable){
+
+         // Camera offsetted data !
+         platforms[i].xDraw = platforms[i].x;
+         platforms[i].yDraw = platforms[i].y;
+         platforms[i].widthDraw = platforms[i].width*camera.scale;
+         platforms[i].heightDraw = platforms[i].height*camera.scale;
+         platforms[i].xDraw  += camera.x;
+         platforms[i].yDraw  += camera.y;
+         platforms[i].xDraw  = gameWidth/2 + (platforms[i].xDraw - gameWidth/2) * camera.scale;
+         platforms[i].yDraw  = gameHeight/2 + (platforms[i].yDraw - gameHeight/2) * camera.scale;
+         // Add texture to platform
+         FtexturePlatform(i);
+      }
+   }
    // Draw Particles 
    for(int i = 0;i<sizeof(particles)/sizeof(particles[0]);i++){
       if(particles[i].reserved){
@@ -85,15 +188,14 @@ void FDraw_Game(){
          particles[i].xDraw  = gameWidth/2 + (particles[i].xDraw - gameWidth/2) * camera.scale;
          particles[i].yDraw  = gameHeight/2 + (particles[i].yDraw - gameHeight/2) * camera.scale;
          SDL_SetRenderDrawColor(renderer,particles[i].red,particles[i].green,particles[i].blue,255);
+         //SDL_SetTextureColorMod(NULL,particles[i].red,particles[i].green,particles[i].blue);
          // Render Particle
-         SDL_RenderFillRect(renderer,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw});
+         SDL_RenderCopyEx(renderer,tex_blank,NULL,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw},particles[i].rotation,NULL,SDL_FLIP_NONE);
+         //SDL_RenderFillRect(renderer,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw});
       }
    }
-
-   
-    // Draw platforms
    for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
-      if(platforms[i].reserved){
+      if(platforms[i].reserved && platforms[i].collidable){
 
          // Camera offsetted data !
          platforms[i].xDraw = platforms[i].x;
@@ -237,6 +339,7 @@ void FDraw_Game(){
    }
    }
    FDisplayHUD();
+
    
    /////-------------------------------END OF RENDERING
 }
@@ -245,11 +348,27 @@ void FDraw_Game(){
 
 
 void FUpdate_Data(){
-   camera.scale = 1.5;
+   camera.scale += ( camera.scaleReal - camera.scale)*app.deltaTime*5;
+   if(level.Finished){
+      if(level.endTransition < 1){
+         level.endTransition += 2*app.deltaTime;
+      }
+      if(level.endShowCoins < 100){
+         level.endShowCoins += 200*app.deltaTime;
+      }
+   }
+      Check_Buttons();
+   
+    if(level.resetTransition>0){
+      level.resetTransition -= 1000*app.deltaTime;
+    }
    if(level.checkpointShowTimer > 0){
       level.checkpointShowTimer -= 1000*app.deltaTime;
    }
-    if(!level.Paused){
+   if(player[0].keys.r){
+    FGameRestart();
+   }
+    if(!level.Paused && !level.Finished){
     FPlayer_Movement();
     if(app.inputChange && !level.Finished && level.Started){
       char keyInputChange[200];
@@ -264,12 +383,6 @@ void FUpdate_Data(){
       }
       app.inputChange = false;
    }
- 
-   app.deltaTimeGhost = app.deltaTime;
-   if(player[0].keys.r){
-    FGameRestart();
-   }
-
    // Player Collision
    player[0].onPlatform = false;
    player[0].onWall = false;
@@ -426,16 +539,19 @@ void FUpdate_Data(){
          FGameRestart();
       }
    }
+
+  
 }
 
 
 void FGameRestart(){
+   
    if(level.newRecord){
       level.newRecord = false;
    }
-    if(mapData.PBTimer>0){
+   if(mapData.PBTimer>0){
         mapData.ghostInGame = true; 
-      }
+   }
       for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
         if(platforms[i].reserved){
          platforms[i].x = platforms[i].spawnX;
@@ -445,7 +561,14 @@ void FGameRestart(){
          platforms[i].moveType = 0;
         }        
       }
+      level.Paused = false;
+      level.endShowCoins = 0;
+      level.endTransition = 0;
+      camera.scaleReal = level.cameraScaleStart;
       remove("levels/temp.txt");
+      if(app.status == 0){
+         level.resetTransition = 255;
+      }
       mapData.ghostEnd = false;
       mapData.ghostNextInput = -10;
       mapData.fileadditionIndex = 0;
