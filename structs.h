@@ -53,7 +53,11 @@ struct Profile{
    char username[256];
    int coins;
    int experience;
+   int levelsUnlocked;
 };
+
+
+
 
 struct Editor{
   bool selected;
@@ -94,7 +98,14 @@ struct Level{
   int StarTime;
   double endShowCoins;
 
+  bool campaignLevel;
+  double coinsReceivedOpacity;
+
+  double LastCheckpointX;
+  double LastCheckpointY;
 } level;
+
+
 
 struct KeyboardBind{
    bool up;
@@ -105,6 +116,7 @@ struct KeyboardBind{
    bool r;
    bool escape;
    bool escapeRelease;
+   bool enter;
 };
 
 struct Camera{
@@ -149,6 +161,17 @@ struct App{
 
    bool showFPS;
 
+   int chapter;
+   int campaignLevel;
+   int campaignLevelSelect;
+   char campaignLevelName[256];
+   int campaignLevelPB;
+   double campaignLevelShowcase;
+   int campaignLevelStarTime;
+
+   char levelGoTo[256];
+   bool statusChanged;
+
 }app;
 
 struct Button{
@@ -170,6 +193,7 @@ struct Button{
   bool hoverable;
   bool highlight;
   char value[256];
+  bool hoverSound;
 
 };
 
@@ -239,6 +263,12 @@ struct Slider{
   char value[256];
 };
 
+struct Channel{
+   bool playing;
+   double playtime;
+};
+
+
 struct MapData{
    // for clarity these are the values that the camera will not follow if the player goes beyond them.
    double xMin;
@@ -295,6 +325,10 @@ struct Players {
     bool jumpBool;
     bool dead;
     double deathAnimationTimer;
+
+    double stepSoundCount;
+    int stepSoundInt;
+    double wallHangingCount;
 };
 
 struct Particle{
@@ -315,6 +349,8 @@ struct Particle{
 struct DeathBox{
    double editorSelectionTime;
    bool reserved;
+   double spawnX;
+   double spawnY;
    double x;
    double y;
    double xDraw;
@@ -324,6 +360,11 @@ struct DeathBox{
    double widthDraw;
    double heightDraw;
    double opacity;
+   int moveType;
+   double moveModule;
+   double moveAngle;
+   double moveTime;
+   double moveDistance;
 
 };
 
@@ -425,7 +466,7 @@ struct MouseBind{
 
 // Allocate buffers for the data
 struct Players player[2];
-struct Platform platforms[100];
+struct Platform platforms[300];
 struct Button buttons[100];
 struct Knob knobs[50];
 struct LevelsList levelsList[256];
@@ -439,3 +480,4 @@ struct Displacement displacement[100];
 struct DeathBox deathbox[100];
 struct TextBox textbox[20];
 struct Profile profile;
+struct Channel channels[8];

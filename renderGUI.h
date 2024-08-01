@@ -12,6 +12,7 @@ void renderText(int stringCount,char *Text,int x ,int y, int width,int height,in
   // OUTLINE --> TEXT (order of rendering)   
   int outLineOffset = 2;
     // {text}
+  
   for (int i = 0;i<stringCount;i++){
       cap = 0;
       num = 0;
@@ -53,9 +54,14 @@ void FGUIHover(){
          if(buttons[i].hoverOpacity >= 100){
             buttons[i].hoverOpacity = 100;
          }
+         if(buttons[i].hoverSound){
+              Mix_PlayChannel(-1,Sound_Hover,0);
+              buttons[i].hoverSound = false;
+         }
       }
       else{
          buttons[i].hoverOpacity -= 1000*app.deltaTime;
+         buttons[i].hoverSound = true;
          if(buttons[i].hoverOpacity < 0){
             buttons[i].hoverOpacity = 0;
          }

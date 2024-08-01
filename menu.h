@@ -24,7 +24,6 @@ void FDraw_Menu(){
    
    char coins[256];
    sprintf(coins,"%d\0",profile.coins);
-   
    renderText(len(coins),coins,gameWidth-10*len(coins)-10,10,10*len(coins),15,255,200,(int[3]){255,255,255});   
 
    int level = log2(profile.experience+2);
@@ -33,6 +32,7 @@ void FDraw_Menu(){
    renderText(len(levelText),levelText,50,25,10*len(levelText),15,255,200,(int[3]){255,255,255});
    
    SDL_RenderCopy(renderer,tex_coin,NULL,&(SDL_Rect){gameWidth-35-10*len(coins),5,20,20}); 
+   
    }
    int num = 7;
    
@@ -75,7 +75,7 @@ void FUpdate_Data_Menu(){
       int xMax = buttons[i].x+buttons[i].hoverWidth;
      
       if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax && mouse.left == -1){
-        
+        printf("%d\n",Mix_PlayChannel(-1,Sound_buttonClick,0));
         mouse.left = 0;
         if(app.status == 2){
          if(i == 1){
@@ -95,8 +95,8 @@ void FUpdate_Data_Menu(){
          else if(i > 2){
          for(int j = 0;j<sizeof(platforms)/sizeof(platforms[0]);j++){
           platforms[j].reserved = false;
-         }           
-         FSetDataMap(levelsList[i-3].levelPath,levelsList[i-3].levelNameSize+12);
+         }
+         sprintf(level.absolutePath,"%s\0",levelsList[i-3].levelPath);       
          appendTransition(app.status,0);
          break; 
          }
@@ -118,6 +118,7 @@ void FUpdate_Data_Menu(){
          else if (i == 3){
             app.WINDOW_LOOP = false;
          }
+
 
         }
         else if (app.status == 5){

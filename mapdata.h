@@ -4,7 +4,7 @@ void FSaveMap(){
       FILE *file = fopen(filePath,"w");
       char mapDatal[256];
       char playerData[256];
-      sprintf(mapDatal,"m:%s,-1,%d,%d,%d,%d,%s,%d,%f,%d;\n\0",textbox[0].textContent,(int)mapData.xMin,(int)mapData.yMin,(int)mapData.xMax,(int)mapData.yMax,backgrounds[app.backgroundInt].textureName,(int)app.backgroundOpacity,(double)editor.GameScale,(int)(editor.StarTimeMs*10+editor.StarTime*1000));
+      sprintf(mapDatal,"m:%s,-1,%d,%d,%d,%d,%s,%d,%f,%d,0;\n\0",textbox[0].textContent,(int)mapData.xMin,(int)mapData.yMin,(int)mapData.xMax,(int)mapData.yMax,backgrounds[app.backgroundInt].textureName,(int)app.backgroundOpacity,(double)editor.GameScale,(int)(editor.StarTimeMs*10+editor.StarTime*1000));
       sprintf(playerData,"p:%d,%d,%d,%d;\n\0",(int)player[0].x,(int)player[0].y,(int)player[0].width,(int)player[0].height);
       fputs(mapDatal,file);
       fputs(playerData,file);
@@ -45,7 +45,7 @@ void FSaveMap(){
       for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
         if(deathbox[i].reserved){
             char* deathboxData = malloc(2000);   
-            sprintf(deathboxData,"k%d:%d,%d,%d,%d,%d;\n\0",i,(int)deathbox[i].x,(int)deathbox[i].y,(int)deathbox[i].width,(int)deathbox[i].height,(int)deathbox[i].opacity);
+            sprintf(deathboxData,"k%d:%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)deathbox[i].x,(int)deathbox[i].y,(int)deathbox[i].width,(int)deathbox[i].height,(int)deathbox[i].opacity,(int)deathbox[i].moveAngle,(int)deathbox[i].moveModule,(int)deathbox[i].moveTime);
 
             fputs(deathboxData,file);
             free(deathboxData);
@@ -425,7 +425,7 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
          break;
       case 9:
         level.StarTime = atoi(importBuffer);
-        printf("%d\n",level.StarTime);
+        
         break;
      }
      }
@@ -514,14 +514,22 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       switch(data){
       case 0: 
          deathbox[ID].x = atof(importBuffer);
+         deathbox[ID].spawnX = atof(importBuffer);
       case 1: 
          deathbox[ID].y = atof(importBuffer);
+         deathbox[ID].spawnY = atof(importBuffer);
       case 2: 
          deathbox[ID].width = atof(importBuffer);
       case 3: 
          deathbox[ID].height = atof(importBuffer);   
       case 4: 
          deathbox[ID].opacity = atof(importBuffer);   
+      case 5: 
+         deathbox[ID].moveAngle = atof(importBuffer);  
+      case 6: 
+         deathbox[ID].moveModule = atof(importBuffer);  
+      case 7: 
+         deathbox[ID].moveTime = atof(importBuffer);  
       }
           
      }

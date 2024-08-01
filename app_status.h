@@ -2,6 +2,8 @@
 void appendTransition(int from,int to){
    app.transition = true;
    app.statusTo = to;
+   app.statusChanged = false;
+   Mix_PlayChannel(-1,Sound_transition,0);
 }
 
 void FDrawTransition(){
@@ -12,7 +14,7 @@ void FDrawTransition(){
   if(app.transition){
     int i = 0;
     int j = 0;
-  if(app.transitionInt< 2){
+  if(app.transitionInt < 2){
     
     while(transitionCubeSize*i+transitionCubeSize/2-min(max(app.transitionInt,0),1)*transitionCubeSize/2<gameWidth){
       while(transitionCubeSize*j+transitionCubeSize/2-min(max(app.transitionInt,0),1)*transitionCubeSize/2<gameHeight){
@@ -42,8 +44,9 @@ void FDrawTransition(){
    
    
    app.transitionInt+=3*app.deltaTime;
-   if(app.transitionInt>=2 && app.status != app.statusTo){
+   if(app.transitionInt>=2  && !app.statusChanged){
       FswitchAppStatus(app.status,app.statusTo);
+      app.statusChanged = true;
       
    }
    if(app.transitionInt>=4){
@@ -57,6 +60,7 @@ void FDrawTransition(){
 void FswitchAppStatus(int from, int to){ 
     for(int i = 0 ;i<sizeof(buttons)/sizeof(buttons[0]);i++){
       buttons[i].reserved = false;
+      buttons[i].highlight = false;
       sprintf(buttons[i].value,"\0");
     }
     for(int i = 0 ;i<sizeof(sliders)/sizeof(sliders[0]);i++){
@@ -65,29 +69,40 @@ void FswitchAppStatus(int from, int to){
     for(int i = 0 ;i<sizeof(textbox)/sizeof(textbox[0]);i++){
       textbox[i].reserved = false;
     }
-   if(from == 1 && to == 0){
-      FGameRestart();
-      
-   }
-   else if(to == 0){
+    if(from != to){
+      for(int i = 0 ;i<sizeof(light)/sizeof(light[0]);i++){
+      light[i].reserved = false;
+    }
+    }
+    
+   if(to == 0){
+      FSetDataMap(level.absolutePath,len(level.absolutePath)); 
+      printf("%s\n",level.absolutePath);
       app.backgroundInt = FindBackgroundInt(FGetDataMap(level.absolutePath,"m",6,len(level.absolutePath)));
       app.backgroundOpacity = atoi(FGetDataMap(level.absolutePath,"m",7,len(level.absolutePath)));
       level.checkpointCount = 0;
-
       
-   } 
-   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
-      buttons[i].reserved  = false;
-      buttons[i].highlight = false;
+      FGameRestart();  
    }
+
    app.status = to;
    if(to == 0){
+      if(from == 2){
+        level.campaignLevel = false;
+      }
+      else{
+        level.campaignLevel = true;
+      }
       SetButton(false,0,"Paused",gameWidth/2 - len("Paused\0")*30/2,gameHeight/2-150,30,true,-1,-1,false);
       SetButton(false,1,"Resume",gameWidth/2 - len("Resume\0")*15/2,gameHeight/2-80,15,true,-1,-1,false);
-      SetButton(false,2,"Exit to Menu",gameWidth/2 - len("Exit to Map\0")*15/2,gameHeight/2-50,15,true,-1,-1,false);
+  
       SetButton(false,3,"Restart Level",50,gameHeight-50,15,true,-1,-1,false);
       SetButton(false,4,"Next Level",gameWidth-200,gameHeight-50,15,true,-1,-1,false);
-      FGameRestart();
+
+      SetButton(false,2,"Exit to Menu",gameWidth/2 - len("Exit to Menu\0")*15/2,gameHeight/2-20-30*(!level.campaignLevel),15,true,-1,-1,false);
+      if(level.campaignLevel){
+        SetButton(false,5,"Exit to Map",gameWidth/2 - len("Exit to Map\0")*15/2,gameHeight/2-50,15,true,-1,-1,false);
+      }
     }
    // Play Menu
    if(to == 7){
@@ -96,12 +111,19 @@ void FswitchAppStatus(int from, int to){
     SetButtonIcon(0,tex_tools,0.225,0.48,0.25,0.5);
     SetButtonIcon(1,tex_tools,0.725,1,0,0.24);
    }
+   if(to == 8){
+    app.backgroundOpacity = 255;
+    player[0].x = 200;
+    player[0].y = 200;
+    player[0].width = 50;
+    player[0].height = 50*10/9;
+    app.chapter = 1;
+    campaignWidthIsland = 0;
+    campaignHeightIsland = 0;
+   }
    // Menu
    if(to == 4){
-    for(int i = 0 ;i<sizeof(light)/sizeof(light[0]);i++){
-      light[i].reserved = false;
-    }
-      remove("levels/temp.txt");
+     remove("levels/temp.txt");
     app.backgroundInt = FindBackgroundInt("background");
     app.backgroundOpacity = 255;
     SetButton(true,0,"Play",30,200,20,true,-1,-1,false);
@@ -166,25 +188,24 @@ void FswitchAppStatus(int from, int to){
    // Editor
    if(to == 1){
       if(from != 1){
-          for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+          for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
             platforms[i].reserved = false;
           }
-          for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+          for(int i = 0;i<sizeof(triggers)/sizeof(triggers[0]);i++){
             triggers[i].reserved = false;
-          }
-          for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
-            light[i].reserved = false;
           }
           for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
             displacement[i].reserved = false;
           }
-          for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
+          for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
             deathbox[i].reserved = false;
           }
           app.backgroundInt = FindBackgroundInt("background");
           editor.GameScale = 2;
           app.backgroundOpacity = 255;
           editor.gridMove = 1;
+          editor.StarTime = 60;
+          editor.StarTimeMs = 0;
           player[0].x = 0;
           player[0].y = 0;
           player[0].spawnX = 0;
@@ -238,7 +259,7 @@ void FswitchAppStatus(int from, int to){
           SetSlider(false,0,"Slope",gameWidth-190,180,10,true,-1,-1,false,-45,45,80,0);
           SetSlider(false,1,"Tex x",gameWidth-190,220,10,true,-1,-1,false,0,100,80,0);
           SetSlider(false,2,"Tex y",gameWidth-190,240,10,true,-1,-1,false,0,100,80,0);
-          SetKnob(false,0,"Tex Scale",gameWidth-190,240,10,true,30,250,50);
+          SetKnob(false,0,"Tex Scale",gameWidth-190,240,10,true,5,250,50);
           SetSlider(false,14,"Opacity",gameWidth-190,300,10,true,-1,-1,false,0,255,60,255);
           SetButton(false,24,"Collidable",gameWidth-190,300,10,true,-1,-1,false);
 
@@ -248,13 +269,13 @@ void FswitchAppStatus(int from, int to){
           SetKnob(false,2,"Move Angle",gameWidth-190,440,10,true,0,360,50);
           SetKnobCoef(2,0.4);
           
-          SetSlider(false,17,"Move Len",gameWidth-190,460,10,true,-1,-1,false,0,300,50,0);
-          SetSlider(false,18,"Move Time",gameWidth-190,480,10,true,-1,-1,false,100,2000,50,0);
+          SetKnob(false,8,"Move Len",gameWidth-190,460,10,true,0,1500,0);
+          SetKnob(false,9,"Move Time",gameWidth-190,480,10,true,100,10000,0);
 
           SetKnob(false,3,"Border X",gameWidth-190,120,10,true,500,10000,5000);
           SetKnob(false,4,"Border Y",gameWidth-190,140,10,true,500,10000,5000);
-          SetKnobCoef(3,3);  
-          SetKnobCoef(4,3);
+          SetKnobCoef(3,10);  
+          SetKnobCoef(4,10);
           SetSlider(false,15,"Camera",gameWidth-190,160,10,true,-1,-1,false,50,600,50,200);
           SetKnob(false,6,"Star Time Ms",gameWidth-190,200,10,true,0,99,0);
           SetKnobCoef(6,0.5);

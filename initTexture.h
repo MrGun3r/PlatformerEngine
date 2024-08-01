@@ -74,6 +74,8 @@ void FLoadBackgrounds(){
    surface_trophy = IMG_Load("assets/editor/trophy.png");
    surface_blank  = IMG_Load("assets/editor/cloud.png");
    surface_water  = IMG_Load("assets/editor/water.png");
+   surface_sand  = IMG_Load("assets/editor/sand.png");
+   surface_levelPad  = IMG_Load("assets/editor/levelPad.png");
 
    backgroundLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
    lightLayer      = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
@@ -100,6 +102,8 @@ void FLoadBackgrounds(){
    tex_trophy = SDL_CreateTextureFromSurface(renderer,surface_trophy);
    tex_blank = SDL_CreateTextureFromSurface(renderer,surface_blank);
    tex_water = SDL_CreateTextureFromSurface(renderer,surface_water);
+   tex_sand = SDL_CreateTextureFromSurface(renderer,surface_sand);
+   tex_levelPad = SDL_CreateTextureFromSurface(renderer,surface_levelPad);
  
  
    SDL_FreeSurface(surface_font);
@@ -115,6 +119,8 @@ void FLoadBackgrounds(){
    SDL_FreeSurface(surface_trophy);
    SDL_FreeSurface(surface_blank);
    SDL_FreeSurface(surface_water);
+   SDL_FreeSurface(surface_sand);
+   SDL_FreeSurface(surface_levelPad);
 
   DIR *p;
   struct dirent *pp;     

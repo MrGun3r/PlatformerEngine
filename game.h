@@ -4,6 +4,10 @@ void FDisplayHUD(){
     buttons[0].reserved = true;
     buttons[1].reserved = true;
     buttons[2].reserved = true;
+    if(level.campaignLevel){
+     buttons[5].reserved = true;
+    }
+    
    SDL_SetRenderDrawColor(renderer,200,200,200,150);
    SDL_RenderFillRect(renderer,&(SDL_Rect){gameWidth/2 - 150,gameHeight/2 - 150,300,300});
    }
@@ -11,10 +15,13 @@ void FDisplayHUD(){
     buttons[0].reserved = false;
     buttons[1].reserved  = false;
     buttons[2].reserved  = false; 
+    buttons[5].reserved = false;
    }
    if(level.Finished){
       buttons[3].reserved = true;
-      buttons[4].reserved = true;
+      if(level.campaignLevel){
+        buttons[4].reserved = true; 
+      }
       SDL_SetRenderDrawColor(renderer,100,100,100,200);
       SDL_RenderFillRect(renderer,&(SDL_Rect){0,0,gameWidth*level.endTransition,100});
       SDL_RenderFillRect(renderer,&(SDL_Rect){gameWidth,gameHeight,-gameWidth*level.endTransition,-100});
@@ -81,6 +88,7 @@ void FDisplayHUD(){
      sprintf(coins,"%d\0",profile.coins);
      SDL_RenderCopy(renderer,tex_coin,NULL,&(SDL_Rect){gameWidth-35-10*len(coins),level.endShowCoins-90,20,20}); 
      renderText(len(coins),coins,gameWidth-10*len(coins)-10,level.endShowCoins-90,10*len(coins),15,255,200,(int[3]){255,255,255});  
+     renderText(3,"+10",gameWidth-10*3-10,35,3*10,12,min(255,level.coinsReceivedOpacity),min(255,level.coinsReceivedOpacity),(int[3]){20,255,30});
      
      if(mapData.PBTimer>0){
      char* PBtimer = msToTimer(mapData.PBTimer);
@@ -114,8 +122,16 @@ void Check_Buttons(){
             appendTransition(app.status,4);
          }
          else if(i == 3){
-            printf("what");
             FGameRestart();
+         }
+         else if (i == 4){
+            app.campaignLevel++;
+            findLevelCampaign();
+            sprintf(level.absolutePath,"levels/%s.txt\0",app.campaignLevelName);
+            appendTransition(app.status,0);
+         }
+         else if (i == 5){
+            appendTransition(app.status,8);
          }
       }
       }
@@ -130,27 +146,27 @@ void FDraw_Game(){
    /////-------------------------------START OF RENDERING
 
        
-   if(!camera.freeCam){
-     camera.x = gameWidth/2-player[0].x-player[0].width/2;
-     camera.y = gameHeight/2-player[0].y-player[0].height/2; 
-   }
-   else{
+   camera.x  > gameWidth/(2*camera.scale) + gameWidth/2 - mapData.xMax;
+   if(camera.freeCam){
      camera.x += (-player[0].x-player[0].width/2+gameWidth/2 - camera.x)*10*app.deltaTime;
      camera.y += (-player[0].y-player[0].height/2+gameHeight/2 - camera.y)*10*app.deltaTime;
-   } 
-   if (camera.x > mapData.xMax - gameWidth + player[0].width/2){
-       camera.x = mapData.xMax - gameWidth + player[0].width/2;
-   }
-   if (camera.x < mapData.xMin + player[0].width/2){
-       camera.x = mapData.xMin + player[0].width/2;    
    }
 
-   if (camera.y > mapData.yMax - gameHeight + player[0].height/2){
-       camera.y = mapData.yMax - gameHeight + player[0].height/2;
+   if (camera.x > -gameWidth/(2*camera.scale) + gameWidth/2 - mapData.xMin) {
+       camera.x = -gameWidth/(2*camera.scale) + gameWidth/2 - mapData.xMin;
    }
-   if (camera.y < mapData.yMin + player[0].height/2){
-       camera.y = mapData.yMin + player[0].height/2;    
+   else if (camera.x < gameWidth/(2*camera.scale) + gameWidth/2 - mapData.xMax){
+      camera.x = gameWidth/(2*camera.scale) + gameWidth/2 - mapData.xMax;
    }
+
+   if (camera.y > -gameHeight/(2*camera.scale) + gameHeight/2 - mapData.yMin) {
+       camera.y = -gameHeight/(2*camera.scale) + gameHeight/2 - mapData.yMin;
+   }
+   else if (camera.y < gameHeight/(2*camera.scale) + gameHeight/2 - mapData.yMax){
+      camera.y = gameHeight/(2*camera.scale) + gameHeight/2 - mapData.yMax;
+   }
+   
+   
    app.backgroundMoving += 5*app.deltaTime;
    if(app.backgroundMoving >= backgrounds[app.backgroundInt].textureWidth){
       app.backgroundMoving = 0;
@@ -234,8 +250,14 @@ void FDraw_Game(){
       flip1 = SDL_FLIP_HORIZONTAL;
    }
    if(player[i].dead){
-      SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){98,26,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,SDL_FLIP_NONE);
+      if((int)(player[0].deathAnimationTimer/1000)>=1 && (int)(player[0].deathAnimationTimer/1000) <= 6){
+      SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){95+(int)(player[0].deathAnimationTimer/1000)*24,24,22,22},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,SDL_FLIP_NONE);
       }
+      else if((int)(player[0].deathAnimationTimer/1000) <= 6){
+         SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){98,26,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,SDL_FLIP_NONE);
+      }
+      
+   }
    else if(player[i].onWall){
       if(player[i].onWall > 0){
       flip1 = SDL_FLIP_HORIZONTAL;
@@ -243,7 +265,7 @@ void FDraw_Game(){
       else {flip1 = SDL_FLIP_NONE;}
       player[i].width = player[i].Owidth;
    SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){73,27,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);}
-
+ 
    else if((int)player[i].accX != 0 && (int)player[i].jumpVelo == 0){
    if(SDL_abs(player[i].veloX)>=(player[i].width+player[i].height)*200/40){
       player[i].width = player[i].Owidth + 3;
@@ -348,6 +370,17 @@ void FDraw_Game(){
 
 
 void FUpdate_Data(){
+ ///// Player play sounds
+  
+
+
+
+
+ ////// 
+   level.coinsReceivedOpacity -= 255*app.deltaTime;
+   if(level.coinsReceivedOpacity < 0){
+      level.coinsReceivedOpacity = 0;
+   }
    camera.scale += ( camera.scaleReal - camera.scale)*app.deltaTime*5;
    if(level.Finished){
       if(level.endTransition < 1){
@@ -356,6 +389,7 @@ void FUpdate_Data(){
       if(level.endShowCoins < 100){
          level.endShowCoins += 200*app.deltaTime;
       }
+      camera.scaleReal = 6;
    }
       Check_Buttons();
    
@@ -365,12 +399,11 @@ void FUpdate_Data(){
    if(level.checkpointShowTimer > 0){
       level.checkpointShowTimer -= 1000*app.deltaTime;
    }
-   if(player[0].keys.r){
+   if(player[0].keys.r && level.Started){
     FGameRestart();
    }
     if(!level.Paused && !level.Finished){
-    FPlayer_Movement();
-    if(app.inputChange && !level.Finished && level.Started){
+    if(app.inputChange && !level.Finished && level.Started && level.campaignLevel){
       char keyInputChange[200];
       sprintf(keyInputChange,"i%d:%d,%d,%d,%d,%d,%d,%d,%d,%f,%f;\n\0",mapData.fileadditionIndex,(int)level.timer,player[0].keys.up,player[0].keys.left,player[0].keys.right,player[0].keys.down,player[0].keys.shift,(int)player[0].x,(int)player[0].y,player[0].veloX,player[0].veloY);
       mapData.fileadditionIndex++;
@@ -383,12 +416,12 @@ void FUpdate_Data(){
       }
       app.inputChange = false;
    }
+    FPlayer_Movement();
    // Player Collision
-   player[0].onPlatform = false;
-   player[0].onWall = false;
-   player[1].onPlatform = false;
-   player[1].onWall = false;
-   
+   player[0].onPlatform = 0;
+   player[0].onWall = 0;
+   player[1].onPlatform = 0;
+   player[1].onWall = 0;
    for (int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       if(platforms[i].reserved){
      // Texture Animation
@@ -425,11 +458,11 @@ void FUpdate_Data(){
          }
 
       if(level.Started){
-       int platformSpeed = 1000*platforms[i].moveModule/(platforms[i].moveTime)*app.deltaTime;
+       double platformSpeed = 1000*platforms[i].moveModule/(platforms[i].moveTime)*app.deltaTime;
       platforms[i].moveDistance += platformSpeed;
       if(platforms[i].moveType == 0){
-         platforms[i].x += platformSpeed*cos(platforms[i].moveAngle*(2*PI)/360);
-         platforms[i].y += platformSpeed*sin(platforms[i].moveAngle*(2*PI)/360);
+         platforms[i].x += (double)platformSpeed*cos(platforms[i].moveAngle*(2*PI)/360);
+         platforms[i].y += (double)platformSpeed*sin(platforms[i].moveAngle*(2*PI)/360);
          
       }
       else if(platforms[i].moveType == 1){
@@ -455,7 +488,10 @@ void FUpdate_Data(){
          if(platforms[i].type == 1){
             if(!level.Finished && platforms[i].type == 1 && level.checkpointCount >= level.checkpointsSize){
                 level.Finished = true;
-                FcheckPB();
+                if(level.campaignLevel){
+                  FcheckPB();
+                }
+                Mix_PlayChannel(-1,Sound_finish,0);
              }
          }
          else if(platforms[i].type == 2 && !platforms[i].platformUsed){
@@ -466,6 +502,9 @@ void FUpdate_Data(){
                FaddReplay(true);
                level.tempFileMade = true;
                level.keyInputsSize = 0;
+               level.LastCheckpointX = platforms[i].x + platforms[i].width/2;
+               level.LastCheckpointY = platforms[i].y + platforms[i].height/2;
+               Mix_PlayChannel(-1,Sound_Checkpoint,0);
          }
       }
       }
@@ -476,9 +515,33 @@ void FUpdate_Data(){
    // Player displacement
 
    for(int i = 0;i<sizeof(player)/sizeof(player[0]);i++){
-      if(i > 0 && !mapData.ghostInGame){
+     
+     if(i > 0 && !mapData.ghostInGame){
          continue;
       }
+      /// Player play sounds
+     if(player[i].stepSoundCount > 100 && player[i].onPlatform){
+      if(player[i].stepSoundInt == 0){
+          if(i == 0){
+       Mix_PlayChannel(-1,Sound_Step1,0);
+          }
+      }
+      else if(player[i].stepSoundInt == 1){
+          if(i == 0){
+         Mix_PlayChannel(-1,Sound_Step2,0);
+          }
+      }
+      player[i].stepSoundCount = 0;
+      player[i].stepSoundInt = (player[i].stepSoundInt + 1) % 2; 
+     }
+     if(player[i].wallHangingCount > 90 && player[i].onWall){
+      if(i == 0){
+        Mix_PlayChannel(-1,Sound_Wall,0); 
+      }
+      
+      player[i].wallHangingCount = 0;
+     } 
+     /// Player play sounds
       for(int j = 0;j<sizeof(displacement)/sizeof(displacement[0]);j++){
        if(displacement[j].reserved){
          if(rectCollision((SDL_Rect){player[i].x,player[i].y,player[i].width,player[i].height},(SDL_Rect){displacement[j].x,displacement[j].y,displacement[j].width,displacement[j].height})){
@@ -509,6 +572,7 @@ void FUpdate_Data(){
             if(deathbox[j].reserved){
                if(rectCollision((SDL_Rect){player[i].x,player[i].y,player[i].width,player[i].height},(SDL_Rect){deathbox[j].x,deathbox[j].y,deathbox[j].width,deathbox[j].height})){
                   player[0].dead = true;
+                  Mix_PlayChannel(-1,Sound_Death,0);
                }
             }
          }
@@ -529,16 +593,58 @@ void FUpdate_Data(){
       level.timer += 1000*app.deltaTime;
    }
    else if(!level.Started){level.timer = 0;}
+   // DeathBox Movement
+   for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
+      if(deathbox[i].reserved){
+         if(deathbox[i].moveModule >= 1){
+          if(deathbox[i].moveDistance >= deathbox[i].moveModule){
+            deathbox[i].moveDistance = 0;
+            deathbox[i].moveType++;deathbox[i].moveType = deathbox[i].moveType %2; 
+            if(deathbox[i].moveType == 0){
+               deathbox[i].x = deathbox[i].spawnX;
+               deathbox[i].y = deathbox[i].spawnY;
+            } 
+            else if(deathbox[i].moveType == 1){
+               deathbox[i].x = deathbox[i].spawnX + deathbox[i].moveModule*cos(deathbox[i].moveAngle*(2*PI)/360);
+               deathbox[i].y = deathbox[i].spawnY + deathbox[i].moveModule*sin(deathbox[i].moveAngle*(2*PI)/360);
+            } 
+         }
+
+         if(level.Started){
+          double deathBoxSpeed = 1000*deathbox[i].moveModule/(deathbox[i].moveTime)*app.deltaTime;
+         deathbox[i].moveDistance += deathBoxSpeed;
+         if(deathbox[i].moveType == 0){
+            deathbox[i].x += (double)deathBoxSpeed*cos(deathbox[i].moveAngle*(2*PI)/360);
+            deathbox[i].y += (double)deathBoxSpeed*sin(deathbox[i].moveAngle*(2*PI)/360);
+            
+         }
+         else if(deathbox[i].moveType == 1){
+            deathbox[i].x -= deathBoxSpeed*cos(deathbox[i].moveAngle*(2*PI)/360);
+            deathbox[i].y -= deathBoxSpeed*sin(deathbox[i].moveAngle*(2*PI)/360);
+         }  
+         }
+         }
+      }
+   }
    }
 
    if(player[0].dead){
-      player[0].deathAnimationTimer+= 1000*app.deltaTime;
-      if(player[0].deathAnimationTimer > 1000){
+      player[0].deathAnimationTimer += 10000*app.deltaTime;
+      if(player[0].deathAnimationTimer > 10000){
          player[0].dead = false;
          player[0].deathAnimationTimer = 0;
-         FGameRestart();
+         if(level.checkpointCount <= 0){
+           FGameRestart(); 
+         }
+         else{
+            player[0].x = level.LastCheckpointX;
+            player[0].y = level.LastCheckpointY;
+         }
+         
       }
    }
+
+   
 
   
 }
@@ -561,6 +667,14 @@ void FGameRestart(){
          platforms[i].moveType = 0;
         }        
       }
+      for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
+        if(deathbox[i].reserved){
+         deathbox[i].x = deathbox[i].spawnX;
+         deathbox[i].y = deathbox[i].spawnY;
+         deathbox[i].moveDistance = 0;
+         deathbox[i].moveType = 0;
+        }        
+      }
       level.Paused = false;
       level.endShowCoins = 0;
       level.endTransition = 0;
@@ -577,6 +691,8 @@ void FGameRestart(){
       level.Started = false;
       player[0].x = player[0].spawnX;
       player[0].y = player[0].spawnY;
+      player[0].keys.left = false;
+      player[0].keys.right = false;
       player[0].dead = false;
       player[0].deathAnimationTimer = 0;
       player[1].x = player[0].spawnX;

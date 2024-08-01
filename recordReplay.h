@@ -47,14 +47,24 @@ void FcheckPB(){
    FaddReplay(false);
    level.tempFileMade = true;
    level.keyInputsSize = 0;
-
+   
    FILE *fileMap = fopen("levels/temp.txt","r"); 
+   if(level.StarTime > level.timer){
+      profile.coins += 10;
+      FSaveProfile();
+      level.coinsReceivedOpacity = 1000;
+   }
+   if(mapData.PBTimer < 0){
+      profile.levelsUnlocked++;
+      FSaveProfile();
+   }
    if(level.timer >= mapData.PBTimer && mapData.PBTimer > 0){
     level.tempFileMade = false;
     fclose(fileMap);
     remove("levels/temp.txt");
     return;
    }
+   
    level.newRecord = true;
    mapData.PBTimer = (int)level.timer;
    FILE *NewfileMap = (FILE*)fopen("levels/levelDataN.txt","w");

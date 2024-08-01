@@ -40,16 +40,22 @@ void FCollision_Response(struct Players *Player,int platformID){
                if(!level.Finished && platforms[platformID].type == 1 && level.checkpointCount >= level.checkpointsSize){
                 level.Finished = true;
                 camera.scaleReal = 5;
-                FcheckPB();
+                if(level.campaignLevel){
+                  FcheckPB();
+                }
+                Mix_PlayChannel(-1,Sound_finish,0);
                 }
              else if (platforms[platformID].type == 2 && !platforms[platformID].platformUsed){
                platforms[platformID].platformUsed = true;
                level.checkpoints[level.checkpointCount] = level.timer;
                level.checkpointShowTimer = 3000;
                level.checkpointCount++;
+               level.LastCheckpointX = platforms[platformID].x + platforms[platformID].width/2;
+               level.LastCheckpointY = platforms[platformID].y - Player->height;
                FaddReplay(true);
                level.tempFileMade = true;
                level.keyInputsSize = 0;
+               Mix_PlayChannel(-1,Sound_Checkpoint,0);
              }
             }
             
@@ -58,7 +64,7 @@ void FCollision_Response(struct Players *Player,int platformID){
              Player->y = platforms[platformID].y - Player->height - platforms[platformID].height*sin(platforms[platformID].slope)*distanceRatio;
              Player->onPlatform = true;
             if(platforms[platformID].moveModule >= 1){
-               int platformSpeed = 1000*platforms[platformID].moveModule/(platforms[platformID].moveTime)*app.deltaTime;
+               double platformSpeed = 1000*platforms[platformID].moveModule/(platforms[platformID].moveTime)*app.deltaTime;
               if(platforms[platformID].moveType == 0){
                Player->x += platformSpeed*cos(platforms[platformID].moveAngle*(2*PI)/360);
                Player->y += platformSpeed*sin(platforms[platformID].moveAngle*(2*PI)/360);
@@ -78,18 +84,20 @@ void FCollision_Response(struct Players *Player,int platformID){
          }
     }
     else {
-      Player->veloX *= pow(0,app.deltaTime);
+      Player->veloX *= 0;
       if (SDL_abs(Player->x + Player->width - platforms[platformID].x)>SDL_abs(Player->x - platforms[platformID].x - platforms[platformID].width)){
       Player->x = platforms[platformID].x + platforms[platformID].width;
-      
      }
      else {
-      Player->x = platforms[platformID].x - Player->width;
+      Player->x = platforms[platformID].x - Player->width ;
       }
 
-      Player->onWall = -1;
+     
       if(Player->x+Player->width/2 > platforms[platformID].x+platforms[platformID].width){
-         Player->onWall *= -1;
+         Player->onWall = 1;
+      }
+      else{
+         Player->onWall = -1;
       }
     }
 } 

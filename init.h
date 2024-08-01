@@ -23,6 +23,14 @@ int initVideo(){
    FAppInit_Values();
    FLoadTextures();
    FLoadBackgrounds();
+    /// Load SDL mixer 
+   
+   if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 8, 128) == -1 )
+   {
+       return 0;    
+   }
+
+   FLoadSounds();
 
 
 
@@ -35,7 +43,7 @@ int initVideo(){
       FswitchAppStatus(0,5);
    }
 
-   
+
 
    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
    SDL_SetWindowResizable(window, SDL_TRUE);

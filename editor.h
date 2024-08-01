@@ -187,7 +187,7 @@ void FUpdate_Editor(){
             addDisplacement(gameWidth/2-camera.x,gameHeight/2-camera.y,displacement[editor.indexSelected].width,displacement[editor.indexSelected].height,displacement[editor.indexSelected].type,displacement[editor.indexSelected].power,displacement[editor.indexSelected].powerType,displacement[editor.indexSelected].opacity);
          }
          else if (editor.typeSelected == 5){
-            addDeathBox(gameWidth/2-camera.x,gameHeight/2-camera.y,deathbox[editor.indexSelected].width,deathbox[editor.indexSelected].height,deathbox[editor.indexSelected].opacity);
+            addDeathBox(gameWidth/2-camera.x,gameHeight/2-camera.y,deathbox[editor.indexSelected].width,deathbox[editor.indexSelected].height,deathbox[editor.indexSelected].opacity,deathbox[editor.indexSelected].moveAngle,deathbox[editor.indexSelected].moveModule,deathbox[editor.indexSelected].moveTime);
          }
          
        }
@@ -244,7 +244,7 @@ void FUpdate_Editor(){
          displacement[editor.indexSelected].powerType = displacement[editor.indexSelected].powerType % 2;
        }
        else if (i == 23){
-         addDeathBox(gameWidth/2-camera.x,gameHeight/2-camera.y,25.0f,25.0f,255);
+         addDeathBox(gameWidth/2-camera.x,gameHeight/2-camera.y,25.0f,25.0f,255,0,0,100);
        }
        else if (i == 24){
          platforms[editor.indexSelected].collidable = !platforms[editor.indexSelected].collidable;
@@ -268,8 +268,8 @@ void FUpdate_Editor(){
   }
   platforms[editor.indexSelected].opacity = sliders[14].sliderValue;
   platforms[editor.indexSelected].moveAngle = knobs[2].knobValue;
-  platforms[editor.indexSelected].moveModule = sliders[17].sliderValue;
-  platforms[editor.indexSelected].moveTime = sliders[18].sliderValue;
+  platforms[editor.indexSelected].moveModule = knobs[8].knobValue;
+  platforms[editor.indexSelected].moveTime = knobs[9].knobValue;
   platforms[editor.indexSelected].textureAnimationTime = knobs[5].knobValue;
   if(platforms[editor.indexSelected].type == 0){
     platforms[editor.indexSelected].red = sliders[10].sliderValue;
@@ -310,6 +310,9 @@ void FUpdate_Editor(){
  }
  else if (editor.typeSelected  == 5){
    deathbox[editor.indexSelected].opacity = sliders[14].sliderValue;
+   deathbox[editor.indexSelected].moveAngle = knobs[2].knobValue;
+   deathbox[editor.indexSelected].moveModule = knobs[8].knobValue;
+   deathbox[editor.indexSelected].moveTime = knobs[9].knobValue;
  }
 }
 
@@ -324,7 +327,7 @@ void addTrigger(int x,int y,double width,double height,int Type,double opacity){
         triggers[i].y = y;
         triggers[i].width = width;
         triggers[i].height = height;
-        triggers[i].opacity = 255;
+        triggers[i].opacity = opacity;
         triggers[i].triggerType = Type;
         break;
       }
@@ -384,7 +387,7 @@ void addLight(double x,double y,double size,double red,double green,double blue,
    editorShowButtons();
 }
 
-void addDeathBox(double x, double y, double width,double height,double opacity){
+void addDeathBox(double x, double y, double width,double height,double opacity,double moveAngle,double moveModule,double moveTime){
    for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
       if(!deathbox[i].reserved){
          editor.selected = true;
@@ -396,7 +399,11 @@ void addDeathBox(double x, double y, double width,double height,double opacity){
          deathbox[i].width = width;
          deathbox[i].height = height;
          deathbox[i].opacity = opacity;
-         sliders[14].sliderValue = 255;
+         sliders[14].sliderValue = opacity;
+
+         knobs[2].knobValue = moveAngle;
+         knobs[8].knobValue = moveModule;
+         knobs[9].knobValue = moveTime;
          break;
       }
    }
@@ -446,8 +453,8 @@ void addPlatform(int x,int y,double width,double height,double slope,bool slopeI
         knobs[5].knobValue = animation;
 
         knobs[2].knobValue = moveAngle;
-        sliders[17].sliderValue = moveModule;
-        sliders[18].sliderValue = moveTime;
+        knobs[8].knobValue = moveModule;
+        knobs[9].knobValue = moveTime;
 
         sliders[10].sliderValue = red;
         sliders[11].sliderValue = green;
@@ -521,8 +528,8 @@ void editorShowButtons(){
          buttons[24].reserved = true;
 
          knobs[2].reserved = true;
-         sliders[17].reserved = true;
-         sliders[18].reserved = true;
+         knobs[8].reserved = true;
+         knobs[9].reserved = true;
          if(platforms[editor.indexSelected].type == 0){
 
          sliders[0].reserved = true;
@@ -543,8 +550,8 @@ void editorShowButtons(){
          ChangeButtonPosition(17,buttons[17].x,320);
          ChangeKnobPosition(5,knobs[5].x,360);
          ChangeKnobPosition(2,knobs[2].x,440);
-         ChangeSliderPosition(17,sliders[17].x,460);
-         ChangeSliderPosition(18,sliders[18].x,480);
+         ChangeKnobPosition(8,knobs[8].x,460);
+         ChangeKnobPosition(9,knobs[9].x,480);
 
          }
          else if(platforms[editor.indexSelected].type == 1 || platforms[editor.indexSelected].type == 2){
@@ -557,8 +564,8 @@ void editorShowButtons(){
 
             ChangeKnobPosition(5,knobs[5].x,300);
             ChangeKnobPosition(2,knobs[2].x,320);
-            ChangeSliderPosition(17,sliders[17].x,340);
-            ChangeSliderPosition(18,sliders[18].x,360);
+            ChangeKnobPosition(8,knobs[8].x,340);
+            ChangeKnobPosition(9,knobs[9].x,360);
          }
       }
       else if (editor.typeSelected == 2){
@@ -586,7 +593,13 @@ void editorShowButtons(){
       }
       else if (editor.typeSelected == 5){
           sliders[14].reserved = true;
+          knobs[2].reserved = true;
+          knobs[8].reserved = true;
+          knobs[9].reserved = true;
          ChangeSliderPosition(14,sliders[14].x,220);
+         ChangeKnobPosition(2,knobs[2].x,240);
+         ChangeKnobPosition(8,knobs[8].x,260);
+         ChangeKnobPosition(9,knobs[9].x,280);
       }
        
    }
@@ -617,6 +630,21 @@ void FDraw_Editor(){
    SDL_SetRenderDrawColor(renderer,200,0,0,100);
 
    FDrawObjects();
+   // Draw Borders
+
+   SDL_SetRenderDrawColor(renderer,200,0,0,100);
+   double xMin =  max(min(gameWidth/2 + (mapData.xMin + camera.x - gameWidth/2)*camera.scale,gameWidth),0);
+   double yMin =  max(min(gameHeight/2 + (mapData.yMin + camera.y - gameHeight/2)*camera.scale,gameHeight),0);
+   double xMax =  max(min(gameWidth/2 + (mapData.xMax + camera.x - gameWidth/2)*camera.scale,gameWidth),0);
+   double yMax =  max(min(gameHeight/2 + (mapData.yMax + camera.y - gameHeight/2)*camera.scale,gameHeight),0);
+   SDL_RenderFillRect(renderer,&(SDL_Rect){0,0,xMin,gameHeight});
+   SDL_RenderFillRect(renderer,&(SDL_Rect){xMax,0,gameWidth-xMax,gameHeight});
+   SDL_RenderFillRect(renderer,&(SDL_Rect){xMin,0,xMax-xMin,yMin});
+   SDL_RenderFillRect(renderer,&(SDL_Rect){xMin,yMax,xMax-xMin,gameHeight-yMax});
+
+ 
+
+
    if(editor.status >= 0){
     FDrawLoadSave();
    }
@@ -696,8 +724,8 @@ void FCheck_Select_Editor(){
             sliders[12].sliderValue = platforms[editor.indexSelected].blue;
 
             knobs[2].knobValue = platforms[editor.indexSelected].moveAngle;
-            sliders[17].sliderValue = platforms[editor.indexSelected].moveModule;
-            sliders[18].sliderValue = platforms[editor.indexSelected].moveTime;
+            knobs[8].knobValue = platforms[editor.indexSelected].moveModule;
+            knobs[9].knobValue = platforms[editor.indexSelected].moveTime;
             return;
           }
         }
@@ -749,6 +777,9 @@ void FCheck_Select_Editor(){
             editor.typeSelected = 5;
             editor.indexSelected = i;
             sliders[14].sliderValue = deathbox[editor.indexSelected].opacity;
+            knobs[2].knobValue = deathbox[editor.indexSelected].moveAngle;
+            knobs[8].knobValue = deathbox[editor.indexSelected].moveModule;
+            knobs[9].knobValue = deathbox[editor.indexSelected].moveTime;
             return;
           }
          }
@@ -1052,8 +1083,8 @@ void FTransformState(){
          buttons[4].highlight = false;
       }
       if(editor.transform == 1){
-      player[0].x += (float)mouse.dX/(camera.scale*editor.gridMove);
-      player[0].y += (float)mouse.dY/(camera.scale*editor.gridMove);
+      player[0].x += (int)((float)mouse.dX/(camera.scale));
+      player[0].y += (int)((float)mouse.dY/(camera.scale));
       }
       else if (editor.transform == 0){
       player[0].width += (float)(mouse.dX+mouse.dY)/(2*camera.scale);
@@ -1070,12 +1101,12 @@ void FTransformState(){
    }
    else if (editor.typeSelected == 1){
       if(editor.transform == 1){
-         platforms[editor.indexSelected].x += mouse.dX/camera.scale;
-         platforms[editor.indexSelected].y += mouse.dY/camera.scale; 
+         platforms[editor.indexSelected].x += (int)(mouse.dX/camera.scale);
+         platforms[editor.indexSelected].y += (int)(mouse.dY/camera.scale); 
       }
       else if (editor.transform == 0){
-           platforms[editor.indexSelected].width += mouse.dX/camera.scale;
-           platforms[editor.indexSelected].height += mouse.dY/camera.scale; 
+           platforms[editor.indexSelected].width +=  (int)(mouse.dX/camera.scale);
+           platforms[editor.indexSelected].height += (int)(mouse.dY/camera.scale); 
       
       if(platforms[editor.indexSelected].width <= 5){
          platforms[editor.indexSelected].width=5;
@@ -1172,7 +1203,7 @@ void FTransformState(){
 void FDrawObjects(){
    
    for (int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
-      if(platforms[i].reserved){
+      if(platforms[i].reserved  && !platforms[i].collidable){
          // Camera offsetted data !
          platforms[i].xDraw = platforms[i].x;
          platforms[i].yDraw = platforms[i].y;
@@ -1205,6 +1236,41 @@ void FDrawObjects(){
       }
    }
 
+   for (int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+      if(platforms[i].reserved && platforms[i].collidable){
+         // Camera offsetted data !
+         platforms[i].xDraw = platforms[i].x;
+         platforms[i].yDraw = platforms[i].y;
+         platforms[i].widthDraw = platforms[i].width*camera.scale;
+         platforms[i].heightDraw = platforms[i].height*camera.scale;
+         platforms[i].xDraw  += camera.x;
+         platforms[i].yDraw  += camera.y;
+         platforms[i].xDraw  = gameWidth/2 + (platforms[i].xDraw - gameWidth/2) * camera.scale;
+         platforms[i].yDraw  = gameHeight/2 + (platforms[i].yDraw - gameHeight/2) * camera.scale;
+
+
+         
+         SDL_SetRenderDrawColor(renderer,200,200,200,255);
+         FtexturePlatform(i);
+         
+         
+         
+         if(editor.selected && editor.typeSelected == 1 && editor.indexSelected == i){ 
+            if(platforms[i].moveModule >= 1){
+            SDL_SetRenderDrawColor(renderer,200,200,200,255);
+            SDL_RenderDrawLine(renderer,platforms[i].xDraw+platforms[i].widthDraw/2,platforms[i].yDraw+platforms[i].heightDraw/2,platforms[i].xDraw+platforms[i].widthDraw/2+camera.scale*platforms[i].moveModule*cos(platforms[i].moveAngle*(2*PI)/360),platforms[i].yDraw+platforms[i].heightDraw/2+camera.scale*platforms[i].moveModule*sin(platforms[i].moveAngle*(2*PI)/360));
+
+            SDL_RenderDrawRect(renderer,&(SDL_Rect){platforms[i].xDraw+platforms[i].widthDraw/2+camera.scale*platforms[i].moveModule*cos(platforms[i].moveAngle*(2*PI)/360)-10/2*camera.scale,platforms[i].yDraw+platforms[i].heightDraw/2+camera.scale*platforms[i].moveModule*sin(platforms[i].moveAngle*(2*PI)/360)-10/2*camera.scale,10*camera.scale,10*camera.scale});
+         }
+         SDL_SetRenderDrawColor(renderer,0,255,0,255);
+         SDL_RenderDrawRect(renderer,&(SDL_Rect){platforms[editor.indexSelected].xDraw,platforms[editor.indexSelected].yDraw-(platforms[editor.indexSelected].heightDraw*sin(platforms[editor.indexSelected].slope))*(platforms[editor.indexSelected].slope>=0),platforms[editor.indexSelected].widthDraw,platforms[editor.indexSelected].heightDraw+(platforms[editor.indexSelected].heightDraw*sin(platforms[editor.indexSelected].slope))*(platforms[editor.indexSelected].slope>=0)});
+         }
+         
+                 
+      }
+   }
+
+
    player[0].xDraw = player[0].x;
    player[0].yDraw = player[0].y;
    player[0].widthDraw = player[0].width;
@@ -1232,8 +1298,14 @@ void FDrawObjects(){
          deathbox[i].yDraw  = gameHeight/2 + (deathbox[i].yDraw - gameHeight/2) * camera.scale;
 
          FtextureQuad(deathbox[i].xDraw,deathbox[i].yDraw,deathbox[i].widthDraw,deathbox[i].heightDraw,tex_skull,min(deathbox[i].opacity+25,255),0);   
-
+         
          if(editor.selected && editor.typeSelected == 5 && editor.indexSelected == i){ 
+            if(deathbox[i].moveModule >= 1){
+            SDL_SetRenderDrawColor(renderer,200,200,200,255);
+            SDL_RenderDrawLine(renderer,deathbox[i].xDraw+deathbox[i].widthDraw/2,deathbox[i].yDraw+deathbox[i].heightDraw/2,deathbox[i].xDraw+deathbox[i].widthDraw/2+camera.scale*deathbox[i].moveModule*cos(deathbox[i].moveAngle*(2*PI)/360),deathbox[i].yDraw+deathbox[i].heightDraw/2+camera.scale*deathbox[i].moveModule*sin(deathbox[i].moveAngle*(2*PI)/360));
+
+            SDL_RenderDrawRect(renderer,&(SDL_Rect){deathbox[i].xDraw+deathbox[i].widthDraw/2+camera.scale*deathbox[i].moveModule*cos(deathbox[i].moveAngle*(2*PI)/360)-10/2*camera.scale,deathbox[i].yDraw+deathbox[i].heightDraw/2+camera.scale*deathbox[i].moveModule*sin(deathbox[i].moveAngle*(2*PI)/360)-10/2*camera.scale,10*camera.scale,10*camera.scale});
+         }
          SDL_SetRenderDrawColor(renderer,0,255,0,255);
          SDL_RenderDrawRect(renderer,&(SDL_Rect){deathbox[editor.indexSelected].xDraw,deathbox[editor.indexSelected].yDraw,deathbox[editor.indexSelected].widthDraw,deathbox[editor.indexSelected].heightDraw});          
       }

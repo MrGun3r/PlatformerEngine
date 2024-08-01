@@ -5,11 +5,18 @@ void FInput_Listener(){
    if (event.type == SDL_QUIT){
       app.WINDOW_LOOP = false;
    }
-   if(app.transition){
-      return;
+   if(mouse.left == -1){
+      mouse.left = 0;
    }
+   if(mouse.right == -1){
+      mouse.right = 0;
+   }
+  
    if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED){
          FwindowResize();
+   }
+   if(app.transition){
+      return;
    }
    if (event.type == SDL_KEYDOWN){
       if(app.textboxSelected >= 0){
@@ -26,7 +33,7 @@ void FInput_Listener(){
       }
       if((int)event.key.keysym.sym == 13){
             FapplyText();
-           } 
+      } 
       }
       switch(event.key.keysym.sym){
          case SDLK_UP:
@@ -55,6 +62,10 @@ void FInput_Listener(){
          case SDLK_ESCAPE:
           player[0].keys.escape = true;
           break;
+         case 13:
+          player[0].keys.enter = true;
+          break;
+
      } 
    }
    if (event.type == SDL_KEYUP){
@@ -84,7 +95,7 @@ void FInput_Listener(){
           player[0].keys.r = false;
           break;
          case SDLK_ESCAPE:
-         app.textboxSelected = -1;
+          app.textboxSelected = -1;
           player[0].keys.escape = false;
           if(app.status == 0){ 
                level.Paused = !level.Paused;
@@ -113,13 +124,10 @@ void FInput_Listener(){
             appendTransition(app.status,7);
           }
           break;
+         case 13:
+          player[0].keys.enter = false;
+          break;
      } 
-   }
-   if(mouse.left == -1){
-      mouse.left = 0;
-   }
-   if(mouse.right == -1){
-      mouse.right = 0;
    }
    if(event.type == SDL_MOUSEBUTTONDOWN){
       if(event.button.button == SDL_BUTTON_LEFT){

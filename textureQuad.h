@@ -46,7 +46,7 @@ SDL_Texture* CreateRepeatedTexture(SDL_Renderer* renderer, SDL_Texture* original
 void FtexturePlatform(int platformID){
 
   // Texturing currently uses CPU , Which is stupidily inefficient , Waiting for SDL to add Texture UV Wrapping...
-
+     
      setTexturePlatform(platformID);
      double textureInt = platforms[platformID].textureAnimationInt;
      double textureSize = textures[platforms[platformID].textureInt].textureAnimationSize;

@@ -12,7 +12,7 @@ void FPlayer_Movement(){
          continue;
       }
    if(player[i].playerControl < 1){
-      player[i].playerControl += 2*app.deltaTime;
+      player[i].playerControl += 4*app.deltaTime;
       if(player[i].playerControl >= 1){
          player[i].playerControl = 1;
       }
@@ -37,21 +37,53 @@ void FPlayer_Movement(){
    if (player[i].keys.up && player[i].jumpBool && player[i].onPlatform){
       player[i].jumpBool = false;
       player[i].jumpVelo = -150;
+      if(i == 0){
+        Mix_PlayChannel(-1,Sound_Jump,0); 
+      }
+      
+      
    }
    if (player[i].keys.left){
       player[i].accX = (-(player[i].width+player[i].height)*500/40-300*(player[i].keys.shift))*player[i].playerControl;
       player[i].animationIndex += 10*app.deltaTime;
       player[i].direction = -1;
+      if(SDL_abs(player[i].veloX) > 10){
+         player[i].stepSoundCount += (1000 - 500*(!player[i].keys.shift))*app.deltaTime;
+      }
+      
       
    }
    else if (player[i].keys.right){
       player[i].accX = ((player[i].width+player[i].height)*500/40+300*(player[i].keys.shift))*player[i].playerControl;
       player[i].animationIndex += 10*app.deltaTime;
       player[i].direction = 1;
+      if(SDL_abs(player[i].veloX) > 10){
+         player[i].stepSoundCount += (1000 - 500*(!player[i].keys.shift))*app.deltaTime;
+      }
    }
    else {player[i].accX = 0;}
    player[i].particleTimer += 1000*app.deltaTime;
-
+   if (player[i].onWall){
+      if(player[i].veloY>10){
+         player[i].wallHangingCount += 1000*app.deltaTime;
+      }
+      //player[i].wallveloX = 0;
+     if(player[i].veloY+player[i].jumpVelo > 100){
+        player[i].veloY = 100-player[i].jumpVelo;    
+     }
+     if (player[i].keys.up && player[i].jumpBool){
+      player[i].jumpBool = false;
+      player[i].veloY = 0;
+      player[i].jumpVelo = -150;
+      if(i == 0){
+       Mix_PlayChannel(-1,Sound_JumpWall,0);  
+      }
+      
+      player[i].wallveloX = 100*player[i].onWall; 
+      player[i].playerControl = 0;
+      player[i].onWall = false;
+     } 
+   }
    /////
    
    if(level.Started){
@@ -67,7 +99,7 @@ void FPlayer_Movement(){
    }
    ////
    if(level.Started && !player[i].dead){
-     player[i].x += (player[i].veloX + player[i].wallveloX + player[i].displacementVeloX)*app.deltaTime;
+     player[i].x += (player[i].veloX + (player[i].wallveloX)*(!player[i].onWall) + player[i].displacementVeloX)*app.deltaTime;
      player[i].y += ((player[i].veloY) + player[i].jumpVelo  + player[i].displacementVeloY)*app.deltaTime; 
    }
    ///// 
@@ -77,19 +109,6 @@ void FPlayer_Movement(){
    player[i].displacementAccelY *= pow(0.05,app.deltaTime);
    if(!player[i].onPlatform){
       player[i].accY = 0;
-   }
-   if (player[i].onWall){
-     if(player[i].veloY+player[i].jumpVelo > 100){
-        player[i].veloY = 100-player[i].jumpVelo;
-        
-     }
-     if (player[i].keys.up && player[i].jumpBool){
-      player[i].jumpBool = false;
-      player[i].veloY = 0;
-      player[i].jumpVelo = -150;
-      player[i].wallveloX = 100*player[i].onWall; 
-      player[i].playerControl = 0;
-     } 
    }
    
    }

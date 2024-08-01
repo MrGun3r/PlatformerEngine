@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <SDL2/SDL_mixer.h>
 // Variables
 
 #define PI 3.14159 
@@ -18,6 +19,10 @@ SDL_Renderer* renderer = NULL;
 float windowWidthScale = 1;
 float windowHeightScale = 1;
 
+double campaignXIsland;
+double campaignYIsland;
+double campaignWidthIsland;
+double campaignHeightIsland;
 
 /// Window size (Actual window size , Window Size will be resizable as desired)
 
@@ -58,6 +63,10 @@ SDL_Surface* surface_blank = NULL;
 SDL_Texture* tex_blank = NULL;
 SDL_Surface* surface_water = NULL;
 SDL_Texture* tex_water = NULL;
+SDL_Surface* surface_sand = NULL;
+SDL_Texture* tex_sand = NULL;
+SDL_Surface* surface_levelPad = NULL;
+SDL_Texture* tex_levelPad = NULL;
 
 // Game window Textures
 SDL_Texture* backgroundLayer = NULL;
@@ -68,6 +77,22 @@ SDL_Texture* TransitionLayer = NULL;
 SDL_Texture* resultLayer = NULL;    
 SDL_Surface* surface_light = NULL;
 SDL_Texture* tex_light = NULL;
+
+
+/// Sounds
+
+Mix_Chunk* Sound_Jump = NULL;
+Mix_Chunk* Sound_JumpWall = NULL;
+Mix_Chunk* Sound_Step1 = NULL;
+Mix_Chunk* Sound_Step2 = NULL;
+Mix_Chunk* Sound_Wall = NULL;
+Mix_Chunk* Sound_Death = NULL;
+Mix_Chunk* Sound_Checkpoint = NULL;
+Mix_Chunk* Sound_Hover = NULL;
+Mix_Chunk* Sound_buttonClick = NULL;
+Mix_Chunk* Sound_transition = NULL;
+Mix_Chunk* Sound_finish = NULL;
+Mix_Chunk* Sound_levelSelect = NULL;
 
 // Variable Types
 
@@ -91,6 +116,8 @@ void FLoadBackgrounds();
 int FindTextureInt(char *textureName);
 int FindBackgroundInt(char *backgroundName);
 
+// Sound Init
+void FLoadSounds();
 
 // Rendering 
 void FtexturePlatform(int platformID);
@@ -124,11 +151,13 @@ void FPlayer_Movement();
 // Profile setup
 void SetUsernameProfile();
 bool CheckUsernameProfile();
+void FSaveProfile();
 
 // Campaign
 
 void FDraw_Campaign();
 void FUpdate_Campaign();
+void findLevelCampaign();
 
 // App change state
 void FswitchAppStatus(int from, int to);
@@ -149,7 +178,7 @@ void addParticle(double x,double y,double size,double red,double green,double bl
 void editorShowButtons();
 void addTrigger(int x,int y,double width,double height,int Type,double opacity);
 void addLight(double x,double y,double size,double red,double green,double blue,double visibility,double brightness);
-void addDeathBox(double x, double y, double width,double height,double opacity);
+void addDeathBox(double x, double y, double width,double height,double opacity,double moveAngle,double moveModule,double moveTime);
 void FInfoBox();
 
 // In Game functions
@@ -201,3 +230,4 @@ void FWindow_Loop();
 #include "particles.h"
 #include "profile.h"
 #include "campaign.h"
+#include "sounds.h"
