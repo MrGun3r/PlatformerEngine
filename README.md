@@ -1,4 +1,4 @@
-![alt text](https://github.com/MrGun3r/PlatformerEngine/blob/main/readmePhoto.png?raw=true)
+![alt text](https://github.com/MrGun3r/PlatformerEngine/blob/main/readmePhoto.PNG?raw=true)
 
 To compile this run "make" in your terminal / command prompt or run :<br />
 
