@@ -54,6 +54,9 @@ struct Light{
    double moveDistance;
    int moveNodeCount;
    bool moveNodeReverse;
+
+   int moveNodeIntSpawn;
+   double moveSpeedSpawn;
 };
 
 struct Profile{
@@ -375,7 +378,8 @@ struct DeathBox{
    int moveNodeCount;
    bool moveNodeReverse;
 
-
+   int moveNodeIntSpawn;
+   double moveSpeedSpawn;
 };
 
 
@@ -402,6 +406,9 @@ struct Displacement{
    double moveDistance;
    int moveNodeCount;
    bool moveNodeReverse;
+
+   int moveNodeIntSpawn;
+   double moveSpeedSpawn;
 };
 
 
@@ -443,6 +450,10 @@ struct Platform{
    double moveDistance;
    int moveNodeCount;
    bool moveNodeReverse;
+
+
+   int moveNodeIntSpawn;
+   double moveSpeedSpawn;
    
 };
 
