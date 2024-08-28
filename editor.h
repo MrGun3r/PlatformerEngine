@@ -171,6 +171,9 @@ void FUpdate_Editor(){
          else if (editor.typeSelected == 5){
             deathbox[editor.indexSelected].reserved = false;
          }
+         else if (editor.typeSelected == 6){
+            movenodes[editor.indexSelected].reserved = false;
+         }
          editor.selected = false;
          editorShowButtons();
        }
@@ -294,6 +297,10 @@ void FUpdate_Editor(){
        }
        else if (i == 28){
          movenodes[editor.indexSelected].wrap = !movenodes[editor.indexSelected].wrap;
+       }
+       else if (i == 29){
+         triggers[editor.indexSelected].triggerType++;
+         triggers[editor.indexSelected].triggerType %= 4;
        }
       }
     }
@@ -610,8 +617,9 @@ void editorShowButtons(){
       } 
       buttons[1].reserved = true;
       buttons[2].reserved = true;
+      buttons[5].reserved = true; 
       if(editor.typeSelected != 6){
-        buttons[5].reserved = true;
+        
         buttons[9].reserved = true;  
       }
       
@@ -1014,6 +1022,15 @@ void FDraw_SideBar_Editor(){
      char* typeValue = malloc(100);
      if(triggers[editor.indexSelected].triggerType == 0){
       sprintf(typeValue,"Platform\0");
+     }
+     else if(triggers[editor.indexSelected].triggerType == 1){
+      sprintf(typeValue,"DeathBox\0");
+     }
+     else if(triggers[editor.indexSelected].triggerType == 2){
+      sprintf(typeValue,"Light\0");
+     }
+     else if(triggers[editor.indexSelected].triggerType == 3){
+      sprintf(typeValue,"Displacement\0");
      }
 
      SDL_memcpy(buttons[29].value,typeValue,len(typeValue)+1);
@@ -1488,6 +1505,15 @@ void FDrawObjects(){
           FtextureQuad(triggers[i].xDraw,triggers[i].yDraw,triggers[i].widthDraw,triggers[i].heightDraw,tex_trigger,min(triggers[i].opacity+25,255),0);
         if(triggers[i].triggerType == 0 && platforms[(int)triggers[i].Value3].reserved){
          SDL_RenderDrawLine(renderer,triggers[i].xDraw+triggers[i].widthDraw/2,triggers[i].yDraw+triggers[i].heightDraw/2,platforms[(int)triggers[i].Value3].xDraw+platforms[(int)triggers[i].Value3].widthDraw/2,platforms[(int)triggers[i].Value3].yDraw+platforms[(int)triggers[i].Value3].heightDraw/2);
+        }
+        else if(triggers[i].triggerType == 1 && deathbox[(int)triggers[i].Value3].reserved){
+         SDL_RenderDrawLine(renderer,triggers[i].xDraw+triggers[i].widthDraw/2,triggers[i].yDraw+triggers[i].heightDraw/2,deathbox[(int)triggers[i].Value3].xDraw+deathbox[(int)triggers[i].Value3].widthDraw/2,deathbox[(int)triggers[i].Value3].yDraw+deathbox[(int)triggers[i].Value3].heightDraw/2);
+        }
+        else if(triggers[i].triggerType == 2 && light[(int)triggers[i].Value3].reserved){
+         SDL_RenderDrawLine(renderer,triggers[i].xDraw+triggers[i].widthDraw/2,triggers[i].yDraw+triggers[i].heightDraw/2,light[(int)triggers[i].Value3].xDraw+light[(int)triggers[i].Value3].sizeDraw/2,light[(int)triggers[i].Value3].yDraw+light[(int)triggers[i].Value3].sizeDraw/2);
+        }
+        else if(triggers[i].triggerType == 3 && displacement[(int)triggers[i].Value3].reserved){
+         SDL_RenderDrawLine(renderer,triggers[i].xDraw+triggers[i].widthDraw/2,triggers[i].yDraw+triggers[i].heightDraw/2,displacement[(int)triggers[i].Value3].xDraw+displacement[(int)triggers[i].Value3].widthDraw/2,displacement[(int)triggers[i].Value3].yDraw+displacement[(int)triggers[i].Value3].heightDraw/2);
         }
 
 

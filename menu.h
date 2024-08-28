@@ -36,10 +36,11 @@ void FDraw_Menu(){
    }
    int num = 7;
    
-   for(int i = 3;i<sizeof(buttons)/sizeof(buttons[0]);i++){
+   for(int i = 3;i<sizeof(buttons)/sizeof(buttons[0]) +1;i++){
       if(buttons[i].reserved){
          if(app.status == 2){
            if(!app.fetchedList){
+            
            char* PBTemp = FGetDataMap(levelsList[i-3].levelPath,"m",1,levelsList[i].levelNameSize);
            SDL_memcpy(levelsList[i-3].PB,PBTemp,9);
            free(PBTemp);

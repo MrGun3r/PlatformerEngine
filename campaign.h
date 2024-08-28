@@ -3,15 +3,12 @@ void findLevelCampaign(){
         if(app.campaignLevel == 0){
          sprintf(app.campaignLevelName,"Pilot");
         }
-
         else if(app.campaignLevel == 1){
          sprintf(app.campaignLevelName,"Spikes");
         }
-
         else if(app.campaignLevel == 2){
          sprintf(app.campaignLevelName,"Temple");
         }
-
         else if(app.campaignLevel == 3){
          sprintf(app.campaignLevelName,"Climb");
         }

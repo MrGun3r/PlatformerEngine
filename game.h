@@ -443,6 +443,7 @@ void FUpdate_Data(){
    for(int i = 0;i<sizeof(light)/sizeof(light[0]);i++){
       if(light[i].reserved){
         lightMovement(i);
+        
       }
    }
    for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
@@ -575,11 +576,38 @@ void FUpdate_Data(){
             if(triggers[j].useDelayTimer >= triggers[j].useDelay && !triggers[j].timerStart){
                triggers[j].useDelayTimer = 0;
                triggers[j].timerStart = true;
-               printf("use");
                if(triggers[j].triggerType == 0){
+                  if((int)triggers[j].Value1 >= 0){
                   platforms[(int)triggers[j].Value3].moveNodeInt = (int)triggers[j].Value1;
+                  platforms[(int)triggers[j].Value3].x = movenodes[(int)triggers[j].Value1].positions[0][0] - (platforms[(int)triggers[j].Value3].width-25)/2;
+                  platforms[(int)triggers[j].Value3].y = movenodes[(int)triggers[j].Value1].positions[0][1] - (platforms[(int)triggers[j].Value3].height-25)/2;   
+                  }
                   platforms[(int)triggers[j].Value3].moveSpeed = triggers[j].Value2;
                } 
+               else if(triggers[j].triggerType == 1){
+                  if((int)triggers[j].Value1 >= 0){
+                  deathbox[(int)triggers[j].Value3].moveNodeInt = (int)triggers[j].Value1;
+                  deathbox[(int)triggers[j].Value3].x = movenodes[(int)triggers[j].Value1].positions[0][0] - (deathbox[(int)triggers[j].Value3].width-25)/2;
+                  deathbox[(int)triggers[j].Value3].y = movenodes[(int)triggers[j].Value1].positions[0][1] - (deathbox[(int)triggers[j].Value3].height-25)/2;   
+                  }
+                  deathbox[(int)triggers[j].Value3].moveSpeed = triggers[j].Value2;
+               } 
+               else if(triggers[j].triggerType == 2){
+                  if((int)triggers[j].Value1 >= 0){
+                  light[(int)triggers[j].Value3].moveNodeInt = (int)triggers[j].Value1;
+                  light[(int)triggers[j].Value3].x = movenodes[(int)triggers[j].Value1].positions[0][0] - (light[(int)triggers[j].Value3].size-25)/2;
+                  light[(int)triggers[j].Value3].y = movenodes[(int)triggers[j].Value1].positions[0][1] - (light[(int)triggers[j].Value3].size-25)/2;   
+                  }
+                  light[(int)triggers[j].Value3].moveSpeed = triggers[j].Value2;
+               }
+               else if(triggers[j].triggerType == 3){
+                  if((int)triggers[j].Value1 >= 0){
+                  displacement[(int)triggers[j].Value3].moveNodeInt = (int)triggers[j].Value1;
+                  displacement[(int)triggers[j].Value3].x = movenodes[(int)triggers[j].Value1].positions[0][0] - (displacement[(int)triggers[j].Value3].width-25)/2;
+                  displacement[(int)triggers[j].Value3].y = movenodes[(int)triggers[j].Value1].positions[0][1] - (displacement[(int)triggers[j].Value3].height-25)/2;   
+                  }
+                  displacement[(int)triggers[j].Value3].moveSpeed = triggers[j].Value2;
+               }   
             }
             else{
                triggers[j].useDelayTimer += 1000*app.deltaTime;
@@ -672,6 +700,8 @@ void FGameRestart(){
          platforms[i].moveNodeCount = 0;
          platforms[i].moveDistance = 0;
          platforms[i].moveNodeReverse = false;
+         platforms[i].moveSpeed = platforms[i].moveSpeedSpawn;
+         platforms[i].moveNodeInt = platforms[i].moveNodeIntSpawn;
         
         }        
       }
@@ -682,6 +712,8 @@ void FGameRestart(){
          deathbox[i].moveNodeCount = 0;
          deathbox[i].moveDistance = 0;
          deathbox[i].moveNodeReverse = false;
+         deathbox[i].moveSpeed = deathbox[i].moveSpeedSpawn;
+         deathbox[i].moveNodeInt = deathbox[i].moveNodeIntSpawn;
         }        
       }
       
@@ -692,11 +724,16 @@ void FGameRestart(){
         light[i].moveNodeCount = 0;
         light[i].moveDistance = 0;
         light[i].moveNodeReverse = false;
+        light[i].moveSpeed = light[i].moveSpeedSpawn;
+         light[i].moveNodeInt = light[i].moveNodeIntSpawn;
        }
       }
       for(int i = 0;i<sizeof(triggers)/sizeof(triggers[0]);i++){
         if(triggers[i].reserved){
           triggers[i].triggerUsed = false;
+          triggers[i].timerStart = false;
+          triggers[i].useDelayTimer = 0;
+          triggers[i].reuseDelayTimer = 0;
         }
        }
       for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
@@ -706,6 +743,8 @@ void FGameRestart(){
          displacement[i].moveNodeCount = 0;
          displacement[i].moveDistance = 0;
          displacement[i].moveNodeReverse = false;
+         displacement[i].moveSpeed = displacement[i].moveSpeedSpawn;
+         displacement[i].moveNodeInt = displacement[i].moveNodeIntSpawn;
        }
        }
       level.Paused = false;

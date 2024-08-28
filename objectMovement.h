@@ -135,9 +135,11 @@ void deathboxMovement(int i){
         return;
 }
 void lightMovement(int i){
+      
       if(level.Started && light[i].moveSpeed >= 1 && light[i].moveNodeInt >= 0 && movenodes[light[i].moveNodeInt].reserved){
          int from;
          int to;
+         
          if(movenodes[light[i].moveNodeInt].wrap){
           light[i].moveNodeCount %= movenodes[light[i].moveNodeInt].nodesCount;
           from = light[i].moveNodeCount % movenodes[light[i].moveNodeInt].nodesCount;
