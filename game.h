@@ -211,25 +211,7 @@ void FDraw_Game(){
       }
    }
    // Draw Nodes
-   for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
-      if(movenodes[i].reserved){
-         for(int j = 0;j<movenodes[i].nodesCount;j++){
-           movenodes[i].positionsDraw[j][0] = gameWidth/2 + (movenodes[i].positions[j][0] + camera.x - gameWidth/2) * camera.scale;
-           movenodes[i].positionsDraw[j][1] = gameHeight/2 + (movenodes[i].positions[j][1] + camera.y - gameHeight/2) * camera.scale;
-           SDL_SetRenderDrawColor(renderer,200,200,200,255);
-           if(movenodes[i].nodesCount>1){
-            if(j != movenodes[i].nodesCount - 1 || movenodes[i].wrap){
-              SDL_RenderDrawLine(renderer,movenodes[i].positionsDraw[j][0]+12*camera.scale,movenodes[i].positionsDraw[j][1]+12*camera.scale,movenodes[i].positionsDraw[(j+1)%(movenodes[i].nodesCount)][0]+12*camera.scale,movenodes[i].positionsDraw[(j+1)%(movenodes[i].nodesCount)][1]+12*camera.scale); 
-            }
-            
-           }
-           SDL_RenderCopy(renderer,tex_movenode,NULL,&(SDL_Rect){movenodes[i].positionsDraw[j][0],movenodes[i].positionsDraw[j][1],25*camera.scale,25*camera.scale});
-           char nodeNumber[5];
-           sprintf(nodeNumber,"%d\0",j);
-           renderText(2,nodeNumber,movenodes[i].positionsDraw[j][0]+11*camera.scale,movenodes[i].positionsDraw[j][1]+8*camera.scale,10*camera.scale,10*camera.scale,255,255,(int[3]){255,255,255});
-         }
-      }
-   }
+   
    for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       if(platforms[i].reserved && platforms[i].collidable){
 
