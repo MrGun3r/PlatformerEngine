@@ -23,6 +23,10 @@ void FAppInit_Values(){
       knobs[i].knobCoef = 1;
       SDL_memcpy(sliders[i].value,"\0",1);
    }
+   for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
+      movenodes[i].reserved = false;
+      movenodes[i].nodesCount = 0;
+   }
   // Resolutions
 
   app.resolutions[0][0] = 640;

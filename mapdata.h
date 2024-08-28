@@ -12,7 +12,7 @@ void FSaveMap(){
          if(platforms[i].reserved){
             char* platformData = malloc(2000);
  
-            sprintf(platformData,"%d:%d,%d,%d,%d,%f,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)platforms[i].x,(int)platforms[i].y,(int)platforms[i].width,(int)platforms[i].height,platforms[i].slope,(int)platforms[i].slopeInv,(int)platforms[i].textureScale,textures[(int)platforms[i].textureInt].textureName,(int)platforms[i].textureStretch,platforms[i].type,(int)platforms[i].textureOffsetX,(int)platforms[i].textureOffsetY,platforms[i].collidable,(int)platforms[i].opacity,(int)platforms[i].red,(int)platforms[i].green,(int)platforms[i].blue,(int)platforms[i].textureAnimationTime,(int)platforms[i].moveAngle,(int)platforms[i].moveModule,(int)platforms[i].moveTime);
+            sprintf(platformData,"%d:%d,%d,%d,%d,%f,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)platforms[i].x,(int)platforms[i].y,(int)platforms[i].width,(int)platforms[i].height,platforms[i].slope,(int)platforms[i].slopeInv,(int)platforms[i].textureScale,textures[(int)platforms[i].textureInt].textureName,(int)platforms[i].textureStretch,platforms[i].type,(int)platforms[i].textureOffsetX,(int)platforms[i].textureOffsetY,platforms[i].collidable,(int)platforms[i].opacity,(int)platforms[i].red,(int)platforms[i].green,(int)platforms[i].blue,(int)platforms[i].textureAnimationTime,(int)platforms[i].moveNodeInt,(int)platforms[i].moveSpeed);
             fputs(platformData,file);
             free(platformData);
          }
@@ -20,7 +20,7 @@ void FSaveMap(){
       for(int i = 0;i<sizeof(triggers)/sizeof(triggers[0]);i++){
          if(triggers[i].reserved){
             char* triggerData = malloc(2000);   
-            sprintf(triggerData,"t%d:%d,%d,%d,%d,%d,%d;\n\0",i,(int)triggers[i].x,(int)triggers[i].y,(int)triggers[i].width,(int)triggers[i].height,(int)triggers[i].triggerType,(int)triggers[i].opacity);
+            sprintf(triggerData,"t%d:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)triggers[i].x,(int)triggers[i].y,(int)triggers[i].width,(int)triggers[i].height,(int)triggers[i].triggerType,(int)triggers[i].opacity,(int)triggers[i].Value1,(int)triggers[i].Value2,(int)triggers[i].Value3,(int)triggers[i].Value4,(int)triggers[i].useDelay,(int)triggers[i].reuseDelay);
             fputs(triggerData,file);
             free(triggerData);
          }
@@ -28,7 +28,7 @@ void FSaveMap(){
       for(int i = 0;i<sizeof(light)/sizeof(light[0]);i++){
         if(light[i].reserved){
             char* lightData = malloc(2000);   
-            sprintf(lightData,"l%d:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)light[i].x,(int)light[i].y,(int)light[i].size,(int)light[i].rotation,(int)light[i].angle,(int)light[i].brightness,(int)light[i].visibility,(int)light[i].red,(int)light[i].green,(int)light[i].blue);
+            sprintf(lightData,"l%d:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)light[i].x,(int)light[i].y,(int)light[i].size,(int)light[i].rotation,(int)light[i].angle,(int)light[i].brightness,(int)light[i].visibility,(int)light[i].red,(int)light[i].green,(int)light[i].blue,(int)light[i].moveNodeInt,(int)light[i].moveSpeed);
             fputs(lightData,file);
             free(lightData);
          } 
@@ -36,7 +36,7 @@ void FSaveMap(){
       for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
         if(displacement[i].reserved){
             char* displacementData = malloc(2000);   
-            sprintf(displacementData,"d%d:%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)displacement[i].x,(int)displacement[i].y,(int)displacement[i].width,(int)displacement[i].height,(int)displacement[i].type,(int)displacement[i].powerType,(int)displacement[i].power,(int)displacement[i].opacity);
+            sprintf(displacementData,"d%d:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)displacement[i].x,(int)displacement[i].y,(int)displacement[i].width,(int)displacement[i].height,(int)displacement[i].type,(int)displacement[i].powerType,(int)displacement[i].power,(int)displacement[i].opacity,(int)displacement[i].moveNodeInt,(int)displacement[i].moveSpeed);
 
             fputs(displacementData,file);
             free(displacementData);
@@ -45,11 +45,26 @@ void FSaveMap(){
       for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
         if(deathbox[i].reserved){
             char* deathboxData = malloc(2000);   
-            sprintf(deathboxData,"k%d:%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)deathbox[i].x,(int)deathbox[i].y,(int)deathbox[i].width,(int)deathbox[i].height,(int)deathbox[i].opacity,(int)deathbox[i].moveAngle,(int)deathbox[i].moveModule,(int)deathbox[i].moveTime);
+            sprintf(deathboxData,"k%d:%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)deathbox[i].x,(int)deathbox[i].y,(int)deathbox[i].width,(int)deathbox[i].height,(int)deathbox[i].opacity,(int)deathbox[i].moveNodeInt,(int)deathbox[i].moveSpeed);
 
             fputs(deathboxData,file);
             free(deathboxData);
          } 
+      }
+      for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
+         if(movenodes[i].reserved){
+            char* movenodeIndex = malloc(100);
+            sprintf(movenodeIndex,"n%d:%d",i,movenodes[i].wrap);
+            fputs(movenodeIndex,file);
+            free(movenodeIndex);
+            for(int j = 0;j<movenodes[i].nodesCount;j++){
+               char* movenodeData = malloc(100);   
+               sprintf(movenodeData,",%d,%d",(int)movenodes[i].positions[j][0],(int)movenodes[i].positions[j][1]); 
+               fputs(movenodeData,file);
+               free(movenodeData);
+            }
+            fputs(";\n\0",file);
+         }
       }
       fputs("/",file);
       fclose(file);
@@ -179,6 +194,10 @@ void FSetDataMap(char* path,int pathSize){
     for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
       deathbox[i].reserved = false;
    }
+   for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
+      movenodes[i].reserved = false;
+      movenodes[i].nodesCount = 0;
+   }
 
    // Read from txt file Map Data
 
@@ -236,6 +255,10 @@ void FSetDataMap(char* path,int pathSize){
             // DeathBox
             DataImport = 6;
          }
+         else if (importBufferShortened[0] == 'n'){
+            // DeathBox
+            DataImport = 7;
+         }
          else{
             // platforms
             DataImport = 0;
@@ -243,7 +266,7 @@ void FSetDataMap(char* path,int pathSize){
          if(DataImport == 0){
             ID = atoi(importBufferShortened);
          }
-         else if(DataImport == 3 || DataImport == 4 || DataImport == 5 || DataImport == 6){
+         else if(DataImport == 3 || DataImport == 4 || DataImport == 5 || DataImport == 6 || DataImport == 7){
             ID = atoi(&importBufferShortened[1]);
          }
          else{ID = -1;}
@@ -356,13 +379,10 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
        platforms[ID].textureAnimationTime = atoi(importBuffer);
        break;
       case 18:
-       platforms[ID].moveAngle = atoi(importBuffer);
+       platforms[ID].moveNodeInt = atoi(importBuffer);
        break;
       case 19:
-       platforms[ID].moveModule = atoi(importBuffer);
-       break;
-      case 20:
-       platforms[ID].moveTime = atoi(importBuffer);
+       platforms[ID].moveSpeed = atof(importBuffer);
        break;
        }
      }
@@ -434,9 +454,11 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       switch(data){
       case 0:
          triggers[ID].x = atof(importBuffer);
+         triggers[ID].spawnX = atof(importBuffer);
          break;
       case 1:
          triggers[ID].y = atof(importBuffer);
+         triggers[ID].spawnY = atof(importBuffer);
          break;
       case 2:
          triggers[ID].width = atof(importBuffer);
@@ -450,6 +472,25 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       case 5:
          triggers[ID].opacity = atof(importBuffer);
          break;
+      case 6:
+         triggers[ID].Value1 = atof(importBuffer);
+         break;
+      case 7:
+         triggers[ID].Value2 = atof(importBuffer);
+         break;
+      case 8:
+         triggers[ID].Value3 = atof(importBuffer);
+         break;
+      case 9:
+         triggers[ID].Value4 = atof(importBuffer);
+         break;
+      case 10:
+         triggers[ID].useDelay = atof(importBuffer);
+         break;
+      case 11:
+         triggers[ID].reuseDelay = atof(importBuffer);
+         break;
+
      }
      }
      else if (dataType == 4){
@@ -458,9 +499,11 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       switch(data){
       case 0:
          light[ID].x = atof(importBuffer);
+         light[ID].spawnX = atof(importBuffer);
          break;
       case 1:
          light[ID].y = atof(importBuffer);
+         light[ID].spawnY = atof(importBuffer);
          break;
       case 2:
          light[ID].size = atof(importBuffer);
@@ -486,6 +529,12 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       case 9:
          light[ID].blue = atof(importBuffer);
          break;
+      case 10:
+         light[ID].moveNodeInt = atoi(importBuffer);
+         break;
+      case 11:
+         light[ID].moveSpeed = atof(importBuffer);
+         break;
      }
      }
      else if (dataType == 5){
@@ -493,20 +542,36 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       switch(data){
       case 0: 
          displacement[ID].x = atof(importBuffer);
+         displacement[ID].spawnX = atof(importBuffer);
+         break;
       case 1: 
          displacement[ID].y = atof(importBuffer);
+         displacement[ID].spawnY = atof(importBuffer);
+         break;
       case 2: 
          displacement[ID].width = atof(importBuffer);
+         break;
       case 3: 
          displacement[ID].height = atof(importBuffer);
+         break;
       case 4: 
          displacement[ID].type = atoi(importBuffer);
+         break;
       case 5: 
          displacement[ID].powerType = atoi(importBuffer);
+         break;
       case 6: 
          displacement[ID].power = atof(importBuffer);
+         break;
       case 7: 
          displacement[ID].opacity = atof(importBuffer);
+         break;
+      case 8: 
+         displacement[ID].moveNodeInt = atoi(importBuffer);
+         break;
+      case 9: 
+         displacement[ID].moveSpeed = atof(importBuffer);
+         break;
       } 
      }
      else if (dataType == 6){
@@ -515,22 +580,45 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       case 0: 
          deathbox[ID].x = atof(importBuffer);
          deathbox[ID].spawnX = atof(importBuffer);
+         break;
       case 1: 
          deathbox[ID].y = atof(importBuffer);
          deathbox[ID].spawnY = atof(importBuffer);
+         break;
+
       case 2: 
          deathbox[ID].width = atof(importBuffer);
+         break;
       case 3: 
-         deathbox[ID].height = atof(importBuffer);   
+         deathbox[ID].height = atof(importBuffer);
+         break;   
       case 4: 
-         deathbox[ID].opacity = atof(importBuffer);   
+         deathbox[ID].opacity = atof(importBuffer);
+         break;   
       case 5: 
-         deathbox[ID].moveAngle = atof(importBuffer);  
+         deathbox[ID].moveNodeInt = atoi(importBuffer);
+         break;  
       case 6: 
-         deathbox[ID].moveModule = atof(importBuffer);  
-      case 7: 
-         deathbox[ID].moveTime = atof(importBuffer);  
+         deathbox[ID].moveSpeed = atof(importBuffer);
+         break;
       }
           
+     }
+     else if (dataType == 7){
+      movenodes[ID].reserved = true;
+      if(data == 0){
+         movenodes[ID].wrap = (bool)atoi(importBuffer);
+      }
+      else{
+         switch((data+1) % 2){
+         case 0:
+           movenodes[ID].positions[movenodes[ID].nodesCount][0] = atof(importBuffer);
+           break;
+         case 1:
+           movenodes[ID].positions[movenodes[ID].nodesCount][1] = atof(importBuffer);
+           movenodes[ID].nodesCount++;
+           break;
+      }
+      }
      }
 }

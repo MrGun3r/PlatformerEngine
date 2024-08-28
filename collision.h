@@ -63,17 +63,7 @@ void FCollision_Response(struct Players *Player,int platformID){
              
              Player->y = platforms[platformID].y - Player->height - platforms[platformID].height*sin(platforms[platformID].slope)*distanceRatio;
              Player->onPlatform = true;
-            if(platforms[platformID].moveModule >= 1){
-               double platformSpeed = 1000*platforms[platformID].moveModule/(platforms[platformID].moveTime)*app.deltaTime;
-              if(platforms[platformID].moveType == 0){
-               Player->x += platformSpeed*cos(platforms[platformID].moveAngle*(2*PI)/360);
-               Player->y += platformSpeed*sin(platforms[platformID].moveAngle*(2*PI)/360);
-              } 
-              else{    
-               Player->x -= platformSpeed*cos(platforms[platformID].moveAngle*(2*PI)/360);
-               Player->y -= platformSpeed*sin(platforms[platformID].moveAngle*(2*PI)/360);
-              }
-            }
+            
             
             
          

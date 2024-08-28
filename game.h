@@ -210,6 +210,26 @@ void FDraw_Game(){
          //SDL_RenderFillRect(renderer,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw});
       }
    }
+   // Draw Nodes
+   for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
+      if(movenodes[i].reserved){
+         for(int j = 0;j<movenodes[i].nodesCount;j++){
+           movenodes[i].positionsDraw[j][0] = gameWidth/2 + (movenodes[i].positions[j][0] + camera.x - gameWidth/2) * camera.scale;
+           movenodes[i].positionsDraw[j][1] = gameHeight/2 + (movenodes[i].positions[j][1] + camera.y - gameHeight/2) * camera.scale;
+           SDL_SetRenderDrawColor(renderer,200,200,200,255);
+           if(movenodes[i].nodesCount>1){
+            if(j != movenodes[i].nodesCount - 1 || movenodes[i].wrap){
+              SDL_RenderDrawLine(renderer,movenodes[i].positionsDraw[j][0]+12*camera.scale,movenodes[i].positionsDraw[j][1]+12*camera.scale,movenodes[i].positionsDraw[(j+1)%(movenodes[i].nodesCount)][0]+12*camera.scale,movenodes[i].positionsDraw[(j+1)%(movenodes[i].nodesCount)][1]+12*camera.scale); 
+            }
+            
+           }
+           SDL_RenderCopy(renderer,tex_movenode,NULL,&(SDL_Rect){movenodes[i].positionsDraw[j][0],movenodes[i].positionsDraw[j][1],25*camera.scale,25*camera.scale});
+           char nodeNumber[5];
+           sprintf(nodeNumber,"%d\0",j);
+           renderText(2,nodeNumber,movenodes[i].positionsDraw[j][0]+11*camera.scale,movenodes[i].positionsDraw[j][1]+8*camera.scale,10*camera.scale,10*camera.scale,255,255,(int[3]){255,255,255});
+         }
+      }
+   }
    for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       if(platforms[i].reserved && platforms[i].collidable){
 
@@ -308,31 +328,20 @@ void FDraw_Game(){
    for(int i = 1;i<sizeof(triggers)/sizeof(triggers[0]);i++){
       if(triggers[i].reserved){         
          // Camera offsetted data !
-         triggers[i].x -= camera.x;
-         triggers[i].y -= camera.y;
-         triggers[i].width  *= camera.scale;
-         triggers[i].height *= camera.scale;
+         triggers[i].xDraw = triggers[i].x + camera.x;
+         triggers[i].yDraw = triggers[i].y + camera.y;
+         triggers[i].widthDraw = triggers[i].width*camera.scale;
+         triggers[i].heightDraw = triggers[i].height*camera.scale;
       
-         triggers[i].x      -= gameWidth/2;
-         triggers[i].y      -= gameHeight/2;
-         triggers[i].x      *= camera.scale;
-         triggers[i].y      *= camera.scale;
-         triggers[i].x      += gameWidth/2;
-         triggers[i].y      += gameHeight/2;
+         triggers[i].xDraw      -= gameWidth/2;
+         triggers[i].yDraw      -= gameHeight/2;
+         triggers[i].xDraw      *= camera.scale;
+         triggers[i].yDraw      *= camera.scale;
+         triggers[i].xDraw      += gameWidth/2;
+         triggers[i].yDraw      += gameHeight/2;
          
 
          FtextureQuad(triggers[i].xDraw,triggers[i].yDraw,triggers[i].widthDraw,triggers[i].heightDraw,tex_trigger,triggers[i].opacity,0);
-         
-         // Reset data to normal map data!
-         triggers[i].x = (triggers[i].x-gameWidth/2)/camera.scale  + gameWidth/2;
-         triggers[i].y = (triggers[i].y-gameHeight/2)/camera.scale + gameHeight/2;
- 
-         triggers[i].width  /= camera.scale;
-         triggers[i].height /= camera.scale;
-             
-         triggers[i].x += camera.x;
-         triggers[i].y += camera.y;
- 
       }
    }
    for(int i = 1;i<sizeof(light)/sizeof(light[0]);i++){
@@ -422,8 +431,31 @@ void FUpdate_Data(){
    player[0].onWall = 0;
    player[1].onPlatform = 0;
    player[1].onWall = 0;
+   
+
+
+   // DeathBox Movement
+   for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
+      if(deathbox[i].reserved){
+         deathboxMovement(i);
+      }
+   }
+   for(int i = 0;i<sizeof(light)/sizeof(light[0]);i++){
+      if(light[i].reserved){
+        lightMovement(i);
+      }
+   }
+   for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
+      if(displacement[i].reserved){
+         displacementMovement(i);
+      }
+   }
+
+
+
    for (int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       if(platforms[i].reserved){
+
      // Texture Animation
       if(platforms[i].textureAnimationTime >= 1){
          platforms[i].textureAnimationTimer += 1000*app.deltaTime;
@@ -437,45 +469,10 @@ void FUpdate_Data(){
         platforms[i].textureAnimationInt = 0; 
         platforms[i].textureAnimationTimer = 0;
       }
-      // Texture Animation
-        
-       
-
+  
 
       // Platform Movement
-         // Check if platform reached destination
-         if(platforms[i].moveDistance >= platforms[i].moveModule){
-            platforms[i].moveDistance = 0;
-            platforms[i].moveType++;platforms[i].moveType = platforms[i].moveType %2; 
-            if(platforms[i].moveType == 0){
-               platforms[i].x = platforms[i].spawnX;
-               platforms[i].y = platforms[i].spawnY;
-            } 
-            else if(platforms[i].moveType == 1){
-               platforms[i].x = platforms[i].spawnX + platforms[i].moveModule*cos(platforms[i].moveAngle*(2*PI)/360);
-               platforms[i].y = platforms[i].spawnY + platforms[i].moveModule*sin(platforms[i].moveAngle*(2*PI)/360);
-            } 
-         }
-
-      if(level.Started){
-       double platformSpeed = 1000*platforms[i].moveModule/(platforms[i].moveTime)*app.deltaTime;
-      platforms[i].moveDistance += platformSpeed;
-      if(platforms[i].moveType == 0){
-         platforms[i].x += (double)platformSpeed*cos(platforms[i].moveAngle*(2*PI)/360);
-         platforms[i].y += (double)platformSpeed*sin(platforms[i].moveAngle*(2*PI)/360);
-         
-      }
-      else if(platforms[i].moveType == 1){
-         platforms[i].x -= platformSpeed*cos(platforms[i].moveAngle*(2*PI)/360);
-         platforms[i].y -= platformSpeed*sin(platforms[i].moveAngle*(2*PI)/360);
-      }  
-      }
-      
-
-      
-      
-
-
+        platformMovement(i);
       // Player Platform Collision
       if((platforms[i].collidable || platforms[i].type != 0)){
       if(FCheck_Collision(player[1],i) && platforms[i].collidable){
@@ -541,7 +538,7 @@ void FUpdate_Data(){
       
       player[i].wallHangingCount = 0;
      } 
-     /// Player play sounds
+     
       for(int j = 0;j<sizeof(displacement)/sizeof(displacement[0]);j++){
        if(displacement[j].reserved){
          if(rectCollision((SDL_Rect){player[i].x,player[i].y,player[i].width,player[i].height},(SDL_Rect){displacement[j].x,displacement[j].y,displacement[j].width,displacement[j].height})){
@@ -563,7 +560,43 @@ void FUpdate_Data(){
                }  
             }
          }
+         
        }
+      }
+
+      for(int j = 1 ;j<sizeof(triggers)/sizeof(triggers[0]);j++){
+         if(triggers[j].reserved){
+            if(!triggers[j].triggerUsed){
+               if(rectCollision((SDL_Rect){player[i].x,player[i].y,player[i].width,player[i].height},(SDL_Rect){triggers[j].x,triggers[j].y,triggers[j].width,triggers[j].height})){
+               triggers[j].triggerUsed = true;      
+              }
+             }
+          else{
+            if(triggers[j].useDelayTimer >= triggers[j].useDelay && !triggers[j].timerStart){
+               triggers[j].useDelayTimer = 0;
+               triggers[j].timerStart = true;
+               printf("use");
+               if(triggers[j].triggerType == 0){
+                  platforms[(int)triggers[j].Value3].moveNodeInt = (int)triggers[j].Value1;
+                  platforms[(int)triggers[j].Value3].moveSpeed = triggers[j].Value2;
+               } 
+            }
+            else{
+               triggers[j].useDelayTimer += 1000*app.deltaTime;
+               
+            } 
+         }
+
+         if(triggers[j].timerStart && triggers[j].reuseDelay >= 1){
+            triggers[j].reuseDelayTimer += 1000*app.deltaTime;
+            if(triggers[j].reuseDelayTimer >= triggers[j].reuseDelay){
+               triggers[j].triggerUsed = false;
+               triggers[j].timerStart = false;
+               triggers[j].reuseDelayTimer = 0;
+            }
+         }
+         
+         }
       }
 
       // Player check death
@@ -596,34 +629,7 @@ void FUpdate_Data(){
    // DeathBox Movement
    for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
       if(deathbox[i].reserved){
-         if(deathbox[i].moveModule >= 1){
-          if(deathbox[i].moveDistance >= deathbox[i].moveModule){
-            deathbox[i].moveDistance = 0;
-            deathbox[i].moveType++;deathbox[i].moveType = deathbox[i].moveType %2; 
-            if(deathbox[i].moveType == 0){
-               deathbox[i].x = deathbox[i].spawnX;
-               deathbox[i].y = deathbox[i].spawnY;
-            } 
-            else if(deathbox[i].moveType == 1){
-               deathbox[i].x = deathbox[i].spawnX + deathbox[i].moveModule*cos(deathbox[i].moveAngle*(2*PI)/360);
-               deathbox[i].y = deathbox[i].spawnY + deathbox[i].moveModule*sin(deathbox[i].moveAngle*(2*PI)/360);
-            } 
-         }
-
-         if(level.Started){
-          double deathBoxSpeed = 1000*deathbox[i].moveModule/(deathbox[i].moveTime)*app.deltaTime;
-         deathbox[i].moveDistance += deathBoxSpeed;
-         if(deathbox[i].moveType == 0){
-            deathbox[i].x += (double)deathBoxSpeed*cos(deathbox[i].moveAngle*(2*PI)/360);
-            deathbox[i].y += (double)deathBoxSpeed*sin(deathbox[i].moveAngle*(2*PI)/360);
-            
-         }
-         else if(deathbox[i].moveType == 1){
-            deathbox[i].x -= deathBoxSpeed*cos(deathbox[i].moveAngle*(2*PI)/360);
-            deathbox[i].y -= deathBoxSpeed*sin(deathbox[i].moveAngle*(2*PI)/360);
-         }  
-         }
-         }
+         
       }
    }
    }
@@ -663,18 +669,45 @@ void FGameRestart(){
          platforms[i].x = platforms[i].spawnX;
          platforms[i].y = platforms[i].spawnY;
          platforms[i].platformUsed = false;  
+         platforms[i].moveNodeCount = 0;
          platforms[i].moveDistance = 0;
-         platforms[i].moveType = 0;
+         platforms[i].moveNodeReverse = false;
+        
         }        
       }
       for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
         if(deathbox[i].reserved){
          deathbox[i].x = deathbox[i].spawnX;
          deathbox[i].y = deathbox[i].spawnY;
+         deathbox[i].moveNodeCount = 0;
          deathbox[i].moveDistance = 0;
-         deathbox[i].moveType = 0;
+         deathbox[i].moveNodeReverse = false;
         }        
       }
+      
+      for(int i = 0;i<sizeof(light)/sizeof(light[0]);i++){
+        if(light[i].reserved){
+        light[i].x = light[i].spawnX;
+        light[i].y = light[i].spawnY;
+        light[i].moveNodeCount = 0;
+        light[i].moveDistance = 0;
+        light[i].moveNodeReverse = false;
+       }
+      }
+      for(int i = 0;i<sizeof(triggers)/sizeof(triggers[0]);i++){
+        if(triggers[i].reserved){
+          triggers[i].triggerUsed = false;
+        }
+       }
+      for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
+        if(displacement[i].reserved){
+         displacement[i].x = displacement[i].spawnX;
+         displacement[i].y = displacement[i].spawnY;
+         displacement[i].moveNodeCount = 0;
+         displacement[i].moveDistance = 0;
+         displacement[i].moveNodeReverse = false;
+       }
+       }
       level.Paused = false;
       level.endShowCoins = 0;
       level.endTransition = 0;

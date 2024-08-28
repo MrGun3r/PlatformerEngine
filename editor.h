@@ -40,14 +40,27 @@ void FUpdate_Editor(){
       }
      }
 
+
+     if(editor.status < 0){
+      FTransformState();
+     }
+
      for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
       if(deathbox[i].reserved && deathbox[i].editorSelectionTime <= 1000){
          deathbox[i].editorSelectionTime += 1000*app.deltaTime;
+      }
+      if(deathbox[i].moveNodeInt >= 0 && movenodes[deathbox[i].moveNodeInt].reserved){
+         deathbox[i].x = movenodes[deathbox[i].moveNodeInt].positions[0][0]-(deathbox[i].width-25)/2;
+         deathbox[i].y = movenodes[deathbox[i].moveNodeInt].positions[0][1]-(deathbox[i].height-25)/2;
       }
      }
      for(int i = 0;i<sizeof(light)/sizeof(light[0]);i++){
       if(light[i].reserved && light[i].editorSelectionTime <= 1000){
          light[i].editorSelectionTime += 1000*app.deltaTime;
+      }
+      if(light[i].moveNodeInt >= 0 && movenodes[light[i].moveNodeInt].reserved){
+         light[i].x = movenodes[light[i].moveNodeInt].positions[0][0]-(light[i].size-25)/2;
+         light[i].y = movenodes[light[i].moveNodeInt].positions[0][1]-(light[i].size-25)/2;
       }
      }
      for(int i = 0;i<sizeof(triggers)/sizeof(triggers[0]);i++){
@@ -58,6 +71,15 @@ void FUpdate_Editor(){
      for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
       if(displacement[i].reserved && displacement[i].editorSelectionTime <= 1000){
          displacement[i].editorSelectionTime += 1000*app.deltaTime;
+      }
+      if(displacement[i].moveNodeInt >= 0 && movenodes[displacement[i].moveNodeInt].reserved){
+         displacement[i].x = movenodes[displacement[i].moveNodeInt].positions[0][0]-(displacement[i].width-25)/2;
+         displacement[i].y = movenodes[displacement[i].moveNodeInt].positions[0][1]-(displacement[i].height-25)/2;
+      }
+     }
+     for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
+      if(movenodes[i].reserved && movenodes[i].editorSelectionTime <= 1000){
+         movenodes[i].editorSelectionTime += 1000*app.deltaTime;
       }
      }
     // Update Selection
@@ -76,9 +98,7 @@ void FUpdate_Editor(){
       camera.scaleReal /= 1.2;
       camera.scaleReal = max(0.5,camera.scaleReal);
    }
-   if(editor.status < 0){
-      FTransformState();
-   }
+   
 
    // Change texture platform
    for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
@@ -96,6 +116,10 @@ void FUpdate_Editor(){
             platforms[i].textureAnimationTimer = 0;
          }
          
+      if(platforms[i].moveNodeInt >= 0 && movenodes[platforms[i].moveNodeInt].reserved){
+         platforms[i].x = movenodes[platforms[i].moveNodeInt].positions[0][0]-(platforms[i].width-25)/2;
+         platforms[i].y = movenodes[platforms[i].moveNodeInt].positions[0][1]-(platforms[i].height-25)/2;
+      }
       }
    }
 
@@ -112,7 +136,7 @@ void FUpdate_Editor(){
       if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax && mouse.left == -1){
         mouse.left = 0;
        if(i == 0){
-         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,FindTextureInt("stone"),0,50,0,0,false,true,255,0,0,100,0,255,255,255);
+         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,FindTextureInt("stone"),0,50,0,0,false,true,255,0,255,255,255);
        } 
        if(i == 1 && editor.selected){
          editor.transform = 1;
@@ -167,13 +191,13 @@ void FUpdate_Editor(){
          // Copy Object
          if(editor.typeSelected == 1){
             if(platforms[editor.indexSelected].type == 0){
-               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,0,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].moveAngle,platforms[editor.indexSelected].moveModule,platforms[editor.indexSelected].moveTime,platforms[editor.indexSelected].textureAnimationTime,platforms[editor.indexSelected].red,platforms[editor.indexSelected].green,platforms[editor.indexSelected].blue);
+               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,0,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].textureAnimationTime,platforms[editor.indexSelected].red,platforms[editor.indexSelected].green,platforms[editor.indexSelected].blue);
             }
             else if (platforms[editor.indexSelected].type == 1){
-               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,1,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].moveAngle,platforms[editor.indexSelected].moveModule,platforms[editor.indexSelected].moveTime,platforms[editor.indexSelected].textureAnimationTime,platforms[editor.indexSelected].red,platforms[editor.indexSelected].green,platforms[editor.indexSelected].blue);
+               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,1,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].textureAnimationTime,platforms[editor.indexSelected].red,platforms[editor.indexSelected].green,platforms[editor.indexSelected].blue);
             }
             else if (platforms[editor.indexSelected].type == 2){
-               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,2,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].moveAngle,platforms[editor.indexSelected].moveModule,platforms[editor.indexSelected].moveTime,platforms[editor.indexSelected].textureAnimationTime,platforms[editor.indexSelected].red,platforms[editor.indexSelected].green,platforms[editor.indexSelected].blue);
+               addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,platforms[editor.indexSelected].width,platforms[editor.indexSelected].height,platforms[editor.indexSelected].slope,platforms[editor.indexSelected].slopeInv,platforms[editor.indexSelected].textureInt,2,platforms[editor.indexSelected].textureScale,platforms[editor.indexSelected].textureOffsetX,platforms[editor.indexSelected].textureOffsetY,platforms[editor.indexSelected].textureStretch,platforms[editor.indexSelected].collidable,platforms[editor.indexSelected].opacity,platforms[editor.indexSelected].textureAnimationTime,platforms[editor.indexSelected].red,platforms[editor.indexSelected].green,platforms[editor.indexSelected].blue);
             }
 
          }
@@ -187,7 +211,7 @@ void FUpdate_Editor(){
             addDisplacement(gameWidth/2-camera.x,gameHeight/2-camera.y,displacement[editor.indexSelected].width,displacement[editor.indexSelected].height,displacement[editor.indexSelected].type,displacement[editor.indexSelected].power,displacement[editor.indexSelected].powerType,displacement[editor.indexSelected].opacity);
          }
          else if (editor.typeSelected == 5){
-            addDeathBox(gameWidth/2-camera.x,gameHeight/2-camera.y,deathbox[editor.indexSelected].width,deathbox[editor.indexSelected].height,deathbox[editor.indexSelected].opacity,deathbox[editor.indexSelected].moveAngle,deathbox[editor.indexSelected].moveModule,deathbox[editor.indexSelected].moveTime);
+            addDeathBox(gameWidth/2-camera.x,gameHeight/2-camera.y,deathbox[editor.indexSelected].width,deathbox[editor.indexSelected].height,deathbox[editor.indexSelected].opacity);
          }
          
        }
@@ -207,10 +231,11 @@ void FUpdate_Editor(){
          addTrigger(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,255);
        }
        else if (i == 13){
-         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,-1,1,50,0,0,false,true,255,0,0,255,0,255,255,255);
-       }
+         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,-1,1,50,0,0,false,true,255,0,255,255,255);
+         
+        }
        else if (i == 14){
-         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,-1,2,50,0,0,false,true,255,0,0,255,0,255,255,255);
+         addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,-1,2,50,0,0,false,true,255,0,255,255,255);
        }
        else if (i == 15){
          camera.scaleReal *= 1.2;
@@ -244,10 +269,31 @@ void FUpdate_Editor(){
          displacement[editor.indexSelected].powerType = displacement[editor.indexSelected].powerType % 2;
        }
        else if (i == 23){
-         addDeathBox(gameWidth/2-camera.x,gameHeight/2-camera.y,25.0f,25.0f,255,0,0,100);
+         addDeathBox(gameWidth/2-camera.x,gameHeight/2-camera.y,25.0f,25.0f,255);
        }
        else if (i == 24){
          platforms[editor.indexSelected].collidable = !platforms[editor.indexSelected].collidable;
+       }
+       else if (i == 25){
+         addMoveNode(gameWidth/2-camera.x,gameHeight/2-camera.y);
+       }
+       else if (i == 26){
+         if(movenodes[editor.indexSelected].nodesCount < 20){
+            movenodes[editor.indexSelected].nodesCount++;
+            movenodes[editor.indexSelected].positions[movenodes[editor.indexSelected].nodesCount-1][0] =  gameWidth/2-camera.x;
+            movenodes[editor.indexSelected].positions[movenodes[editor.indexSelected].nodesCount-1][1] =  gameHeight/2-camera.y;
+            editor.movenodeSelected = movenodes[editor.indexSelected].nodesCount - 1;
+         }
+         
+       }
+       else if (i == 27){
+         if(movenodes[editor.indexSelected].nodesCount > 1){
+          movenodes[editor.indexSelected].nodesCount--;
+          editor.movenodeSelected = movenodes[editor.indexSelected].nodesCount - 1;
+         }   
+       }
+       else if (i == 28){
+         movenodes[editor.indexSelected].wrap = !movenodes[editor.indexSelected].wrap;
        }
       }
     }
@@ -263,13 +309,13 @@ void FUpdate_Editor(){
    platforms[editor.indexSelected].textureOffsetX = sliders[1].sliderValue;
    platforms[editor.indexSelected].textureOffsetY = sliders[2].sliderValue;
    platforms[editor.indexSelected].textureScale = knobs[0].knobValue;
+   platforms[editor.indexSelected].moveNodeInt = knobs[8].knobValue;
+   platforms[editor.indexSelected].moveSpeed = knobs[9].knobValue;
    if(platforms[editor.indexSelected].type == 0){
    platforms[editor.indexSelected].slope = sliders[0].sliderValue/(180/(2*PI)); 
   }
   platforms[editor.indexSelected].opacity = sliders[14].sliderValue;
-  platforms[editor.indexSelected].moveAngle = knobs[2].knobValue;
-  platforms[editor.indexSelected].moveModule = knobs[8].knobValue;
-  platforms[editor.indexSelected].moveTime = knobs[9].knobValue;
+
   platforms[editor.indexSelected].textureAnimationTime = knobs[5].knobValue;
   if(platforms[editor.indexSelected].type == 0){
     platforms[editor.indexSelected].red = sliders[10].sliderValue;
@@ -295,11 +341,19 @@ void FUpdate_Editor(){
  }
  else if (editor.typeSelected == 2){
    triggers[editor.indexSelected].opacity = sliders[14].sliderValue;
+   triggers[editor.indexSelected].Value1 = knobs[8].knobValue;
+   triggers[editor.indexSelected].Value2 = knobs[9].knobValue;
+   triggers[editor.indexSelected].Value3 = knobs[10].knobValue;
+   triggers[editor.indexSelected].useDelay = knobs[11].knobValue;
+   triggers[editor.indexSelected].reuseDelay = knobs[12].knobValue;
+
  }
  else if (editor.typeSelected == 3){
    light[editor.indexSelected].rotation = sliders[7].sliderValue;
    light[editor.indexSelected].brightness = sliders[8].sliderValue;
    light[editor.indexSelected].visibility = sliders[9].sliderValue;
+   light[editor.indexSelected].moveNodeInt = knobs[8].knobValue;
+   light[editor.indexSelected].moveSpeed = knobs[9].knobValue;
    light[editor.indexSelected].red = sliders[10].sliderValue;
    light[editor.indexSelected].green = sliders[11].sliderValue;
    light[editor.indexSelected].blue = sliders[12].sliderValue;
@@ -307,12 +361,14 @@ void FUpdate_Editor(){
  else if (editor.typeSelected  == 4){
    displacement[editor.indexSelected].power = sliders[13].sliderValue; 
    displacement[editor.indexSelected].opacity = sliders[14].sliderValue;
+   displacement[editor.indexSelected].moveNodeInt = knobs[8].knobValue;
+   displacement[editor.indexSelected].moveSpeed = knobs[9].knobValue;
  }
  else if (editor.typeSelected  == 5){
    deathbox[editor.indexSelected].opacity = sliders[14].sliderValue;
-   deathbox[editor.indexSelected].moveAngle = knobs[2].knobValue;
-   deathbox[editor.indexSelected].moveModule = knobs[8].knobValue;
-   deathbox[editor.indexSelected].moveTime = knobs[9].knobValue;
+   deathbox[editor.indexSelected].moveNodeInt = knobs[8].knobValue;
+   deathbox[editor.indexSelected].moveSpeed = knobs[9].knobValue;
+
  }
 }
 
@@ -329,6 +385,12 @@ void addTrigger(int x,int y,double width,double height,int Type,double opacity){
         triggers[i].height = height;
         triggers[i].opacity = opacity;
         triggers[i].triggerType = Type;
+          
+
+         
+         knobs[8].knobValue = -1;
+         knobs[9].knobValue = 0;
+        
         break;
       }
    }
@@ -351,6 +413,13 @@ void addDisplacement(double x, double y, double width,double height,double type,
          displacement[i].powerType = powerType;
          displacement[i].power = power;
          displacement[i].opacity = opacity;
+
+         displacement[i].moveSpeed = 0;
+         displacement[i].moveNodeInt = -1;
+         
+         knobs[8].knobValue = -1;
+         knobs[9].knobValue = 0;
+
          sliders[14].sliderValue = 255;
          break;
       }
@@ -373,7 +442,13 @@ void addLight(double x,double y,double size,double red,double green,double blue,
          light[i].blue =  blue;
          light[i].visibility = visibility;
          light[i].brightness = brightness;
+          
+         light[i].moveSpeed = 0;
+         light[i].moveNodeInt = -1;
          
+         knobs[8].knobValue = -1;
+         knobs[9].knobValue = 0;
+
          sliders[8].sliderValue = brightness;
          sliders[9].sliderValue = visibility;
 
@@ -387,7 +462,7 @@ void addLight(double x,double y,double size,double red,double green,double blue,
    editorShowButtons();
 }
 
-void addDeathBox(double x, double y, double width,double height,double opacity,double moveAngle,double moveModule,double moveTime){
+void addDeathBox(double x, double y, double width,double height,double opacity){
    for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
       if(!deathbox[i].reserved){
          editor.selected = true;
@@ -399,18 +474,43 @@ void addDeathBox(double x, double y, double width,double height,double opacity,d
          deathbox[i].width = width;
          deathbox[i].height = height;
          deathbox[i].opacity = opacity;
+
+         deathbox[i].moveSpeed = 0;
+         deathbox[i].moveNodeInt = -1;
+         
+         knobs[8].knobValue = -1;
+         knobs[9].knobValue = 0;
+
          sliders[14].sliderValue = opacity;
 
-         knobs[2].knobValue = moveAngle;
-         knobs[8].knobValue = moveModule;
-         knobs[9].knobValue = moveTime;
+   
          break;
       }
    }
    editorShowButtons();
 }
 
-void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity,double moveAngle,double moveModule,double moveTime,double animation
+void addMoveNode(int x, int y){
+   for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
+      if(!movenodes[i].reserved){
+         editor.selected = true;
+         editor.typeSelected = 6;
+         editor.indexSelected = i;
+         editor.movenodeSelected = 0;
+         movenodes[i].reserved = true;
+         movenodes[i].positions[0][0] = (double)x;
+         movenodes[i].positions[0][1] = (double)y;
+         movenodes[i].nodesCount = 1;
+         movenodes[i].wrap = false;
+         
+         break;
+      }
+   }
+   editorShowButtons();
+}
+
+
+void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity,double animation
 ,double red,double green,double blue){
    for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       if(!platforms[i].reserved){
@@ -429,14 +529,13 @@ void addPlatform(int x,int y,double width,double height,double slope,bool slopeI
         sliders[0].sliderValue = 0;
         platforms[i].slopeInv = slopeInv;
         platforms[i].textureScale = scale;
-        platforms[i].moveAngle = moveAngle;
-        platforms[i].moveModule = moveModule;
-        platforms[i].moveTime = moveTime;
         platforms[i].textureAnimationTime = animation;
         
         platforms[i].red = red;
         platforms[i].green = green;
         platforms[i].blue = blue;
+        platforms[i].moveSpeed = 0;
+        platforms[i].moveNodeInt = -1;
 
         knobs[0].knobValue = 50;
         if(type == 1){platforms[i].textureInt = FindTextureInt("check");platforms[i].type = 1;}
@@ -451,10 +550,9 @@ void addPlatform(int x,int y,double width,double height,double slope,bool slopeI
         knobs[0].knobValue = scale;
         sliders[14].sliderValue = opacity;
         knobs[5].knobValue = animation;
-
-        knobs[2].knobValue = moveAngle;
-        knobs[8].knobValue = moveModule;
-        knobs[9].knobValue = moveTime;
+        knobs[8].knobValue = -1;
+        knobs[9].knobValue = 0;
+        
 
         sliders[10].sliderValue = red;
         sliders[11].sliderValue = green;
@@ -494,6 +592,7 @@ void editorShowButtons(){
    buttons[19].reserved = true;
    buttons[20].reserved = true;
    buttons[23].reserved = true;
+   buttons[25].reserved = true;
    if(editor.status >= 0){
       textbox[0].reserved = true;
    }
@@ -511,8 +610,11 @@ void editorShowButtons(){
       } 
       buttons[1].reserved = true;
       buttons[2].reserved = true;
-      buttons[5].reserved = true;
-      buttons[9].reserved = true;
+      if(editor.typeSelected != 6){
+        buttons[5].reserved = true;
+        buttons[9].reserved = true;  
+      }
+      
 
       if(editor.typeSelected == 0){
             // Nothing so far
@@ -526,10 +628,11 @@ void editorShowButtons(){
          ChangeSliderPosition(14,sliders[14].x,340);
          knobs[5].reserved = true;
          buttons[24].reserved = true;
-
-         knobs[2].reserved = true;
          knobs[8].reserved = true;
          knobs[9].reserved = true;
+         
+         
+         
          if(platforms[editor.indexSelected].type == 0){
 
          sliders[0].reserved = true;
@@ -549,9 +652,10 @@ void editorShowButtons(){
          ChangeButtonPosition(24,buttons[24].x,300);
          ChangeButtonPosition(17,buttons[17].x,320);
          ChangeKnobPosition(5,knobs[5].x,360);
-         ChangeKnobPosition(2,knobs[2].x,440);
-         ChangeKnobPosition(8,knobs[8].x,460);
-         ChangeKnobPosition(9,knobs[9].x,480);
+         
+         ChangeKnobPosition(8,knobs[8].x,440);
+         ChangeKnobPosition(9,knobs[9].x,460);
+        
 
          }
          else if(platforms[editor.indexSelected].type == 1 || platforms[editor.indexSelected].type == 2){
@@ -563,14 +667,23 @@ void editorShowButtons(){
             ChangeSliderPosition(14,sliders[14].x,280);
 
             ChangeKnobPosition(5,knobs[5].x,300);
-            ChangeKnobPosition(2,knobs[2].x,320);
+            
             ChangeKnobPosition(8,knobs[8].x,340);
             ChangeKnobPosition(9,knobs[9].x,360);
          }
       }
       else if (editor.typeSelected == 2){
        sliders[14].reserved = true;
+       buttons[29].reserved = true;
+       knobs[8].reserved = true;
+       knobs[9].reserved = true;
+       knobs[10].reserved = true;
+       knobs[11].reserved = true;
+       knobs[12].reserved = true;
        ChangeSliderPosition(14,sliders[14].x,220);
+       ChangeKnobPosition(8,knobs[8].x,260);
+       ChangeKnobPosition(9,knobs[9].x,280);
+       ChangeKnobPosition(10,knobs[10].x,300);
       }
       else if (editor.typeSelected == 3){
          sliders[7].reserved = true;
@@ -579,27 +692,43 @@ void editorShowButtons(){
          sliders[10].reserved = true;
          sliders[11].reserved = true;
          sliders[12].reserved = true;
+         knobs[8].reserved = true;
+         knobs[9].reserved = true;
 
          ChangeSliderPosition(10,sliders[10].x,260);
          ChangeSliderPosition(11,sliders[11].x,280);
          ChangeSliderPosition(12,sliders[12].x,300);
+         ChangeKnobPosition(8,knobs[8].x,340);
+         ChangeKnobPosition(9,knobs[9].x,360);
       }
       else if (editor.typeSelected == 4){
          buttons[21].reserved = true;
          buttons[22].reserved = true;
          sliders[13].reserved = true;
          sliders[14].reserved = true;
+         knobs[8].reserved = true;
+         knobs[9].reserved = true;
          ChangeSliderPosition(14,sliders[14].x,240);
+         ChangeKnobPosition(8,knobs[8].x,300);
+         ChangeKnobPosition(9,knobs[9].x,320);
       }
       else if (editor.typeSelected == 5){
+
           sliders[14].reserved = true;
-          knobs[2].reserved = true;
           knobs[8].reserved = true;
           knobs[9].reserved = true;
+        
          ChangeSliderPosition(14,sliders[14].x,220);
-         ChangeKnobPosition(2,knobs[2].x,240);
+         
          ChangeKnobPosition(8,knobs[8].x,260);
-         ChangeKnobPosition(9,knobs[9].x,280);
+         ChangeKnobPosition(8,knobs[8].x,300);
+         ChangeKnobPosition(9,knobs[9].x,320);
+         
+      }
+      else if (editor.typeSelected == 6){
+         buttons[26].reserved = true;
+         buttons[27].reserved = true;
+         buttons[28].reserved = true;
       }
        
    }
@@ -716,6 +845,8 @@ void FCheck_Select_Editor(){
             sliders[1].sliderValue = platforms[editor.indexSelected].textureOffsetX;
             sliders[2].sliderValue = platforms[editor.indexSelected].textureOffsetY;
             knobs[0].knobValue = platforms[editor.indexSelected].textureScale;
+            knobs[8].knobValue = platforms[editor.indexSelected].moveNodeInt;
+            knobs[9].knobValue = platforms[editor.indexSelected].moveSpeed;
             sliders[14].sliderValue = platforms[editor.indexSelected].opacity;
             knobs[5].knobValue = platforms[editor.indexSelected].textureAnimationTime;
 
@@ -723,9 +854,7 @@ void FCheck_Select_Editor(){
             sliders[11].sliderValue = platforms[editor.indexSelected].green;
             sliders[12].sliderValue = platforms[editor.indexSelected].blue;
 
-            knobs[2].knobValue = platforms[editor.indexSelected].moveAngle;
-            knobs[8].knobValue = platforms[editor.indexSelected].moveModule;
-            knobs[9].knobValue = platforms[editor.indexSelected].moveTime;
+
             return;
           }
         }
@@ -742,12 +871,17 @@ void FCheck_Select_Editor(){
             editor.typeSelected = 2;
             editor.indexSelected = i;
             sliders[14].sliderValue = triggers[editor.indexSelected].opacity;
+            knobs[8].knobValue = triggers[editor.indexSelected].Value1;
+            knobs[9].knobValue = triggers[editor.indexSelected].Value2;
+            knobs[10].knobValue = triggers[editor.indexSelected].Value3;
+            knobs[11].knobValue = triggers[editor.indexSelected].useDelay;
+            knobs[12].knobValue = triggers[editor.indexSelected].reuseDelay;
             return;
           }
          }
       }
 
-      for(int i = 0 ;i<sizeof(displacement)/sizeof(displacement[0]);i++){
+      for(int i = 0;i<sizeof(displacement)/sizeof(displacement[0]);i++){
          if(displacement[i].reserved && displacement[i].editorSelectionTime >= 999){
             int xMin = displacement[i].xDraw;
             int xMax = displacement[i].xDraw+displacement[i].widthDraw;
@@ -760,6 +894,8 @@ void FCheck_Select_Editor(){
             editor.indexSelected = i;
             sliders[13].sliderValue = displacement[editor.indexSelected].power;
             sliders[14].sliderValue = displacement[editor.indexSelected].opacity;
+            knobs[8].knobValue = displacement[editor.indexSelected].moveNodeInt;
+            knobs[9].knobValue = displacement[editor.indexSelected].moveSpeed;
             return;
           }
          }
@@ -777,9 +913,9 @@ void FCheck_Select_Editor(){
             editor.typeSelected = 5;
             editor.indexSelected = i;
             sliders[14].sliderValue = deathbox[editor.indexSelected].opacity;
-            knobs[2].knobValue = deathbox[editor.indexSelected].moveAngle;
-            knobs[8].knobValue = deathbox[editor.indexSelected].moveModule;
-            knobs[9].knobValue = deathbox[editor.indexSelected].moveTime;
+            knobs[8].knobValue = deathbox[editor.indexSelected].moveNodeInt;
+            knobs[9].knobValue = deathbox[editor.indexSelected].moveSpeed;
+
             return;
           }
          }
@@ -802,7 +938,28 @@ void FCheck_Select_Editor(){
             sliders[10].sliderValue = light[editor.indexSelected].red;
             sliders[11].sliderValue = light[editor.indexSelected].green;
             sliders[12].sliderValue = light[editor.indexSelected].blue;
+            knobs[8].knobValue = light[editor.indexSelected].moveNodeInt;
+            knobs[9].knobValue = light[editor.indexSelected].moveSpeed;
             return;
+          }
+         }
+      }
+
+      for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
+         if(movenodes[i].reserved && movenodes[i].editorSelectionTime >= 999){
+          for(int j = 0;j<movenodes[i].nodesCount;j++){
+            int xMin = movenodes[i].positionsDraw[j][0];
+            int xMax = movenodes[i].positionsDraw[j][0]+25*camera.scale;
+            int yMin = movenodes[i].positionsDraw[j][1];
+            int yMax = movenodes[i].positionsDraw[j][1]+25*camera.scale;
+         if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax){
+            movenodes[i].editorSelectionTime = 0;
+            editor.selected = true;
+            editor.typeSelected = 6;
+            editor.indexSelected = i;
+            editor.movenodeSelected = j;
+            return;
+          }
           }
          }
       }
@@ -838,13 +995,13 @@ void FDraw_SideBar_Editor(){
      SDL_itoa((int)platforms[editor.indexSelected].textureStretch,buttons[17].value,10);
      SDL_itoa((int)platforms[editor.indexSelected].collidable,buttons[24].value,10);
      if(platforms[editor.indexSelected].type == 0){
-      sprintf(upperText,"%s\0","Platform");
+      sprintf(upperText,"Platform %d\0",editor.indexSelected);
      }
      else if(platforms[editor.indexSelected].type == 1){
-      sprintf(upperText,"%s\0","Finish");
+      sprintf(upperText,"Finish %d\0",editor.indexSelected);
      }
      else if(platforms[editor.indexSelected].type == 2){
-      sprintf(upperText,"%s\0","Checkpoint");
+      sprintf(upperText,"Checkpoint %d\0",editor.indexSelected);
      }
    }
    else if (editor.typeSelected == 2){
@@ -853,6 +1010,14 @@ void FDraw_SideBar_Editor(){
      sprintf(Widthvalue,"width:%d\0",(int)triggers[editor.indexSelected].width);
      sprintf(Heightvalue,"height:%d\0",(int)triggers[editor.indexSelected].height); 
      sprintf(upperText,"%s\0","Trigger");
+
+     char* typeValue = malloc(100);
+     if(triggers[editor.indexSelected].triggerType == 0){
+      sprintf(typeValue,"Platform\0");
+     }
+
+     SDL_memcpy(buttons[29].value,typeValue,len(typeValue)+1);
+     
    }
    else if (editor.typeSelected == 3){
      sprintf(Xvalue,"x:%d\0",(int)light[editor.indexSelected].x);
@@ -906,6 +1071,13 @@ void FDraw_SideBar_Editor(){
      sprintf(Heightvalue,"height:%d\0",(int)deathbox[editor.indexSelected].height);
      
      sprintf(upperText,"%s\0","DeathBox");
+   }
+   else if (editor.typeSelected == 6){
+      sprintf(Xvalue,"x:%d\0",(int)movenodes[editor.indexSelected].positions[editor.movenodeSelected][0]);
+      sprintf(Yvalue,"y:%d\0",(int)movenodes[editor.indexSelected].positions[editor.movenodeSelected][1]);
+      sprintf(Widthvalue,"size:%d\0",25);
+      sprintf(Heightvalue,"Node ID:%d\0",editor.indexSelected);
+      sprintf(upperText,"%s %d\0","Move Node",editor.movenodeSelected);
    }
    else if(editor.typeSelected == -1){
    
@@ -974,8 +1146,7 @@ void FInfoBox(){
       }
        else if(i == 15){  
         SDL_memcpy(infoText,"Zoom In\0",sizeof("Zoom In\0"));
-      }
-      
+      }    
        else if(i == 16){  
         SDL_memcpy(infoText,"Zoom Out\0",sizeof("Zoom Out\0"));
       }
@@ -1189,6 +1360,10 @@ void FTransformState(){
       }
      } 
     }
+    else if (editor.typeSelected == 6){
+      movenodes[editor.indexSelected].positions[editor.movenodeSelected][0] += mouse.dX/camera.scale;
+      movenodes[editor.indexSelected].positions[editor.movenodeSelected][1] += mouse.dY/camera.scale;
+    }
    }
   if(mouse.right){
     mouse.dX = mouse.x - mouse.oldX;
@@ -1214,23 +1389,19 @@ void FDrawObjects(){
          platforms[i].xDraw  = gameWidth/2 + (platforms[i].xDraw - gameWidth/2) * camera.scale;
          platforms[i].yDraw  = gameHeight/2 + (platforms[i].yDraw - gameHeight/2) * camera.scale;
 
-
+          
          
          SDL_SetRenderDrawColor(renderer,200,200,200,255);
          FtexturePlatform(i);
-         
+        
          
          
          if(editor.selected && editor.typeSelected == 1 && editor.indexSelected == i){ 
-            if(platforms[i].moveModule >= 1){
-            SDL_SetRenderDrawColor(renderer,200,200,200,255);
-            SDL_RenderDrawLine(renderer,platforms[i].xDraw+platforms[i].widthDraw/2,platforms[i].yDraw+platforms[i].heightDraw/2,platforms[i].xDraw+platforms[i].widthDraw/2+camera.scale*platforms[i].moveModule*cos(platforms[i].moveAngle*(2*PI)/360),platforms[i].yDraw+platforms[i].heightDraw/2+camera.scale*platforms[i].moveModule*sin(platforms[i].moveAngle*(2*PI)/360));
-
-            SDL_RenderDrawRect(renderer,&(SDL_Rect){platforms[i].xDraw+platforms[i].widthDraw/2+camera.scale*platforms[i].moveModule*cos(platforms[i].moveAngle*(2*PI)/360)-10/2*camera.scale,platforms[i].yDraw+platforms[i].heightDraw/2+camera.scale*platforms[i].moveModule*sin(platforms[i].moveAngle*(2*PI)/360)-10/2*camera.scale,10*camera.scale,10*camera.scale});
-         }
          SDL_SetRenderDrawColor(renderer,0,255,0,255);
          SDL_RenderDrawRect(renderer,&(SDL_Rect){platforms[editor.indexSelected].xDraw,platforms[editor.indexSelected].yDraw-(platforms[editor.indexSelected].heightDraw*sin(platforms[editor.indexSelected].slope))*(platforms[editor.indexSelected].slope>=0),platforms[editor.indexSelected].widthDraw,platforms[editor.indexSelected].heightDraw+(platforms[editor.indexSelected].heightDraw*sin(platforms[editor.indexSelected].slope))*(platforms[editor.indexSelected].slope>=0)});
          }
+         
+         
          
                  
       }
@@ -1256,12 +1427,7 @@ void FDrawObjects(){
          
          
          if(editor.selected && editor.typeSelected == 1 && editor.indexSelected == i){ 
-            if(platforms[i].moveModule >= 1){
-            SDL_SetRenderDrawColor(renderer,200,200,200,255);
-            SDL_RenderDrawLine(renderer,platforms[i].xDraw+platforms[i].widthDraw/2,platforms[i].yDraw+platforms[i].heightDraw/2,platforms[i].xDraw+platforms[i].widthDraw/2+camera.scale*platforms[i].moveModule*cos(platforms[i].moveAngle*(2*PI)/360),platforms[i].yDraw+platforms[i].heightDraw/2+camera.scale*platforms[i].moveModule*sin(platforms[i].moveAngle*(2*PI)/360));
-
-            SDL_RenderDrawRect(renderer,&(SDL_Rect){platforms[i].xDraw+platforms[i].widthDraw/2+camera.scale*platforms[i].moveModule*cos(platforms[i].moveAngle*(2*PI)/360)-10/2*camera.scale,platforms[i].yDraw+platforms[i].heightDraw/2+camera.scale*platforms[i].moveModule*sin(platforms[i].moveAngle*(2*PI)/360)-10/2*camera.scale,10*camera.scale,10*camera.scale});
-         }
+            
          SDL_SetRenderDrawColor(renderer,0,255,0,255);
          SDL_RenderDrawRect(renderer,&(SDL_Rect){platforms[editor.indexSelected].xDraw,platforms[editor.indexSelected].yDraw-(platforms[editor.indexSelected].heightDraw*sin(platforms[editor.indexSelected].slope))*(platforms[editor.indexSelected].slope>=0),platforms[editor.indexSelected].widthDraw,platforms[editor.indexSelected].heightDraw+(platforms[editor.indexSelected].heightDraw*sin(platforms[editor.indexSelected].slope))*(platforms[editor.indexSelected].slope>=0)});
          }
@@ -1300,12 +1466,7 @@ void FDrawObjects(){
          FtextureQuad(deathbox[i].xDraw,deathbox[i].yDraw,deathbox[i].widthDraw,deathbox[i].heightDraw,tex_skull,min(deathbox[i].opacity+25,255),0);   
          
          if(editor.selected && editor.typeSelected == 5 && editor.indexSelected == i){ 
-            if(deathbox[i].moveModule >= 1){
-            SDL_SetRenderDrawColor(renderer,200,200,200,255);
-            SDL_RenderDrawLine(renderer,deathbox[i].xDraw+deathbox[i].widthDraw/2,deathbox[i].yDraw+deathbox[i].heightDraw/2,deathbox[i].xDraw+deathbox[i].widthDraw/2+camera.scale*deathbox[i].moveModule*cos(deathbox[i].moveAngle*(2*PI)/360),deathbox[i].yDraw+deathbox[i].heightDraw/2+camera.scale*deathbox[i].moveModule*sin(deathbox[i].moveAngle*(2*PI)/360));
-
-            SDL_RenderDrawRect(renderer,&(SDL_Rect){deathbox[i].xDraw+deathbox[i].widthDraw/2+camera.scale*deathbox[i].moveModule*cos(deathbox[i].moveAngle*(2*PI)/360)-10/2*camera.scale,deathbox[i].yDraw+deathbox[i].heightDraw/2+camera.scale*deathbox[i].moveModule*sin(deathbox[i].moveAngle*(2*PI)/360)-10/2*camera.scale,10*camera.scale,10*camera.scale});
-         }
+            
          SDL_SetRenderDrawColor(renderer,0,255,0,255);
          SDL_RenderDrawRect(renderer,&(SDL_Rect){deathbox[editor.indexSelected].xDraw,deathbox[editor.indexSelected].yDraw,deathbox[editor.indexSelected].widthDraw,deathbox[editor.indexSelected].heightDraw});          
       }
@@ -1325,6 +1486,9 @@ void FDrawObjects(){
         triggers[i].yDraw  = gameHeight/2 + (triggers[i].yDraw - gameHeight/2) * camera.scale;
          
           FtextureQuad(triggers[i].xDraw,triggers[i].yDraw,triggers[i].widthDraw,triggers[i].heightDraw,tex_trigger,min(triggers[i].opacity+25,255),0);
+        if(triggers[i].triggerType == 0 && platforms[(int)triggers[i].Value3].reserved){
+         SDL_RenderDrawLine(renderer,triggers[i].xDraw+triggers[i].widthDraw/2,triggers[i].yDraw+triggers[i].heightDraw/2,platforms[(int)triggers[i].Value3].xDraw+platforms[(int)triggers[i].Value3].widthDraw/2,platforms[(int)triggers[i].Value3].yDraw+platforms[(int)triggers[i].Value3].heightDraw/2);
+        }
 
 
          if(editor.selected && editor.typeSelected == 2 && editor.indexSelected == i){ 
@@ -1373,6 +1537,34 @@ void FDrawObjects(){
          }
       }
    }
+   for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
+      if(movenodes[i].reserved){
+         for(int j = 0;j<movenodes[i].nodesCount;j++){
+           movenodes[i].positionsDraw[j][0] = gameWidth/2 + (movenodes[i].positions[j][0] + camera.x - gameWidth/2) * camera.scale;
+           movenodes[i].positionsDraw[j][1] = gameHeight/2 + (movenodes[i].positions[j][1] + camera.y - gameHeight/2) * camera.scale;
+           SDL_SetRenderDrawColor(renderer,200,200,200,255);
+           if(movenodes[i].nodesCount>1){
+            if(j != movenodes[i].nodesCount - 1 || movenodes[i].wrap){
+              SDL_RenderDrawLine(renderer,movenodes[i].positionsDraw[j][0]+12*camera.scale,movenodes[i].positionsDraw[j][1]+12*camera.scale,movenodes[i].positionsDraw[(j+1)%(movenodes[i].nodesCount)][0]+12*camera.scale,movenodes[i].positionsDraw[(j+1)%(movenodes[i].nodesCount)][1]+12*camera.scale); 
+            }
+            
+           }
+           SDL_RenderCopy(renderer,tex_movenode,NULL,&(SDL_Rect){movenodes[i].positionsDraw[j][0],movenodes[i].positionsDraw[j][1],25*camera.scale,25*camera.scale});
+           char nodeNumber[5];
+           sprintf(nodeNumber,"%d\0",j);
+           renderText(2,nodeNumber,movenodes[i].positionsDraw[j][0]+11*camera.scale,movenodes[i].positionsDraw[j][1]+8*camera.scale,10*camera.scale,10*camera.scale,255,255,(int[3]){255,255,255});
+         
+           
+           if(editor.selected && editor.typeSelected == 6 && editor.indexSelected == i && editor.movenodeSelected == j){ 
+            SDL_SetRenderDrawColor(renderer,0,255,0,255);
+            SDL_RenderDrawRect(renderer,&(SDL_Rect){movenodes[i].positionsDraw[j][0],movenodes[i].positionsDraw[j][1],25*camera.scale,25*camera.scale});
+           }
+         }
+      }
+   }
+
+
+
    if(editor.selected && editor.typeSelected == 0){
       SDL_SetRenderDrawColor(renderer,0,255,0,255);
       SDL_RenderDrawRect(renderer,&(SDL_Rect){player[0].xDraw,player[0].yDraw,player[0].widthDraw,player[0].heightDraw});

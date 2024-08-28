@@ -27,7 +27,7 @@ double campaignHeightIsland;
 /// Window size (Actual window size , Window Size will be resizable as desired)
 
 int windowWidth = 800;
-int windowHeight = 450;
+int windowHeight = 600;
 
 /// Game Size (Meaning The size of the textures layers , Game size will have decrete values to chosen)
 int gameWidth;
@@ -67,6 +67,8 @@ SDL_Surface* surface_sand = NULL;
 SDL_Texture* tex_sand = NULL;
 SDL_Surface* surface_levelPad = NULL;
 SDL_Texture* tex_levelPad = NULL;
+SDL_Surface* surface_movenode = NULL;
+SDL_Texture* tex_movenode = NULL;
 
 // Game window Textures
 SDL_Texture* backgroundLayer = NULL;
@@ -172,13 +174,14 @@ void FTransformState(); // transforms an object or a camera view
 void FDrawObjects();
 void FDraw_Editor();
 void FSaveMap();
+void addMoveNode(int x, int y);
 void addDisplacement(double x, double y, double width,double height,double type,double power,double powerType,double opacity);
-void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity,double moveAngle,double moveModule,double moveTime,double animation,double red,double green,double blue);
+void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity,double animation,double red,double green,double blue);
 void addParticle(double x,double y,double size,double red,double green,double blue,double angle);
 void editorShowButtons();
 void addTrigger(int x,int y,double width,double height,int Type,double opacity);
 void addLight(double x,double y,double size,double red,double green,double blue,double visibility,double brightness);
-void addDeathBox(double x, double y, double width,double height,double opacity,double moveAngle,double moveModule,double moveTime);
+void addDeathBox(double x, double y, double width,double height,double opacity);
 void FInfoBox();
 
 // In Game functions
@@ -192,7 +195,12 @@ void FaddReplay(bool checkpoint);
 void FDisplayHUD();
 void FGameRestart();
 
-
+// Movement
+void platformMovement(int i);
+void deathboxMovement(int i);
+void triggerMovement(int i);
+void displacementMovement(int i);
+void lightMovement(int i);
 
 
 // Levels listing
@@ -231,3 +239,4 @@ void FWindow_Loop();
 #include "profile.h"
 #include "campaign.h"
 #include "sounds.h"
+#include "objectMovement.h"

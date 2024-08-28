@@ -76,6 +76,7 @@ void FLoadBackgrounds(){
    surface_water  = IMG_Load("assets/editor/water.png");
    surface_sand  = IMG_Load("assets/editor/sand.png");
    surface_levelPad  = IMG_Load("assets/editor/levelPad.png");
+   surface_movenode = IMG_Load("assets/editor/movenode.png");
 
    backgroundLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
    lightLayer      = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gameWidth,  gameHeight);
@@ -104,6 +105,7 @@ void FLoadBackgrounds(){
    tex_water = SDL_CreateTextureFromSurface(renderer,surface_water);
    tex_sand = SDL_CreateTextureFromSurface(renderer,surface_sand);
    tex_levelPad = SDL_CreateTextureFromSurface(renderer,surface_levelPad);
+   tex_movenode = SDL_CreateTextureFromSurface(renderer,surface_movenode);
  
  
    SDL_FreeSurface(surface_font);

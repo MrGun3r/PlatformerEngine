@@ -200,6 +200,9 @@ void FswitchAppStatus(int from, int to){
           for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
             deathbox[i].reserved = false;
           }
+          for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
+            movenodes[i].reserved = false;
+          }
           app.backgroundInt = FindBackgroundInt("background");
           editor.GameScale = 2;
           app.backgroundOpacity = 255;
@@ -250,6 +253,9 @@ void FswitchAppStatus(int from, int to){
           SetButtonIcon(20,tex_displacement,0,1,0,1);
           SetButton(true,23,"",370,10,30,true,-1,40,false);
           SetButtonIcon(23,tex_skull,0,1,0,1);
+          SetButton(true,25,"",420,10,30,true,-1,40,false);
+          SetButtonIcon(25,tex_movenode,0,1,0,1);
+          
           
           SetTextBox(false,0,"Map Name:",45,150,15,450);
 
@@ -257,21 +263,26 @@ void FswitchAppStatus(int from, int to){
           SetButton(true,16,"-",gameWidth-240,gameHeight-15,10,true,-1,-1,false);
           
           SetSlider(false,0,"Slope",gameWidth-190,180,10,true,-1,-1,false,-45,45,80,0);
-          SetSlider(false,1,"Tex x",gameWidth-190,220,10,true,-1,-1,false,0,100,80,0);
-          SetSlider(false,2,"Tex y",gameWidth-190,240,10,true,-1,-1,false,0,100,80,0);
+          SetSlider(false,1,"Tex x",gameWidth-190,200,10,true,-1,-1,false,0,100,80,0);
+          SetSlider(false,2,"Tex y",gameWidth-190,220,10,true,-1,-1,false,0,100,80,0);
           SetKnob(false,0,"Tex Scale",gameWidth-190,240,10,true,5,250,50);
           SetSlider(false,14,"Opacity",gameWidth-190,300,10,true,-1,-1,false,0,255,60,255);
           SetButton(false,24,"Collidable",gameWidth-190,300,10,true,-1,-1,false);
-
+          SetButton(false,26,"Add Node",gameWidth-190,180,10,true,-1,-1,false);
+          SetButton(false,27,"Remove Node",gameWidth-190,200,10,true,-1,-1,false);
+          SetButton(false,28,"Wrap",gameWidth-190,220,10,true,-1,-1,false);
+          SetButton(false,29,"Type",gameWidth-190,240,10,true,-1,-1,false);
           SetKnob(false,5,"Animation",gameWidth-190,360,10,true,0,1000,0);
           SetKnobCoef(5,0.5);
-
-          SetKnob(false,2,"Move Angle",gameWidth-190,440,10,true,0,360,50);
-          SetKnobCoef(2,0.4);
-          
-          SetKnob(false,8,"Move Len",gameWidth-190,460,10,true,0,1500,0);
-          SetKnob(false,9,"Move Time",gameWidth-190,480,10,true,100,10000,0);
-
+          SetKnob(false,8,"Node ID",gameWidth-190,440,10,true,-1,50,-1);
+          SetKnobCoef(8,0.1);
+          SetKnob(false,10,"Object ID",gameWidth-190,300,10,true,0,300,0);
+          SetKnobCoef(10,0.1);
+          SetKnob(false,9,"Move Speed",gameWidth-190,460,10,true,0,500,0);
+          SetKnobCoef(9,2);
+          SetKnob(false,11,"Use Delay",gameWidth-190,320,10,true,0,5000,0);
+          SetKnob(false,12,"Reuse Time",gameWidth-190,340,10,true,0,5000,0);
+        
           SetKnob(false,3,"Border X",gameWidth-190,120,10,true,500,10000,5000);
           SetKnob(false,4,"Border Y",gameWidth-190,140,10,true,500,10000,5000);
           SetKnobCoef(3,10);  
