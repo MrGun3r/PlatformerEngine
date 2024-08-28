@@ -32,6 +32,8 @@ struct Light{
    
    double x;
    double y;
+   double spawnX;
+   double spawnY;
    double xDraw;
    double yDraw;
    double size;
@@ -47,6 +49,11 @@ struct Light{
    double green;
    double blue;
 
+   int moveNodeInt;
+   double moveSpeed;
+   double moveDistance;
+   int moveNodeCount;
+   bool moveNodeReverse;
 };
 
 struct Profile{
@@ -63,6 +70,7 @@ struct Editor{
   bool selected;
   int typeSelected;
   int indexSelected;
+  int movenodeSelected;
   int transform;
   bool saving;
   char fileNameSave[256];
@@ -360,11 +368,13 @@ struct DeathBox{
    double widthDraw;
    double heightDraw;
    double opacity;
-   int moveType;
-   double moveModule;
-   double moveAngle;
-   double moveTime;
+
+   int moveNodeInt;
+   double moveSpeed;
    double moveDistance;
+   int moveNodeCount;
+   bool moveNodeReverse;
+
 
 };
 
@@ -374,6 +384,8 @@ struct Displacement{
    bool reserved;
    double x;
    double y;
+   double spawnX;
+   double spawnY;
    double xDraw;
    double yDraw;
    double width;
@@ -384,6 +396,12 @@ struct Displacement{
    int powerType;
    double power;
    double opacity;
+
+   int moveNodeInt;
+   double moveSpeed;
+   double moveDistance;
+   int moveNodeCount;
+   bool moveNodeReverse;
 };
 
 
@@ -420,11 +438,11 @@ struct Platform{
    double textureAnimationTime;
    double textureAnimationTimer;
 
-   double moveAngle;
-   double moveModule;
-   double moveTime;
-   int moveType;
+   int moveNodeInt;
+   double moveSpeed;
    double moveDistance;
+   int moveNodeCount;
+   bool moveNodeReverse;
    
 };
 
@@ -433,6 +451,8 @@ struct Trigger{
    bool reserved;
    double x;
    double y;
+   double spawnX;
+   double spawnY;
    double xDraw;
    double yDraw;
    double widthDraw;
@@ -441,11 +461,34 @@ struct Trigger{
    double height;
    int triggerType;
    double opacity;
+   bool triggerUsed;
+   bool timerStart;
 
-   // 0 Camera Switch
-   // 1 CheckPoint
-   // 2 Finish Line
+   double Value1;
+   double Value2;
+   double Value3;
+   double Value4;
+
+
+   double useDelay;
+   double reuseDelay;
+
+   double useDelayTimer;
+   double reuseDelayTimer;
+
+   // 0 Platform 
+   // 1 DeathBox
+   // 2 Displacement
 };
+struct MoveNode{
+   bool reserved;
+   double positions[20][2];
+   double positionsDraw[20][2];
+   int nodesCount;
+   double editorSelectionTime;
+   bool wrap;
+};
+
 
 
 struct MouseBind{
@@ -481,3 +524,4 @@ struct DeathBox deathbox[100];
 struct TextBox textbox[20];
 struct Profile profile;
 struct Channel channels[8];
+struct MoveNode movenodes[50];

@@ -52,13 +52,11 @@ void FtexturePlatform(int platformID){
      double textureSize = textures[platforms[platformID].textureInt].textureAnimationSize;
      double textureStart = textureInt/textureSize;
 
-
+      
      if(!platforms[platformID].textureStretch){
     double textureScale = platforms[platformID].textureScale*camera.scale;
-       
        for(double i = platforms[platformID].xDraw-platforms[platformID].textureOffsetX*textureScale/100;i< platforms[platformID].xDraw + platforms[platformID].widthDraw;i+=textureScale){
         for(double j = platforms[platformID].yDraw-(platforms[platformID].heightDraw*sin(platforms[platformID].slope*(platforms[platformID].slope>0))) - platforms[platformID].textureOffsetY*textureScale/100;j<platforms[platformID].yDraw + platforms[platformID].heightDraw;j+=textureScale){
-          
           double distanceRatio0 = (i-platforms[platformID].xDraw)/platforms[platformID].widthDraw;
           double distanceRatio1 = (i+textureScale-platforms[platformID].xDraw)/platforms[platformID].widthDraw;
           if(platforms[platformID].slopeInv){
