@@ -380,9 +380,11 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
        break;
       case 18:
        platforms[ID].moveNodeInt = atoi(importBuffer);
+       platforms[ID].moveNodeIntSpawn = atoi(importBuffer);
        break;
       case 19:
        platforms[ID].moveSpeed = atof(importBuffer);
+       platforms[ID].moveSpeedSpawn = atof(importBuffer);
        break;
        }
      }
@@ -531,9 +533,12 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
          break;
       case 10:
          light[ID].moveNodeInt = atoi(importBuffer);
+         light[ID].moveNodeIntSpawn = atoi(importBuffer);
          break;
       case 11:
          light[ID].moveSpeed = atof(importBuffer);
+         light[ID].moveSpeedSpawn = atof(importBuffer);
+         
          break;
      }
      }
@@ -568,9 +573,11 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
          break;
       case 8: 
          displacement[ID].moveNodeInt = atoi(importBuffer);
+         displacement[ID].moveNodeIntSpawn = atoi(importBuffer);
          break;
       case 9: 
          displacement[ID].moveSpeed = atof(importBuffer);
+         displacement[ID].moveSpeedSpawn = atof(importBuffer);
          break;
       } 
      }
@@ -597,9 +604,11 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
          break;   
       case 5: 
          deathbox[ID].moveNodeInt = atoi(importBuffer);
+         deathbox[ID].moveNodeIntSpawn = atoi(importBuffer);
          break;  
       case 6: 
          deathbox[ID].moveSpeed = atof(importBuffer);
+         deathbox[ID].moveSpeedSpawn = atof(importBuffer);
          break;
       }
           

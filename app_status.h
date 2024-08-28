@@ -154,9 +154,10 @@ void FswitchAppStatus(int from, int to){
      FlistLevels();
      
      for(int i = app.listStartIndex;i<(sizeof(levelsList)/sizeof(levelsList[0]));i++){
-      if(levelsList[i].reserved){
+      
+      if(levelsList[i-1].reserved){
         SetButton(true,i+2,levelsList[i-1].levelName,20,180+(i-app.listStartIndex)*20,10,true,500,-1,false);
-     
+        
        if(180+(i-app.listStartIndex)*20>gameHeight-100){
         app.listLengthMax = i - app.listStartIndex;
         app.listLength = i - app.listStartIndex;
@@ -279,7 +280,7 @@ void FswitchAppStatus(int from, int to){
           SetKnob(false,10,"Object ID",gameWidth-190,300,10,true,0,300,0);
           SetKnobCoef(10,0.1);
           SetKnob(false,9,"Move Speed",gameWidth-190,460,10,true,0,500,0);
-          SetKnobCoef(9,2);
+          SetKnobCoef(9,1);
           SetKnob(false,11,"Use Delay",gameWidth-190,320,10,true,0,5000,0);
           SetKnob(false,12,"Reuse Time",gameWidth-190,340,10,true,0,5000,0);
         
