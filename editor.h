@@ -1191,13 +1191,74 @@ void FInfoBox(){
       else if (i == 24){
          SDL_memcpy(infoText,"Toggle Collidable\0",sizeof("Toggle Collidable\0"));
       }
-      
+      else if (i == 25){
+        SDL_memcpy(infoText,"Add Move Node\0",sizeof("Add Move Node\0"));
+      } 
+      else if (i == 26){
+        SDL_memcpy(infoText,"Add Node\0",sizeof("Add Node\0"));
+      } 
+      else if (i == 27){
+        SDL_memcpy(infoText,"Remove Node\0",sizeof("Remove Node\0")); 
+      } 
+      else if (i == 28){
+        SDL_memcpy(infoText,"Wrap Nodes\0",sizeof("Wrap Nodes\0"));  
+      } 
+      else if (i == 29){
+        SDL_memcpy(infoText,"Trigger Type\0",sizeof("Trigger Type\0"));  
+      }      
 
       renderText(len(infoText),infoText,gameWidth-190,gameHeight-16,7*len(infoText),10,255,200,(int[3]){200,200,200});
+      free(infoText);
       return;
     }
    }
-   for(int i = 0 ;i<sizeof(sliders)/sizeof(sliders[0]);i++){
+   for(int i = 0;i<sizeof(knobs)/sizeof(knobs[0]);i++){
+      if(knobs[i].reserved && knobs[i].hoverOpacity>1){
+         if (i == 0){
+            SDL_memcpy(infoText,"Change Texture Scale\0",sizeof("Change Texture Scale\0")); 
+         }
+         else if (i == 1){
+            SDL_memcpy(infoText,"None\0",sizeof("None\0")); 
+         }
+         else if (i == 2){
+            SDL_memcpy(infoText,"None\0",sizeof("None\0")); 
+         }
+         else if (i == 3){
+            SDL_memcpy(infoText,"Change Border X\0",sizeof("Change Border X\0")); 
+         }
+         else if (i == 4){
+            SDL_memcpy(infoText,"Change Border Y\0",sizeof("Change Border Y\0")); 
+         }
+         else if (i == 5){
+            SDL_memcpy(infoText,"Change Animation Speed\0",sizeof("Change Animation Speed\0")); 
+         }
+         else if (i == 6){
+            SDL_memcpy(infoText,"Change Star Time Ms\0",sizeof("Change Star Time Ms\0")); 
+         }
+         else if (i == 7){
+            SDL_memcpy(infoText,"Change Star Time\0",sizeof("Change Star Time\0")); 
+         }
+         else if (i == 8){
+            SDL_memcpy(infoText,"Change Node ID\0",sizeof("Change Node ID\0")); 
+         }
+         else if (i == 9){
+            SDL_memcpy(infoText,"Change Move Speed\0",sizeof("Change Move Speed\0")); 
+         }
+         else if (i == 10){
+            SDL_memcpy(infoText,"Change Object ID\0",sizeof("Change Object ID\0")); 
+         }
+      renderText(len(infoText),infoText,gameWidth-190,gameHeight-16,7*len(infoText),10,255,200,(int[3]){200,200,200});
+      free(infoText);
+      return;
+      }
+
+      
+      }
+
+
+
+
+      for(int i = 0 ;i<sizeof(sliders)/sizeof(sliders[0]);i++){
       if(sliders[i].reserved && sliders[i].hoverOpacity>1 && !sliders[i].highlight){
          if(i == 0){  
             SDL_memcpy(infoText,"Change Slope\0",sizeof("Change Slope\0"));
@@ -1245,7 +1306,7 @@ void FInfoBox(){
             SDL_memcpy(infoText,"Change Opacity\0",sizeof("Change Opacity\0"));
       }
       else if(i == 15){  
-            SDL_memcpy(infoText,"Change Animation Speed\0",sizeof("Change Animation Speed\0"));
+            SDL_memcpy(infoText,"Change Camera Zoom\0",sizeof("Change Camera Zoom\0"));
       }
 
       renderText(len(infoText),infoText,gameWidth-190,gameHeight-16,7*len(infoText),10,255,200,(int[3]){200,200,200});
@@ -1253,7 +1314,11 @@ void FInfoBox(){
       return;
       }
    }
-}
+   }
+
+   
+
+
 
 void FTransformState(){
   if(mouse.left && editor.selected && !((mouse.y <= 100 && mouse.x > 0 && mouse.x < gameWidth-200) || (mouse.x > gameWidth-200))){
