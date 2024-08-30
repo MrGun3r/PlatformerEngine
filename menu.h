@@ -36,7 +36,7 @@ void FDraw_Menu(){
    }
    int num = 7;
    
-   for(int i = 3;i<sizeof(buttons)/sizeof(buttons[0]) +1;i++){
+   for(int i = 3;i<sizeof(buttons)/sizeof(buttons[0]);i++){
       if(buttons[i].reserved){
          if(app.status == 2){
            if(!app.fetchedList){

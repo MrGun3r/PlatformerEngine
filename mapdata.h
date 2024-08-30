@@ -346,7 +346,7 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       }
       else {
        platforms[ID].textureInt = FindTextureInt(importBuffer);  
-       platforms[ID].texture = textures[platforms[ID].textureInt].texture;
+       platforms[ID].texture = textures[platforms[ID].textureInt%50].texture;
       }
       case 8:
        platforms[ID].textureStretch = atoi(importBuffer);

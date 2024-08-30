@@ -155,7 +155,7 @@ void FswitchAppStatus(int from, int to){
      
      for(int i = app.listStartIndex;i<(sizeof(levelsList)/sizeof(levelsList[0]));i++){
       
-      if(levelsList[i-1].reserved){
+      if(i > 0 && levelsList[i-1].reserved){
         SetButton(true,i+2,levelsList[i-1].levelName,20,180+(i-app.listStartIndex)*20,10,true,500,-1,false);
         
        if(180+(i-app.listStartIndex)*20>gameHeight-100){

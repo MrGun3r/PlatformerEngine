@@ -60,7 +60,6 @@ void FSaveProfile(){
 bool CheckUsernameProfile(){
     FILE *textfile = fopen("profiles/player.txt","r");
     if(textfile == NULL){
-      fclose(textfile);
       return false;
     }
     char buffer[256];

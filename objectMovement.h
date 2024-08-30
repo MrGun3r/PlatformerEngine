@@ -1,5 +1,5 @@
 void platformMovement(int i){
-      if(level.Started && platforms[i].moveSpeed >= 1 && platforms[i].moveNodeInt >= 0 && movenodes[platforms[i].moveNodeInt].reserved){
+      if(level.Started && platforms[i].moveSpeed >= 1 && platforms[i].moveNodeInt >= 0 && platforms[i].moveNodeInt < 50 && movenodes[platforms[i].moveNodeInt].reserved){
          int from;
          int to;
          if(movenodes[platforms[i].moveNodeInt].wrap){
@@ -68,7 +68,7 @@ void platformMovement(int i){
 
 
 void deathboxMovement(int i){
-      if(level.Started && deathbox[i].moveSpeed >= 1 && deathbox[i].moveNodeInt >= 0 && movenodes[deathbox[i].moveNodeInt].reserved){
+      if(level.Started && deathbox[i].moveSpeed >= 1 && deathbox[i].moveNodeInt >= 0 && deathbox[i].moveNodeInt < 50 && movenodes[deathbox[i].moveNodeInt].reserved){
          int from;
          int to;
          if(movenodes[deathbox[i].moveNodeInt].wrap){
@@ -136,7 +136,7 @@ void deathboxMovement(int i){
 }
 void lightMovement(int i){
       
-      if(level.Started && light[i].moveSpeed >= 1 && light[i].moveNodeInt >= 0 && movenodes[light[i].moveNodeInt].reserved){
+      if(level.Started && light[i].moveSpeed >= 1 && light[i].moveNodeInt >= 0 && light[i].moveNodeInt < 50 && movenodes[light[i].moveNodeInt].reserved){
          int from;
          int to;
          
@@ -204,7 +204,7 @@ void lightMovement(int i){
         return;
 }
 void displacementMovement(int i){
-      if(level.Started && displacement[i].moveSpeed >= 1 && displacement[i].moveNodeInt >= 0 && movenodes[displacement[i].moveNodeInt].reserved){
+      if(level.Started && displacement[i].moveSpeed >= 1 && displacement[i].moveNodeInt >= 0 &&  displacement[i].moveNodeInt < 50 && movenodes[displacement[i].moveNodeInt].reserved){
          int from;
          int to;
          if(movenodes[displacement[i].moveNodeInt].wrap){

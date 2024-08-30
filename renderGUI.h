@@ -2,7 +2,7 @@
 void renderText(int stringCount,char *Text,int x ,int y, int width,int height,int opacity,int shadowOpacity,int color[3]){
   // DEALS WITH TEXT AS WELL AS NUMBERS
   
-  char str[stringCount];
+  char str[stringCount+1];
   for(int i = 0;i<stringCount;i++){
     str[i] = *(Text+i);
   }
