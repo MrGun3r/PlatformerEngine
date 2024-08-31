@@ -179,7 +179,7 @@ void addDisplacement(double x, double y, double width,double height,double type,
 void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity,double animation,double red,double green,double blue);
 void addParticle(double x,double y,double size,double red,double green,double blue,double angle);
 void editorShowButtons();
-void addTrigger(int x,int y,double width,double height,int Type,double opacity);
+void addTrigger(int x,int y,double width,double height,int Type,double opacity,double Value1,double Value2,double Value3,double Value4);
 void addLight(double x,double y,double size,double red,double green,double blue,double visibility,double brightness);
 void addDeathBox(double x, double y, double width,double height,double opacity);
 void FInfoBox();

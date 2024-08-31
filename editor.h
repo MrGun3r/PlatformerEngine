@@ -205,7 +205,7 @@ void FUpdate_Editor(){
 
          }
          else if (editor.typeSelected == 2){
-           addTrigger(gameWidth/2-camera.x,gameHeight/2-camera.y,triggers[i].width,triggers[i].height,triggers[i].triggerType,triggers[i].opacity); 
+           addTrigger(gameWidth/2-camera.x,gameHeight/2-camera.y,triggers[i].width,triggers[i].height,triggers[i].triggerType,triggers[i].opacity,triggers[i].Value1,triggers[i].Value2,triggers[i].Value3,triggers[i].Value4); 
          }
          else if (editor.typeSelected == 3){
             addLight(gameWidth/2-camera.x,gameHeight/2-camera.y,light[editor.indexSelected].size,light[editor.indexSelected].red,light[editor.indexSelected].green,light[editor.indexSelected].blue,light[editor.indexSelected].visibility,light[editor.indexSelected].brightness);
@@ -231,7 +231,7 @@ void FUpdate_Editor(){
          editorShowButtons();
        }
        else if (i == 12){
-         addTrigger(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,255);
+         addTrigger(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,255,-1,0,0,0);
        }
        else if (i == 13){
          addPlatform(gameWidth/2-camera.x,gameHeight/2-camera.y,25,25,0,false,-1,1,50,0,0,false,true,255,0,255,255,255);
@@ -379,7 +379,7 @@ void FUpdate_Editor(){
  }
 }
 
-void addTrigger(int x,int y,double width,double height,int Type,double opacity){
+void addTrigger(int x,int y,double width,double height,int Type,double opacity,double Value1,double Value2,double Value3,double Value4){
    for(int i = 1;i<sizeof(triggers)/sizeof(triggers[0]);i++){
       if(!triggers[i].reserved){
         editor.selected = true;
@@ -392,7 +392,10 @@ void addTrigger(int x,int y,double width,double height,int Type,double opacity){
         triggers[i].height = height;
         triggers[i].opacity = opacity;
         triggers[i].triggerType = Type;
-          
+        triggers[i].Value1 = Value1;
+        triggers[i].Value2 = Value2;
+        triggers[i].Value3 = Value3;
+        triggers[i].Value4 = Value4;
 
          
          knobs[8].knobValue = -1;
@@ -1336,8 +1339,8 @@ void FTransformState(){
          buttons[4].highlight = false;
       }
       if(editor.transform == 1){
-      player[0].x += (int)((float)mouse.dX/(camera.scale));
-      player[0].y += (int)((float)mouse.dY/(camera.scale));
+      player[0].x += (float)mouse.dX/(camera.scale);
+      player[0].y += (float)mouse.dY/(camera.scale);
       }
       else if (editor.transform == 0){
       player[0].width += (float)(mouse.dX+mouse.dY)/(2*camera.scale);
@@ -1354,12 +1357,12 @@ void FTransformState(){
    }
    else if (editor.typeSelected == 1){
       if(editor.transform == 1){
-         platforms[editor.indexSelected].x += (int)(mouse.dX/camera.scale);
-         platforms[editor.indexSelected].y += (int)(mouse.dY/camera.scale); 
+         platforms[editor.indexSelected].x += (mouse.dX/camera.scale);
+         platforms[editor.indexSelected].y += (mouse.dY/camera.scale); 
       }
       else if (editor.transform == 0){
-           platforms[editor.indexSelected].width +=  (int)(mouse.dX/camera.scale);
-           platforms[editor.indexSelected].height += (int)(mouse.dY/camera.scale); 
+           platforms[editor.indexSelected].width +=  (mouse.dX/camera.scale);
+           platforms[editor.indexSelected].height += (mouse.dY/camera.scale); 
       
       if(platforms[editor.indexSelected].width <= 5){
          platforms[editor.indexSelected].width=5;
@@ -1628,6 +1631,7 @@ void FDrawObjects(){
          }
       }
    }
+   SDL_SetTextureAlphaMod(tex_movenode,100);
    for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
       if(movenodes[i].reserved){
          for(int j = 0;j<movenodes[i].nodesCount;j++){
@@ -1643,7 +1647,7 @@ void FDrawObjects(){
            SDL_RenderCopy(renderer,tex_movenode,NULL,&(SDL_Rect){movenodes[i].positionsDraw[j][0],movenodes[i].positionsDraw[j][1],25*camera.scale,25*camera.scale});
            char nodeNumber[5];
            sprintf(nodeNumber,"%d\0",j);
-           renderText(2,nodeNumber,movenodes[i].positionsDraw[j][0]+11*camera.scale,movenodes[i].positionsDraw[j][1]+8*camera.scale,10*camera.scale,10*camera.scale,255,255,(int[3]){255,255,255});
+           renderText(2,nodeNumber,movenodes[i].positionsDraw[j][0]+11*camera.scale,movenodes[i].positionsDraw[j][1]+8*camera.scale,10*camera.scale,10*camera.scale,100,100,(int[3]){255,255,255});
          
            
            if(editor.selected && editor.typeSelected == 6 && editor.indexSelected == i && editor.movenodeSelected == j){ 
@@ -1653,6 +1657,7 @@ void FDrawObjects(){
          }
       }
    }
+   SDL_SetTextureAlphaMod(tex_movenode,255);
 
 
 

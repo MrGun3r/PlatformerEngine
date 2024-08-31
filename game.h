@@ -475,7 +475,7 @@ void FUpdate_Data(){
              }
          }
          else if(platforms[i].type == 2 && !platforms[i].platformUsed){
-            platforms[i].platformUsed = true;
+               platforms[i].platformUsed = true;
                level.checkpoints[level.checkpointCount] = level.timer;
                level.checkpointShowTimer = 3000;
                level.checkpointCount++;
@@ -546,7 +546,7 @@ void FUpdate_Data(){
          
        }
       }
-
+     if(i == 0){
       for(int j = 1 ;j<sizeof(triggers)/sizeof(triggers[0]);j++){
          if(triggers[j].reserved){
             if(!triggers[j].triggerUsed){
@@ -605,8 +605,11 @@ void FUpdate_Data(){
                triggers[j].reuseDelayTimer = 0;
             }
          }
+     }
+      }
+      
          
-         }
+         
       }
 
       // Player check death

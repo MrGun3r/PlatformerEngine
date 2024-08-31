@@ -15,6 +15,9 @@ void findLevelCampaign(){
         else if(app.campaignLevel == 4){
          sprintf(app.campaignLevelName,"Ancient");
         }
+        else if(app.campaignLevel == 5){
+         sprintf(app.campaignLevelName,"Elevator");
+        }
         char path[256];
         sprintf(path,"levels/%s.txt\0",app.campaignLevelName);
         app.campaignLevelPB = atoi(FGetDataMap(path,"m",1,len(app.campaignLevelName)+12));

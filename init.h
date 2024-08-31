@@ -13,7 +13,7 @@ int initVideo(){
       printf("Window failed to load:%s\n",SDL_GetError());
       return 1;
       }
-   renderer = SDL_CreateRenderer(window,-1,0); 
+   renderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_PRESENTVSYNC); 
    if (!renderer){
       printf("Renderer failed to load:%s\n",SDL_GetError());
       return 1;
