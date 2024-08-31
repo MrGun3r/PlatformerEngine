@@ -6,10 +6,10 @@ Shift - Sprint
 
 # Compilation
 To compile this run "make" in your terminal / command prompt or run :<br />
-          for windows:
-                    gcc main.c -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -o Game
-          for linux:
-                    gcc main.c -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -o Game
+          for windows:<br />
+                    ```gcc main.c -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -o Game```
+          for linux:<br />
+                    ```gcc main.c -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -o Game```
 
 Screenshots :
 
