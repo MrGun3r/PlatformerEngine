@@ -1,0 +1,26 @@
+#
+Each Compiled script will be a 2D array consisting of: {type,value1,value2,value3,value4,value5}
+
+The start of the txt file must contain '>' as its first letter for the script to execute and be compiled
+
+Values will be written in compiled form in int
+
+Definitions:
+.type = 0 => Camera position change
+ {0,camera.x,camera.y,camera.scale,camera.freeCam,-1}
+.type = 1 => Player position change
+ {1,player.x,player.y,player.width,player.height,player.playerControl}
+.type = 2 => Platform position change
+ {2,index,platform.x,platform.y,platform.width,platform.height}
+
+Values with NULL can discarded 
+
+
+
+example of code ----- //////
+{
+camera:10,10,0.5,0;
+platform:2,500,500,20,5;!
+}
+
+
