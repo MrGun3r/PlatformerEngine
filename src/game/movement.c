@@ -118,7 +118,7 @@ void FPlayer_Special(){
          addProjectile(false,-1,player[0].x+player[0].width/2,player[0].y+player[0].height/3,-player[0].direction*300*cos(player[0].ProjectileAngle*PI/180),300*sin(player[0].ProjectileAngle*PI/180),2);
          player[0].specialDelayTimer = 0;
          
-         printf("%f\n",player[0].ProjectileAngle*PI/180);
+         Mix_PlayChannel(-1,Sound_Throw,0);
          
       }
    else if(player[0].special == 7){
