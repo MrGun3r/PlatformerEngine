@@ -17,6 +17,8 @@ void FLoadSounds(){
     Sound_enemyDead = Mix_LoadWAV("assets/sound/enemy_dead.wav");
     Sound_woosh = Mix_LoadWAV("assets/sound/woosh.wav");
     Sound_pickup = Mix_LoadWAV("assets/sound/pickup.wav");
+    Sound_enemyDash = Mix_LoadWAV("assets/sound/enemyDash.wav");
+    Sound_Throw = Mix_LoadWAV("assets/sound/Throw.wav");
 }
 
 

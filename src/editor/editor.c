@@ -1641,6 +1641,15 @@ void FDrawObjects(){
          else if (enemy[i].type == 2){
             SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3,120,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,SDL_FLIP_NONE);
          }
+         else if (enemy[i].type == 3){
+            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3,144,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,SDL_FLIP_NONE);
+         }
+         else if (enemy[i].type == 4){
+            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){2,169,19,20},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,SDL_FLIP_NONE);
+         }
+         else if (enemy[i].type == 5){
+            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3,192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,SDL_FLIP_NONE);
+         }
           
          
          

@@ -156,6 +156,7 @@ struct Enemy{
    double veloY;
    double jumpVelo;
    bool onPlatform;
+   int platformIndex;
    double bumpX;
    double accX;
    double accY;
@@ -174,6 +175,17 @@ struct Enemy{
    int maxHealth;
    bool unbump;
    double angle;
+
+   //// attack
+   double attackDelayTimer;
+   bool attackPrepare;
+   double angleToPlayer;
+   // dash
+   double dashX;
+   double dashY;
+
+
+
 };
 
 struct KeyboardBind{
@@ -484,7 +496,7 @@ struct Special{
    bool taken;
 };
 struct Projectile{
-    bool reserved;
+   bool reserved;
    double x;
    double y;
    double width;
@@ -502,6 +514,7 @@ struct Projectile{
    double despawnTime;
     
    bool fromEnemy;
+   int enemyIndex;
    int projectileType;
 };
 struct Particle{

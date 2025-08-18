@@ -71,10 +71,10 @@ int Player_Grapple(){
 void FPlayer_Special(){
    if(player[0].special == 1){
       // Attack
-      if(player[0].specialDelay >= player[0].specialDelay){
+      if(player[0].specialDelayTimer >= 2*player[0].specialDelay){
       player[0].attack = true;
       player[0].playerControl = 0.3;
-      player[0].specialDelay = 0;
+      player[0].specialDelayTimer = 0;
       Mix_PlayChannel(-1,Sound_slash,0);
       if(player[0].direction > 0){
          player[0].attackDirection = 1;
@@ -94,9 +94,9 @@ void FPlayer_Special(){
      }   
    }
    else if(player[0].special == 4){
+    
       if(player[0].specialDelayTimer >= player[0].specialDelay){
          Mix_PlayChannel(-1,Sound_woosh,0);
-         
          player[0].specialDelayTimer = 0;
          player[0].drawTrails = true;
          player[0].veloX = player[0].direction*700;
@@ -106,15 +106,19 @@ void FPlayer_Special(){
       
    }
    else if(player[0].special == 5){
-      if(player[0].specialDelay >= 500 && player[0].arrowPull < 300){
+      if(player[0].specialDelayTimer >= player[0].specialDelay && player[0].arrowPull < 300){
          player[0].arrowPull += 800*app.deltaTime;
       }
    }
    else if(player[0].special == 6 && player[0].specialDelayTimer >= player[0].specialDelay && player[0].projectileThrown < 3){
          player[0].projectileThrown++;
-        
-         addProjectile(false,player[0].x+player[0].width/2,player[0].y+player[0].height/3,player[0].direction*300*cos(player[0].ProjectileAngle*PI/180),300*sin(player[0].ProjectileAngle*PI/180),2);
+          
+        // player[0].ProjectileAngle = atan((player[i].y-enemy[player[i].enemyTarget].y)/(player[i].x-enemy[player[i].enemyTarget].x))*180/PI;
+
+         addProjectile(false,-1,player[0].x+player[0].width/2,player[0].y+player[0].height/3,-player[0].direction*300*cos(player[0].ProjectileAngle*PI/180),300*sin(player[0].ProjectileAngle*PI/180),2);
          player[0].specialDelayTimer = 0;
+         
+         printf("%f\n",player[0].ProjectileAngle*PI/180);
          
       }
    else if(player[0].special == 7){
@@ -133,6 +137,7 @@ void FEnemy_Movement(){
          
          double distance = sqrt(pow(enemy[i].x-player[0].x,2)+pow(enemy[i].y-player[0].y,2));         
          if(distance <= 300){
+            enemy[i].textureAnimationInt += 5*SDL_log(fabs(enemy[i].veloX) + 1)*app.deltaTime;
          if(enemy[i].type == 1){
           enemy[i].angle  = atan((enemy[i].y - player[0].y)/(enemy[i].x - player[0].x));
          if(enemy[i].x < player[0].x){
@@ -176,13 +181,11 @@ void FEnemy_Movement(){
                enemy[i].direction = 1;
             }
             enemy[i].accX = enemy[i].direction*400;
-            enemy[i].textureAnimationInt += fabs(enemy[i].veloX)/4*app.deltaTime;
-            
             enemy[i].veloX += enemy[i].accX*app.deltaTime;
             enemy[i].veloY += (enemy[i].accY + GRAVITY)*app.deltaTime;
             
             if(player[0].y+player[0].height < enemy[i].y+enemy[i].height - player[0].height && enemy[i].onPlatform){
-               enemy[i].jumpVelo = -175;
+               enemy[i].jumpVelo = -125;
             }
             if(enemy[i].veloX > enemy[i].maxSpeed){
                enemy[i].veloX = enemy[i].maxSpeed;
@@ -196,6 +199,106 @@ void FEnemy_Movement(){
             enemy[i].y += (enemy[i].veloY + enemy[i].jumpVelo)*app.deltaTime;
             
          }
+         else if(enemy[i].type == 3){
+            
+            enemy[i].veloY += (enemy[i].accY + GRAVITY)*app.deltaTime;
+            enemy[i].veloX = enemy[i].maxSpeed*enemy[i].direction;
+            enemy[i].bumpX *= pow(0.1,app.deltaTime);
+            enemy[i].x += (enemy[i].veloX + enemy[i].bumpX)*app.deltaTime;
+            enemy[i].y += (enemy[i].veloY)*app.deltaTime;
+            int platformIndex = enemy[i].platformIndex;
+            if(enemy[i].x > platforms[platformIndex].x+platforms[platformIndex].width-enemy[i].width && enemy[i].direction == 1){
+               enemy[i].direction = -1;
+            }
+            if(enemy[i].x < platforms[platformIndex].x && enemy[i].direction == -1){
+               enemy[i].direction = 1;
+            }
+         }
+         else if(enemy[i].type == 4){
+            enemy[i].attackDelayTimer += 1000*app.deltaTime;
+           // printf("%f\n",enemy[i].attackDelayTimer);
+            if(enemy[i].attackDelayTimer > 3000){
+               enemy[i].attackDelayTimer = 0;
+               double projectileAngle  = atan((player[0].y-enemy[i].y)/(player[0].x-enemy[i].x));
+               if(player[0].x-enemy[i].x > 0){
+                  projectileAngle += PI;
+               }
+
+               addProjectile(true,i,enemy[i].x+(enemy[i].direction == 1)*enemy[i].width,enemy[i].y+enemy[i].height/3,-300*cos(projectileAngle),-300*sin(projectileAngle),2);
+               for(int k = 0;k<5;k++){
+                 addParticle(tex_blank,enemy[i].x+(enemy[i].direction == 1)*enemy[i].width,enemy[i].y+enemy[i].height/4,(rand()%40-10)/2,(rand()%40-10/2),(rand()%10+10),255,255,255,0);
+               }
+               
+              // printf("Poof");
+            }
+
+
+
+            enemy[i].veloY += (enemy[i].accY + GRAVITY)*app.deltaTime;            
+            enemy[i].bumpX *= pow(0.1,app.deltaTime);
+            if(enemy[i].x > player[0].x){
+               enemy[i].direction = -1;
+            }
+            else{
+               enemy[i].direction = 1;
+            }
+            
+            bool enemyInsideThePlatform = true;
+            int platformIndex = enemy[i].platformIndex;
+            if((enemy[i].x > platforms[platformIndex].x+platforms[platformIndex].width-enemy[i].width && enemy[i].direction == 1) || 
+             (enemy[i].x < platforms[platformIndex].x && enemy[i].direction == -1)){
+               enemyInsideThePlatform = false; 
+            }
+
+            if(enemyInsideThePlatform){
+               enemy[i].veloX = enemy[i].maxSpeed*enemy[i].direction;
+            }
+            else{
+               enemy[i].veloX = 0;
+            }
+            enemy[i].x += (enemy[i].veloX + enemy[i].bumpX)*app.deltaTime;
+            enemy[i].y += (enemy[i].veloY)*app.deltaTime;
+            
+         }
+         else if(enemy[i].type == 5){
+            enemy[i].attackDelayTimer += 1000*app.deltaTime;
+            if(!enemy[i].attackPrepare){
+            enemy[i].angleToPlayer = atan((player[0].y-enemy[i].y)/(player[0].x-enemy[i].x));
+            if(player[0].x-enemy[i].x < 0){
+              enemy[i].angleToPlayer += PI;
+            } 
+            }
+            
+            if(enemy[i].attackDelayTimer > 6000){
+               enemy[i].dashX = 5*enemy[i].maxSpeed*cos(enemy[i].angleToPlayer);
+               enemy[i].dashY = 5*enemy[i].maxSpeed*sin(enemy[i].angleToPlayer);
+               enemy[i].attackDelayTimer = 0;
+               enemy[i].attackPrepare = false;
+            }
+            else if(enemy[i].attackDelayTimer > 5000 && !enemy[i].attackPrepare){
+               Mix_PlayChannel(-1,Sound_enemyDash,0);
+               enemy[i].attackPrepare = true;
+            }
+            else{
+               enemy[i].veloX = enemy[i].maxSpeed*cos(enemy[i].angleToPlayer);
+               enemy[i].veloY = enemy[i].maxSpeed*sin(enemy[i].angleToPlayer);
+            
+            enemy[i].direction = 1;
+            if(player[0].x < enemy[i].x){
+                enemy[i].direction = -1;
+            }
+
+            enemy[i].veloX *= pow(0.05,app.deltaTime);
+            enemy[i].dashX *= pow(0.1,app.deltaTime);
+            enemy[i].dashY *= pow(0.1,app.deltaTime);
+            enemy[i].bumpX *= pow(0.1,app.deltaTime);
+
+            enemy[i].x += (enemy[i].veloX + enemy[i].dashX + enemy[i].bumpX)*app.deltaTime;
+            enemy[i].y += (enemy[i].veloY + enemy[i].dashY)*app.deltaTime;
+            }
+            
+         }
+
       }
    }
    }
@@ -319,8 +422,9 @@ void FPlayer_Movement(){
    }
    if(!player[i].keys.c){
       if(player[i].special == 5 && player[i].arrowPull > 10 && player[i].specialDelayTimer >= player[0].specialDelay){
-         addProjectile(false,player[i].x+player[i].width/2,player[i].y+player[i].height/3,player[i].arrowPull*3*cos(player[i].ProjectileAngle*PI/180),player[i].arrowPull*3*sin(player[i].ProjectileAngle*PI/180),1);
+         addProjectile(false,-1,player[i].x+player[i].width/2,player[i].y+player[i].height/3,player[i].arrowPull*3*cos(player[i].ProjectileAngle*PI/180),player[i].arrowPull*3*sin(player[i].ProjectileAngle*PI/180),1);
          player[0].specialDelayTimer = 0;
+         
       }
       if(player[i].special == 7 && player[i].grappling){
          player[i].grappling = false;
@@ -338,9 +442,8 @@ void FPlayer_Movement(){
       }
       player[i].specialDelayTimer = 5000;
       
-      //// Set the timer of usage of special
-       
-      player[i].specialDelay = delayTimers_forSpecials[player[i].canTake];
+      /// Set the timer of usage of special
+      player[i].specialDelay = delayTimers_forSpecials[player[i].special-1];
    }
    
    player[i].particleTimer += 1000*app.deltaTime;
@@ -527,7 +630,7 @@ void projectileMovement(int i){
       projectiles[i].angle = 0;
    }
 
-   
+   if(!projectiles[i].fromEnemy){
    projectiles[i].followAngle = (atan((projectiles[i].y-player[0].y)/(projectiles[i].x-player[0].x)));
    
    if (projectiles[i].x-player[0].x < 0){
@@ -537,15 +640,31 @@ void projectileMovement(int i){
    if(distance > 10){
       projectiles[i].accX = -5*cos(projectiles[i].followAngle)*distance;
       projectiles[i].accY = -5*sin(projectiles[i].followAngle)*distance;
+   }   
    }
+   else{
+   int enemyIndex = projectiles[i].enemyIndex;
+   projectiles[i].followAngle = (atan((projectiles[i].y-enemy[enemyIndex].y)/(projectiles[i].x-player[enemyIndex].x)));
+   
+   if (projectiles[i].x-enemy[enemyIndex].x < 0){
+     projectiles[i].followAngle += PI;
+   }
+   double distance = sqrt(pow(projectiles[i].x-enemy[enemyIndex].x,2)+pow(projectiles[i].y-enemy[enemyIndex].y,2));
+   if(distance > 10){
+      projectiles[i].accX = -5*cos(projectiles[i].followAngle)*distance;
+      projectiles[i].accY = -5*sin(projectiles[i].followAngle)*distance;
+   } 
+   }
+   
    
    projectiles[i].veloX += projectiles[i].accX*app.deltaTime;
    projectiles[i].veloY += projectiles[i].accY*app.deltaTime;
+   CLAMP_MINMAX(projectiles[i].veloX,-400,400);
+   CLAMP_MINMAX(projectiles[i].veloY,-400,400);
    projectiles[i].veloX *= pow(0.95,app.deltaTime);
    projectiles[i].veloY *= pow(0.95,app.deltaTime);
 
-   CLAMP_MAX(projectiles[i].veloX,400);
-   CLAMP_MAX(projectiles[i].veloY,400);
+
    projectiles[i].x += projectiles[i].veloX*app.deltaTime;
    projectiles[i].y += projectiles[i].veloY*app.deltaTime;
 }

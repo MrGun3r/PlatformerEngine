@@ -51,10 +51,10 @@ char* campaignLevel[] = {
 };
 
 int delayTimers_forSpecials[] = {
-      400,
-      800,
-      800,
-      400,
+      300,
+      0,
+      0,
+      500,
       500,
       200,
       300
@@ -138,6 +138,9 @@ Mix_Chunk* Sound_enemyHurt = NULL;
 Mix_Chunk* Sound_enemyDead = NULL;
 Mix_Chunk* Sound_woosh = NULL;
 Mix_Chunk* Sound_pickup = NULL;
+Mix_Chunk* Sound_enemyDash = NULL;
+Mix_Chunk* Sound_Throw = NULL;
+
 
 
 // Variable Types
@@ -255,7 +258,7 @@ void FDraw_Game();
 void FUpdate_Data();
 void FaddReplay(bool checkpoint);
 void FDisplayHUD();
-void addProjectile(bool fromEnemy,double x, double y, double veloX,double veloY,int type);
+void addProjectile(bool fromEnemy,int enemyIndex,double x, double y, double veloX,double veloY,int type);
 void FGameRestart();
 
 // Movement

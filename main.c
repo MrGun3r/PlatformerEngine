@@ -42,8 +42,8 @@ memcpy(app.resolutions, resolutions, sizeof(resolutions));
 
    app.resolutionInt = 2;
    app.resolutionUsed = 2;
-   gameWidth = app.resolutions[5][0];
-   gameHeight = app.resolutions[5][1];
+   gameWidth = app.resolutions[1][0];
+   gameHeight = app.resolutions[1][1];
 
 
    app.status = 4;

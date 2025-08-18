@@ -100,9 +100,10 @@ void FTransformState(){
       }
       else if (editor.transform == 0){
       
-       resizeObject(&enemy[editor.indexSelected].width,NULL); 
+       resizeObject(&enemy[editor.indexSelected].width,&enemy[editor.indexSelected].height); 
        CLAMP_MIN(enemy[editor.indexSelected].width,5);
-       enemy[editor.indexSelected].height = enemy[editor.indexSelected].width;
+       CLAMP_MIN(enemy[editor.indexSelected].height,5);
+
       }
     }
     else if (editor.typeSelected == 9){

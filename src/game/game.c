@@ -240,28 +240,16 @@ void FDraw_Game(){
          platforms[i].yDraw  += camera.y;
          platforms[i].xDraw  = gameWidth/2 + (platforms[i].xDraw - gameWidth/2) * camera.scale;
          platforms[i].yDraw  = gameHeight/2 + (platforms[i].yDraw - gameHeight/2) * camera.scale;
+         if(!Rect_inBounds(platforms[i].xDraw,platforms[i].yDraw,platforms[i].widthDraw,platforms[i].heightDraw))
+         {
+            continue;
+         }
+         
          // Add texture to platform
          FtexturePlatform(i);
       }
    }
-   // Draw Particles 
-   for(int i = 0;i<sizeof(particles)/sizeof(particles[0]);i++){
-      if(particles[i].reserved){
-         // Camera offsetted data !
-         particles[i].xDraw = particles[i].x;
-         particles[i].yDraw = particles[i].y;
-         particles[i].sizeDraw = particles[i].size*camera.scale;
-         particles[i].xDraw  += camera.x;
-         particles[i].yDraw  += camera.y;
-         particles[i].xDraw  = gameWidth/2 + (particles[i].xDraw - gameWidth/2) * camera.scale;
-         particles[i].yDraw  = gameHeight/2 + (particles[i].yDraw - gameHeight/2) * camera.scale;
-         SDL_SetRenderDrawColor(renderer,particles[i].red,particles[i].green,particles[i].blue,255);
-         //SDL_SetTextureColorMod(NULL,particles[i].red,particles[i].green,particles[i].blue);
-         // Render Particle
-         SDL_RenderCopyEx(renderer,particles[i].texture,NULL,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw},particles[i].rotation,NULL,SDL_FLIP_NONE);
-         //SDL_RenderFillRect(renderer,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw});
-      }
-   }
+   
    // Draw Nodes
    
    for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
@@ -365,8 +353,8 @@ void FDraw_Game(){
       player[i].width = player[i].Owidth;
      SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){168,0,16,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
    }
-   else if (player[i].attack && player[i].specialDelay < 300){
-     int attackInt = (int)(player[i].specialDelay*2/300);
+   else if (player[i].attack && player[i].specialDelayTimer < player[i].specialDelay){
+     int attackInt = (int)(player[i].specialDelayTimer*2/(double)player[i].specialDelay);
      player[i].width = player[i].Owidth; 
      SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){191+25*attackInt,2,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);  
    }
@@ -451,6 +439,33 @@ void FDraw_Game(){
             SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,120,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
           } 
          }
+         if(enemy[i].type == 3){
+           if(enemy[i].attackCoolDown > 50){
+           SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3+24*((int)enemy[i].textureAnimationInt % 7),144,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+           }
+          else{
+            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,144,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+          } 
+         }
+         if(enemy[i].type == 4){
+           if(enemy[i].attackCoolDown > 50){
+           SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){2+24*((int)enemy[i].textureAnimationInt % 7),169,20,20},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+           }
+          else{
+            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){169,169,19,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+          } 
+         }
+         if(enemy[i].type == 5){
+           if(enemy[i].attackCoolDown > 50 && !enemy[i].attackPrepare){
+           SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3+24*((int)enemy[i].textureAnimationInt % 7),192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+           }
+           else if(enemy[i].attackPrepare){
+            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){192,192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+           }
+          else{
+            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+          } 
+         }
       }
    }
    // Red Target Arrow
@@ -475,9 +490,34 @@ void FDraw_Game(){
             projectiles[i].yDraw,projectiles[i].widthDraw,projectiles[i].heightDraw},projectiles[i].angle,NULL,0);
          }
          else if(projectiles[i].projectileType == 2){
-            SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){0,120,56,56},&(SDL_Rect){projectiles[i].xDraw,
-            projectiles[i].yDraw,projectiles[i].widthDraw,projectiles[i].heightDraw},projectiles[i].angle,NULL,0);
+            if(!projectiles[i].fromEnemy){
+              SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){0,120,56,56},&(SDL_Rect){projectiles[i].xDraw,
+            projectiles[i].yDraw,projectiles[i].widthDraw,projectiles[i].heightDraw},projectiles[i].angle,NULL,0); 
+            }
+            else{
+               SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3,214,56,56},&(SDL_Rect){projectiles[i].xDraw,
+            projectiles[i].yDraw,projectiles[i].widthDraw,projectiles[i].heightDraw},projectiles[i].angle,NULL,0); 
+            }
+            
          }
+      }
+   }
+   // Draw Particles 
+   for(int i = 0;i<sizeof(particles)/sizeof(particles[0]);i++){
+      if(particles[i].reserved){
+         // Camera offsetted data !
+         particles[i].xDraw = particles[i].x;
+         particles[i].yDraw = particles[i].y;
+         particles[i].sizeDraw = particles[i].size*camera.scale;
+         particles[i].xDraw  += camera.x;
+         particles[i].yDraw  += camera.y;
+         particles[i].xDraw  = gameWidth/2 + (particles[i].xDraw - gameWidth/2) * camera.scale;
+         particles[i].yDraw  = gameHeight/2 + (particles[i].yDraw - gameHeight/2) * camera.scale;
+         SDL_SetRenderDrawColor(renderer,particles[i].red,particles[i].green,particles[i].blue,255);
+         //SDL_SetTextureColorMod(NULL,particles[i].red,particles[i].green,particles[i].blue);
+         // Render Particle
+         SDL_RenderCopyEx(renderer,particles[i].texture,NULL,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw},particles[i].rotation,NULL,SDL_FLIP_NONE);
+         //SDL_RenderFillRect(renderer,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw});
       }
    }
    ///////
@@ -554,7 +594,6 @@ void playerHurt(int i,double damage){
    player[i].veloX *= -0.5;
    player[i].veloY *= -0.25;
    if(player[i].health < 0){
-      printf("Dead !! \n");
       player[i].dead = true;
    }
 }
@@ -648,13 +687,14 @@ void FUpdate_Data(){
     for(int i = 0;i<sizeof(enemy)/sizeof(enemy[0]);i++){
       if(enemy[i].reserved && !enemy[i].killed){
          
-         if(player[0].arrowPull < 10){
+         if(player[0].arrowPull < 10 || player[0].special == 6){
           double distance_player_enemy = sqrt(pow(player[0].x-enemy[i].x,2)+pow(player[0].y-enemy[i].y,2));
          
-          if(distance_player_enemy < 300 && (player[0].enemyTargetDistance > distance_player_enemy || player[0].enemyTarget == -1) && (fabs(player[0].x-enemy[i].x) > 1 && player[0].direction != (int)((player[0].x-enemy[i].x)/fabs(player[0].x-enemy[i].x)))){
+          if(distance_player_enemy < 300 && (player[0].enemyTargetDistance > distance_player_enemy || player[0].enemyTarget == -1) && (fabs(player[0].x-enemy[i].x) > 1)){
 
             player[0].enemyTargetDistance = distance_player_enemy;
             player[0].enemyTarget = i;
+            
            
          
           }
@@ -708,28 +748,18 @@ void FUpdate_Data(){
    }
    // Player Attack
    if(player[0].special == 1){
-      if(player[0].specialDelay > 300){
+      if(player[0].specialDelayTimer >= player[0].specialDelay){
       player[0].attack = false;
       }
-      if(player[0].specialDelay < 700){
-        player[0].specialDelay += 1000*app.deltaTime;
-        if(player[0].specialDelay < 700){
-           player[0].attackDrawInt = (int)((player[0].specialDelay)*5/300);
-        }
+        
+      if(player[0].specialDelayTimer < player[0].specialDelay){
+         player[0].attackDrawInt = (int)((player[0].specialDelayTimer)*6/player[0].specialDelay);
+      }
       
-      }
+      
+      
    }
-   if(player[0].special == 4){
-      if(player[0].specialDelay < 1000){
-         player[0].specialDelay += 1000*app.deltaTime;
-      }
-   }
-   if(player[0].special == 5){
-      if(player[0].specialDelay < 550){
-         player[0].specialDelay += 1000*app.deltaTime;
-      }
-   }
-   if(player[0].enemyTarget != -1 && (enemy[player[0].enemyTarget].killed || (fabs(player[0].x-enemy[player[0].enemyTarget].x) > 1 && player[0].direction == (int)((player[0].x-enemy[player[0].enemyTarget].x)/fabs(player[0].x-enemy[player[0].enemyTarget].x))))){
+   if(player[0].enemyTarget != -1 && (enemy[player[0].enemyTarget].killed)){
       player[0].enemyTarget = -1;
    }
    
@@ -739,7 +769,7 @@ void FUpdate_Data(){
    }
 
    // Player special delay usage
-   if(player[0].specialDelayTimer < player[0].specialDelay){
+   if(player[0].specialDelayTimer < 5*player[0].specialDelay){
          player[0].specialDelayTimer += 1000*app.deltaTime;
    }
    
@@ -763,7 +793,9 @@ void FUpdate_Data(){
          projectiles[i].despawnTime += 1*app.deltaTime;
          if(projectiles[i].despawnTime > 5){
             projectiles[i].reserved = false;
-            player[0].projectileThrown--;
+            if(!projectiles[i].fromEnemy){
+             player[0].projectileThrown--;  
+            }
             projectiles[i].despawnTime = 0;
          }
          if((fabs(projectiles[i].veloX) > 10 || fabs(projectiles[i].veloY) > 10)){
@@ -781,7 +813,8 @@ void FUpdate_Data(){
             }
             
          // Arrow Enemy Collision
-         for(int j = 0;j<sizeof(enemy)/sizeof(enemy[0]);j++){
+         if(!projectiles[i].fromEnemy){
+            for(int j = 0;j<sizeof(enemy)/sizeof(enemy[0]);j++){
                if(enemy[j].reserved && !enemy[j].killed){
                   if(rectCollision((SDL_Rect){projectiles[i].x,projectiles[i].y,projectiles[i].width,projectiles[i].height},(SDL_Rect){enemy[j].x,enemy[j].y,enemy[j].width,enemy[j].height})){
                      enemyHurt(j,10);
@@ -800,6 +833,22 @@ void FUpdate_Data(){
                    }
                }
          }
+         }
+         else{
+            // Player collision
+            if(rectCollision((SDL_Rect){projectiles[i].x,projectiles[i].y,projectiles[i].width,projectiles[i].height},(SDL_Rect){player[0].x,player[0].y,player[0].width,player[0].height})){
+              playerHurt(0,10);
+            }
+
+            // Parry mechanism
+            if(player[0].attack && rectCollision((SDL_Rect){projectiles[i].x,projectiles[i].y,projectiles[i].width,projectiles[i].height},(SDL_Rect){player[0].attackX,player[0].attackY,player[0].attackSize,player[0].attackSize})){
+               printf("gay");
+               player[0].attack = false;
+               projectiles[i].veloX *= -1;
+               projectiles[i].veloY *= -1;
+            } 
+         }
+         
 
          }
          
@@ -899,6 +948,7 @@ void FUpdate_Data(){
       // Enemy Collision
       for (int j = 0;j<sizeof(enemy)/sizeof(enemy[0]);j++){
          if(FCheck_Collision_Enemy(enemy[j],i)){
+            enemy[j].platformIndex = i;
             FCollision_Response_Enemy(&enemy[j],i);
          }
       }
@@ -970,6 +1020,10 @@ void FUpdate_Data(){
       // Arrow
       if(player[i].enemyTarget != -1){
          player[i].ProjectileAngle = atan((player[i].y-enemy[player[i].enemyTarget].y)/(player[i].x-enemy[player[i].enemyTarget].x))*180/PI;
+         if((player[i].x-enemy[player[i].enemyTarget].x) < 0){
+            player[i].ProjectileAngle += 180;
+         }
+         
       if(player[i].arrowPull < 10){
          player[i].enemyTargetDistance = sqrt(pow(player[0].x-enemy[player[i].enemyTarget].x,2)+pow(player[0].y-enemy[player[i].enemyTarget].y,2));
       }
@@ -1201,10 +1255,13 @@ void FUpdate_Data(){
       }
    }
 }
-void addProjectile(bool fromEnemy,double x, double y, double veloX,double veloY,int type){
+void addProjectile(bool fromEnemy,int enemyIndex,double x, double y, double veloX,double veloY,int type){
    for(int i = 0;i<sizeof(projectiles)/sizeof(projectiles[0]);i++){
       if(!projectiles[i].reserved){
          projectiles[i].fromEnemy = fromEnemy;
+         if(fromEnemy){
+            projectiles[i].enemyIndex = enemyIndex;
+         }
          projectiles[i].reserved = true;
          projectiles[i].x = x;
          projectiles[i].y = y;
@@ -1311,6 +1368,9 @@ void FGameRestart(){
          enemy[i].bumpX = 0;
          enemy[i].textureAnimationInt = 0;
          enemy[i].attackCoolDown = 100;
+         enemy[i].direction = 1;
+         enemy[i].attackDelayTimer = 0;
+         enemy[i].attackPrepare = false;
        }
        }
        for(int i = 0;i<sizeof(specials)/sizeof(specials[0]);i++){
@@ -1320,7 +1380,8 @@ void FGameRestart(){
        }
        for(int i = 0;i<sizeof(projectiles)/sizeof(projectiles[0]);i++){
         if(projectiles[i].reserved){
-         projectiles[i].reserved    = false;
+         projectiles[i].reserved = false;
+         projectiles[i].despawnTime = 0;
        }
        }
       level.Paused = false;
