@@ -27,6 +27,11 @@ void FInput_Listener(){
        mouse.x *= (double)(gameWidth)/(double)(windowWidth);
        mouse.y *= (double)(gameHeight)/(double)(windowHeight - (windowHeight-windowGameHeight)*(windowHeight>windowGameHeight));
        
+       /// Mouse.x and Mouse.y will be between 0 and base res (0 -> 1028)
+       mouse.x /= windowWidthScale;
+       mouse.y /= windowHeightScale; 
+
+
       }
       if(app.transition){
          return;

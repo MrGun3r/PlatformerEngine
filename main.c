@@ -44,7 +44,9 @@ memcpy(app.resolutions, resolutions, sizeof(resolutions));
    app.resolutionUsed = 2;
    gameWidth = app.resolutions[1][0];
    gameHeight = app.resolutions[1][1];
-
+   
+   windowHeightScale = (float)gameHeight/gameHeightBase;
+   windowWidthScale = (float)gameWidth/gameWidthBase;
 
    app.status = 4;
    app.fetchedList = false;
@@ -96,7 +98,7 @@ void FWindow_Loop(){
     }
     else if (app.status == 1){
       FUpdate_Editor();
-      FDraw_Editor();
+      Draw_Editor();
     }
     else{
       FUpdate_Data_Menu();
@@ -111,8 +113,10 @@ void FWindow_Loop(){
    if(windowHeight > windowGameHeight){
       offset = (windowHeight-windowGameHeight)/2;
    }
-
+   
     FDrawTransition();
+    SDL_SetRenderDrawColor(renderer,255,0,0,255);
+      SDL_RenderDrawRect(renderer,&(SDL_Rect){10*windowWidthScale,10*windowHeightScale,30*windowWidthScale,30*windowHeightScale});    
     SDL_SetRenderTarget(renderer,NULL);
     SDL_RenderCopy(renderer,resultLayer,NULL,&(SDL_Rect){0,offset,windowWidth,min(windowHeight,windowGameHeight)});
     SDL_RenderPresent(renderer);
@@ -126,7 +130,7 @@ void freeMalloc(){
 int main(int argc,char *argv[]){
    if (initVideo() == 0){
       FWindow_Loop();
-      
+
    }
    remove("levels/temp.txt");
    freeMalloc();

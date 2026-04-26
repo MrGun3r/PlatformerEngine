@@ -8,7 +8,7 @@ void FSaveMap(char mapName[256]){
       sprintf(playerData,"p:%d,%d,%d,%d;\n\0",(int)player[0].x,(int)player[0].y,(int)player[0].width,(int)player[0].height);
       fputs(mapDatal,file);
       fputs(playerData,file);
-      for(int i = 1;i<sizeof(platforms)/sizeof(platforms[1]);i++){
+      for(int i = 0;i<sizeof(platforms)/sizeof(platforms[1]);i++){
          if(platforms[i].reserved){
             char* platformData = malloc(2000);
  
@@ -85,7 +85,7 @@ void FSaveMap(char mapName[256]){
       for(int i = 0;i<sizeof(specials)/sizeof(specials[0]);i++){
          if(specials[i].reserved){
             char* specialsData = malloc(2000);   
-            sprintf(specialsData,"c%d:%d,%d,%d,%d;\n\0",i,(int)specials[i].x,(int)specials[i].y,(int)specials[i].size,(int)specials[i].type);
+            sprintf(specialsData,"c%d:%d,%d,%d,%d,%d;\n\0",i,(int)specials[i].x,(int)specials[i].y,(int)specials[i].width,(int)specials[i].height,(int)specials[i].type);
             fputs(specialsData,file);
             free(specialsData);
          }
@@ -531,9 +531,7 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
       case 8:
          camera.scaleReal = atof(importBuffer);
          editor.GameScale = camera.scaleReal;
-         camera.scaleReal *= (double)gameWidth/(double)1920;
          level.cameraScaleStart = camera.scaleReal;
-
          break;
       case 9:
         level.StarTime = atoi(importBuffer);
@@ -791,9 +789,12 @@ void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataT
            specials[ID].y = atof(importBuffer);
            break;
          case 2:
-           specials[ID].size = atof(importBuffer);
+           specials[ID].width = atof(importBuffer);
            break;
          case 3:
+           specials[ID].height = atof(importBuffer);
+           break;
+         case 4:
            specials[ID].type = atoi(importBuffer);
            break;
          

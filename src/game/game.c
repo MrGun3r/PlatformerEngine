@@ -9,7 +9,7 @@ void FDisplayHUD(){
     }
     
    SDL_SetRenderDrawColor(renderer,200,200,200,150);
-   SDL_RenderFillRect(renderer,&(SDL_Rect){gameWidth/2 - 150,gameHeight/2 - 150,300,300});
+   RenderFillRect(renderer,&(SDL_Rect){gameWidthBase/2 - 150,gameHeightBase/2 - 150,300,300});
    }
    else{
     buttons[0].reserved = false;
@@ -25,8 +25,8 @@ void FDisplayHUD(){
         buttons[4].reserved = true; 
       }
       SDL_SetRenderDrawColor(renderer,100,100,100,200);
-      SDL_RenderFillRect(renderer,&(SDL_Rect){0,0,gameWidth*level.endTransition,100});
-      SDL_RenderFillRect(renderer,&(SDL_Rect){gameWidth,gameHeight,-gameWidth*level.endTransition,-100});
+      RenderFillRect(renderer,&(SDL_Rect){0,0,gameWidthBase*level.endTransition,100});
+      RenderFillRect(renderer,&(SDL_Rect){gameWidthBase,gameHeightBase,-gameWidthBase*level.endTransition,-100});
    }
    else{
       buttons[3].reserved = false;
@@ -49,54 +49,54 @@ void FDisplayHUD(){
      renderText(8,PBtimer,30,30,8*7,10,255,200,(int[3]){200,200,200});
      free(PBtimer);
    }
-   renderText(mapData.mapNameLen,mapData.mapName,gameWidth-mapData.mapNameLen*12,5,mapData.mapNameLen*12,18,255,200,(int[3]){255,255,255});
+   renderText(mapData.mapNameLen,mapData.mapName,gameWidthBase-mapData.mapNameLen*12,5,mapData.mapNameLen*12,18,255,200,(int[3]){255,255,255});
    char* checkpointsLeft = malloc(20);
    sprintf(checkpointsLeft,"%d/%d\0",level.checkpointCount,level.checkpointsSize);
-   renderText(len(checkpointsLeft),checkpointsLeft,gameWidth-len(checkpointsLeft)*12,30,len(checkpointsLeft)*12,15,255,200,(int[3]){255,255,255});
+   renderText(len(checkpointsLeft),checkpointsLeft,gameWidthBase-len(checkpointsLeft)*12,30,len(checkpointsLeft)*12,15,255,200,(int[3]){255,255,255});
    free(checkpointsLeft);
 
    // Checkpoint Timer
    if(level.checkpointShowTimer>0){
       char* checkpointTimer = msToTimer((int)(level.checkpoints[level.checkpointCount-1]));
-      renderText(8,checkpointTimer,gameWidth/2-4*10,20,8*10,15,255,200,(int[3]){255,255,255});
+      renderText(8,checkpointTimer,gameWidthBase/2-4*10,20,8*10,15,255,200,(int[3]){255,255,255});
       if(mapData.ghostInGame){
       char* timeDiff = msToTimer((int)(SDL_abs(level.checkpoints[level.checkpointCount-1]-level.LastCheckpointTimer)));
       if(level.checkpoints[level.checkpointCount-1]<level.LastCheckpointTimer){
-       renderText(1,"-",gameWidth/2-4*8-8,40,8,15,255,200,(int[3]){0,0,255});    
-       renderText(8,timeDiff,gameWidth/2-4*8,40,8*8,15,255,200,(int[3]){0,0,255});    
+       renderText(1,"-",gameWidthBase/2-4*8-8,40,8,15,255,200,(int[3]){0,0,255});    
+       renderText(8,timeDiff,gameWidthBase/2-4*8,40,8*8,15,255,200,(int[3]){0,0,255});    
       }
       else {
-       renderText(1,"+",gameWidth/2-4*8-8,40,8,12,255,200,(int[3]){255,0,0});    
-       renderText(8,timeDiff,gameWidth/2-4*8,40,8*8,12,255,200,(int[3]){255,0,0});    
+       renderText(1,"+",gameWidthBase/2-4*8-8,40,8,12,255,200,(int[3]){255,0,0});    
+       renderText(8,timeDiff,gameWidthBase/2-4*8,40,8*8,12,255,200,(int[3]){255,0,0});    
       }      
    }
    }
    }
    else {
-    renderText(sizeof("Level Complete"),"Level Complete",gameWidth/2 - 12*sizeof("Level Complete")/2,20,12*sizeof("Level Complete"),15,255,200,(int[3]){255,255,255});
+    renderText(sizeof("Level Complete"),"Level Complete",gameWidthBase/2 - 12*sizeof("Level Complete")/2,20,12*sizeof("Level Complete"),15,255,200,(int[3]){255,255,255});
     
     char* timer = msToTimer((int)level.timer);
     renderText(8,timer,15,15,8*12,20,255,200,(int[3]){255,255,255});
     free(timer);
     
     if(level.newRecord){
-      renderText(sizeof("New Record"),"New Record",gameWidth/2 - 12*sizeof("New Record")/2,45,sizeof("New Record")*12,15,255,200,(int[3]){0,200,0});
+      renderText(sizeof("New Record"),"New Record",gameWidthBase/2 - 12*sizeof("New Record")/2,45,sizeof("New Record")*12,15,255,200,(int[3]){0,200,0});
      }
      char* timerStarTime = msToTimer((int)level.StarTime);
-     SDL_RenderCopy(renderer,tex_star,NULL,&(SDL_Rect){10,42,18,18});   
+     RenderCopy(renderer,tex_star,NULL,&(SDL_Rect){10,42,18,18});   
      renderText(8,timerStarTime,30,45,8*10,16,255,200,(int[3]){255,255,0});
      free(timerStarTime);
 
 
      char coins[256];
      sprintf(coins,"%d\0",profile.coins);
-     SDL_RenderCopy(renderer,tex_coin,NULL,&(SDL_Rect){gameWidth-35-10*len(coins),level.endShowCoins-90,20,20}); 
-     renderText(len(coins),coins,gameWidth-10*len(coins)-10,level.endShowCoins-90,10*len(coins),15,255,200,(int[3]){255,255,255});  
-     renderText(3,"+10",gameWidth-10*3-10,35,3*10,12,min(255,level.coinsReceivedOpacity),min(255,level.coinsReceivedOpacity),(int[3]){20,255,30});
+     RenderCopy(renderer,tex_coin,NULL,&(SDL_Rect){gameWidthBase-35-10*len(coins),level.endShowCoins-90,20,20}); 
+     renderText(len(coins),coins,gameWidthBase-10*len(coins)-10,level.endShowCoins-90,10*len(coins),15,255,200,(int[3]){255,255,255});  
+     renderText(3,"+10",gameWidthBase-10*3-10,35,3*10,12,min(255,level.coinsReceivedOpacity),min(255,level.coinsReceivedOpacity),(int[3]){20,255,30});
      
      if(mapData.PBTimer>0){
      char* PBtimer = msToTimer(mapData.PBTimer);
-     SDL_RenderCopy(renderer,tex_trophy,NULL,&(SDL_Rect){10,72,18,18});
+     RenderCopy(renderer,tex_trophy,NULL,&(SDL_Rect){10,72,18,18});
      renderText(8,PBtimer,30,72,8*10,16,255,200,(int[3]){200,200,200});
      free(PBtimer);
      }
@@ -104,18 +104,18 @@ void FDisplayHUD(){
    }
    if(player[0].special >= 0){
       
-      SDL_RenderCopy(renderer,tex_specials,&(SDL_Rect){5+150*(player[0].special - 1),0,125,125},&(SDL_Rect){gameWidth-player[0].specialshow,gameHeight-100,70,70});
+      RenderCopy(renderer,tex_specials,&(SDL_Rect){5+150*(player[0].special - 1),0,125,125},&(SDL_Rect){gameWidthBase-player[0].specialshow,gameHeightBase-100,70,70});
    }
    // Health
    char* healthText = malloc(3*sizeof(char));
    SDL_itoa((int)player[0].health,healthText,10);
-   renderText(len(healthText),healthText,40,gameHeight-60,len(healthText)*18,30,255,255,(int[3]){255,255,255});
+   renderText(len(healthText),healthText,40,gameHeightBase-60,len(healthText)*18,30,255,255,(int[3]){255,255,255});
    free(healthText);
      
    SDL_SetRenderDrawColor(renderer,0,255,0,255);
-   SDL_RenderFillRect(renderer,&(SDL_Rect){10,gameHeight-25,100*(double)player[0].health/30,10});
+   RenderFillRect(renderer,&(SDL_Rect){10,gameHeightBase-25,100*(double)player[0].health/30,10});
    SDL_SetRenderDrawColor(renderer,0,0,0,255);
-   SDL_RenderDrawRect(renderer,&(SDL_Rect){10,gameHeight-25,100,10});
+   RenderDrawRect(renderer,&(SDL_Rect){10,gameHeightBase-25,100,10});
 
    // Draw textpopups
    for(int i = 0;i<sizeof(textpopups)/sizeof(textpopups[0]);i++){
@@ -124,9 +124,9 @@ void FDisplayHUD(){
             if(textLen >= 1){
             SDL_SetRenderDrawColor(renderer,50,50,50,100);
 
-            SDL_RenderFillRect(renderer,&(SDL_Rect){(double)(textpopups[i].xPopup)/100*gameWidth - textLen*textpopups[i].font/2-10,(double)(textpopups[i].yPopup)/100*gameHeight-textpopups[i].font*1.5/2-10,textLen*textpopups[i].font+20,textpopups[i].font*1.5+20});
+            RenderFillRect(renderer,&(SDL_Rect){(double)(textpopups[i].xPopup)/100*gameWidthBase - textLen*textpopups[i].font/2-10,(double)(textpopups[i].yPopup)/100*gameHeightBase-textpopups[i].font*1.5/2-10,textLen*textpopups[i].font+20,textpopups[i].font*1.5+20});
 
-            renderText(textLen,textpopups[i].textContent,(double)(textpopups[i].xPopup)/100*gameWidth - textLen*textpopups[i].font/2,(double)(textpopups[i].yPopup)/100*gameHeight-textpopups[i].font*1.5/2,textLen*textpopups[i].font,textpopups[i].font*1.5,255,255,(int[3]){255,255,255}); 
+            renderText(textLen,textpopups[i].textContent,(double)(textpopups[i].xPopup)/100*gameWidthBase - textLen*textpopups[i].font/2,(double)(textpopups[i].yPopup)/100*gameHeightBase-textpopups[i].font*1.5/2,textLen*textpopups[i].font,textpopups[i].font*1.5,255,255,(int[3]){255,255,255}); 
             }
             
             
@@ -134,9 +134,9 @@ void FDisplayHUD(){
       }
    }
    SDL_SetRenderDrawColor(renderer,0,0,0,max(level.resetTransition,0));
-   SDL_RenderFillRect(renderer,&(SDL_Rect){0,0,gameWidth,gameHeight});
+   RenderFillRect(renderer,&(SDL_Rect){0,0,gameWidthBase,gameHeightBase});
    renderButtons();
-   FGUIHover();
+   GUIHover();
    // Special showcase
    
    
@@ -183,31 +183,33 @@ void FDraw_Game(){
    
   
    if(!camera.freeCam){
-     camera.x += (-player[0].x-player[0].width/2+gameWidth/2 - camera.x)*10*app.deltaTime;
-     camera.y += (-player[0].y-player[0].height/2+gameHeight/2 - camera.y)*10*app.deltaTime;
+     camera.x += (-player[0].x-player[0].width/2+gameWidthBase/2 - camera.x)*10*app.deltaTime;
+     camera.y += (-player[0].y-player[0].height/2+gameHeightBase/2 - camera.y)*10*app.deltaTime;
    }
    else{
       camera.x += (camera.xReal - camera.x)*10*app.deltaTime;
       camera.y += (camera.yReal - camera.y)*10*app.deltaTime;
    }
 
-   if (camera.x > -gameWidth/(2*camera.scale) + gameWidth/2 - mapData.xMin) {
-       camera.x = -gameWidth/(2*camera.scale) + gameWidth/2 - mapData.xMin;
+   if (camera.x > -gameWidthBase/(2*camera.scale) + gameWidthBase/2 - mapData.xMin) {
+       camera.x = -gameWidthBase/(2*camera.scale) + gameWidthBase/2 - mapData.xMin;
    }
-   else if (camera.x < gameWidth/(2*camera.scale) + gameWidth/2 - mapData.xMax){
-      camera.x = gameWidth/(2*camera.scale) + gameWidth/2 - mapData.xMax;
+   else if (camera.x < gameWidthBase/(2*camera.scale) + gameWidthBase/2 - mapData.xMax){
+      camera.x = gameWidthBase/(2*camera.scale) + gameWidthBase/2 - mapData.xMax;
    }
 
-   if (camera.y > -gameHeight/(2*camera.scale) + gameHeight/2 - mapData.yMin) {
-       camera.y = -gameHeight/(2*camera.scale) + gameHeight/2 - mapData.yMin;
+   if (camera.y > -gameHeightBase/(2*camera.scale) + gameHeightBase/2 - mapData.yMin) {
+       camera.y = -gameHeightBase/(2*camera.scale) + gameHeightBase/2 - mapData.yMin;
    }
-   else if (camera.y < gameHeight/(2*camera.scale) + gameHeight/2 - mapData.yMax){
-      camera.y = gameHeight/(2*camera.scale) + gameHeight/2 - mapData.yMax;
+   else if (camera.y < gameHeightBase/(2*camera.scale) + gameHeightBase/2 - mapData.yMax){
+      camera.y = gameHeightBase/(2*camera.scale) + gameHeightBase/2 - mapData.yMax;
    }
    
    
    app.backgroundMoving += player[0].veloX/5*app.deltaTime;
+
    ROUND_TO(app.backgroundMoving,0,backgrounds[app.backgroundInt].textureWidth)
+
    if(player[0].special >= 0){
       player[0].specialshow += (100 - player[0].specialshow)*10*app.deltaTime;
    }
@@ -221,14 +223,14 @@ void FDraw_Game(){
       light[i].heightDraw = light[i].height*camera.scale;
       light[i].xDraw  += camera.x;
       light[i].yDraw  += camera.y;
-      light[i].xDraw  = gameWidth/2 + (light[i].xDraw - gameWidth/2) * camera.scale;
-      light[i].yDraw  = gameHeight/2 + (light[i].yDraw - gameHeight/2) * camera.scale;
+      light[i].xDraw  = gameWidthBase/2 + (light[i].xDraw - gameWidthBase/2) * camera.scale;
+      light[i].yDraw  = gameHeightBase/2 + (light[i].yDraw - gameHeightBase/2) * camera.scale;
    }
 
    
 
     // Draw platforms
-   for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+   for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       if(platforms[i].reserved && !platforms[i].collidable){
 
          // Camera offsetted data !
@@ -238,8 +240,8 @@ void FDraw_Game(){
          platforms[i].heightDraw = platforms[i].height*camera.scale;
          platforms[i].xDraw  += camera.x;
          platforms[i].yDraw  += camera.y;
-         platforms[i].xDraw  = gameWidth/2 + (platforms[i].xDraw - gameWidth/2) * camera.scale;
-         platforms[i].yDraw  = gameHeight/2 + (platforms[i].yDraw - gameHeight/2) * camera.scale;
+         platforms[i].xDraw  = gameWidthBase/2 + (platforms[i].xDraw - gameWidthBase/2) * camera.scale;
+         platforms[i].yDraw  = gameHeightBase/2 + (platforms[i].yDraw - gameHeightBase/2) * camera.scale;
          if(!Rect_inBounds(platforms[i].xDraw,platforms[i].yDraw,platforms[i].widthDraw,platforms[i].heightDraw))
          {
             continue;
@@ -249,26 +251,25 @@ void FDraw_Game(){
          FtexturePlatform(i);
       }
    }
-   
-   // Draw Nodes
-   
-   for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+      
+   for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       if(platforms[i].reserved && platforms[i].collidable){
 
          // Camera offsetted data !
          platforms[i].widthDraw = platforms[i].width*camera.scale;
          platforms[i].heightDraw = platforms[i].height*camera.scale;
-         platforms[i].xDraw  = gameWidth/2 + (platforms[i].x + camera.x - gameWidth/2) * camera.scale;
-         platforms[i].yDraw  = gameHeight/2 + (platforms[i].y + camera.y - gameHeight/2) * camera.scale;
+         platforms[i].xDraw  = gameWidthBase/2 + (platforms[i].x + camera.x - gameWidthBase/2) * camera.scale;
+         platforms[i].yDraw  = gameHeightBase/2 + (platforms[i].y + camera.y - gameHeightBase/2) * camera.scale;
          // Add texture to platform
          FtexturePlatform(i);
       }
    }
+
    // Draw popup damages
    for(int i = 0;i<sizeof(damagepopups)/sizeof(damagepopups[0]);i++){
       if(damagepopups[i].reserved)
-      {damagepopups[i].xDraw = gameWidth/2 + (damagepopups[i].x + camera.x - gameWidth/2) * camera.scale;
-      damagepopups[i].yDraw = gameHeight/2 + (damagepopups[i].y + camera.y - gameHeight/2) * camera.scale;
+      {damagepopups[i].xDraw = gameWidthBase/2 + (damagepopups[i].x + camera.x - gameWidthBase/2) * camera.scale;
+      damagepopups[i].yDraw = gameHeightBase/2 + (damagepopups[i].y + camera.y - gameHeightBase/2) * camera.scale;
       damagepopups[i].sizeDraw = damagepopups[i].size*camera.scale;
       char* buffer = malloc(20*sizeof(char));
       int numSize = len(buffer);
@@ -289,17 +290,17 @@ void FDraw_Game(){
          // Camera offsetted data !
          specials[i].xDraw = specials[i].x;
          specials[i].yDraw = specials[i].y;
-         specials[i].sizeDraw = specials[i].size*camera.scale;
-       
+         specials[i].widthDraw = specials[i].width*camera.scale;
+         specials[i].heightDraw = specials[i].height*camera.scale;
          specials[i].xDraw  += camera.x;
          specials[i].yDraw  += camera.y;
-         specials[i].xDraw  = gameWidth/2 + (specials[i].xDraw - gameWidth/2) * camera.scale;
-         specials[i].yDraw  = gameHeight/2 + (specials[i].yDraw - gameHeight/2) * camera.scale;
+         specials[i].xDraw  = gameWidthBase/2 + (specials[i].xDraw - gameWidthBase/2) * camera.scale;
+         specials[i].yDraw  = gameHeightBase/2 + (specials[i].yDraw - gameHeightBase/2) * camera.scale;
          if(specials[i].taken){
             SDL_SetTextureAlphaMod(tex_specials,50);
          }
 
-         SDL_RenderCopyEx(renderer,tex_specials,&(SDL_Rect){5+150*(specials[i].type - 1),0,125,125},&(SDL_Rect){specials[i].xDraw,specials[i].yDraw,specials[i].sizeDraw,specials[i].sizeDraw},0,NULL,0);
+         RenderCopyEx(renderer,tex_specials,&(SDL_Rect){5+150*(specials[i].type - 1),0,125,125},&(SDL_Rect){specials[i].xDraw,specials[i].yDraw,specials[i].widthDraw,specials[i].heightDraw},0,NULL,0);
 
          SDL_SetTextureAlphaMod(tex_specials,255);
    }
@@ -321,15 +322,15 @@ void FDraw_Game(){
        player[i].heightDraw = player[i].height;
        player[i].widthDraw  *= camera.scale;
        player[i].heightDraw *= camera.scale;
-       player[i].xDraw = gameWidth/2 + (player[i].x + camera.x - gameWidth/2) * camera.scale;
-       player[i].yDraw = gameHeight/2 + (player[i].y + camera.y - gameHeight/2) * camera.scale;
-      for(int j = 0;j<5;j++){
+       player[i].xDraw = gameWidthBase/2 + (player[i].x + camera.x - gameWidthBase/2) * camera.scale;
+       player[i].yDraw = gameHeightBase/2 + (player[i].y + camera.y - gameHeightBase/2) * camera.scale;
+       for(int j = 0;j<5;j++){
          if(player[i].playerTrails[j][2] > 10){
-           double playerTrailXDraw = gameWidth/2 + (player[i].playerTrails[j][0] + camera.x - gameWidth/2) * camera.scale;
-           double playerTrailYDraw = gameHeight/2 + (player[i].playerTrails[j][1] + camera.y - gameHeight/2) * camera.scale;
+           double playerTrailXDraw = gameWidthBase/2 + (player[i].playerTrails[j][0] + camera.x - gameWidthBase/2) * camera.scale;
+           double playerTrailYDraw = gameHeightBase/2 + (player[i].playerTrails[j][1] + camera.y - gameHeightBase/2) * camera.scale;
            SDL_SetTextureAlphaMod(tex_player,player[i].playerTrails[j][2]);
            
-           SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player[0].playerTrails[j][3]))*24,2,15,18},&(SDL_Rect){playerTrailXDraw,playerTrailYDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,(int)player[0].playerTrails[j][4]); 
+           RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player[0].playerTrails[j][3]))*24,2,15,18},&(SDL_Rect){playerTrailXDraw,playerTrailYDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,(int)player[0].playerTrails[j][4]); 
             
             } 
          }
@@ -343,20 +344,20 @@ void FDraw_Game(){
    
    if(player[i].dead){
       if((int)(player[0].deathAnimationTimer/1000)>=1 && (int)(player[0].deathAnimationTimer/1000) <= 6){
-      SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){95+(int)(player[0].deathAnimationTimer/1000)*24,24,22,22},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,SDL_FLIP_NONE);
+      RenderCopyEx(renderer,tex_player,&(SDL_Rect){95+(int)(player[0].deathAnimationTimer/1000)*24,24,22,22},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,SDL_FLIP_NONE);
       }
       else if((int)(player[0].deathAnimationTimer/1000) <= 6){
-         SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){98,26,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,SDL_FLIP_NONE);
+         RenderCopyEx(renderer,tex_player,&(SDL_Rect){98,26,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,SDL_FLIP_NONE);
       }
    }
    else if (player[i].groundPound || player[i].keys.down){
       player[i].width = player[i].Owidth;
-     SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){168,0,16,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+     RenderCopyEx(renderer,tex_player,&(SDL_Rect){168,0,16,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
    }
    else if (player[i].attack && player[i].specialDelayTimer < player[i].specialDelay){
      int attackInt = (int)(player[i].specialDelayTimer*2/(double)player[i].specialDelay);
      player[i].width = player[i].Owidth; 
-     SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){191+25*attackInt,2,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);  
+     RenderCopyEx(renderer,tex_player,&(SDL_Rect){191+25*attackInt,2,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);  
    }
    else if(player[i].onWall){
       if(player[i].onWall > 0){
@@ -364,106 +365,106 @@ void FDraw_Game(){
       }
       else {flip1 = SDL_FLIP_NONE;}
       player[i].width = player[i].Owidth;
-   SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){73,27,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+   RenderCopyEx(renderer,tex_player,&(SDL_Rect){73,27,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
    }
  
    else if((int)player[i].accX != 0 && (int)player[i].jumpVelo == 0){
    if(SDL_abs(player[i].veloX)>=(player[i].width+player[i].height)*200/40){
       player[i].width = player[i].Owidth + 3;
-      SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){1+((int)(player[i].animationIndex) % 6 )*24,47,18,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+      RenderCopyEx(renderer,tex_player,&(SDL_Rect){1+((int)(player[i].animationIndex) % 6 )*24,47,18,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
    }
    else{
       player[i].width = player[i].Owidth;
-   SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player[i].animationIndex) % 6 )*24,2,15,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+   RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player[i].animationIndex) % 6 )*24,2,15,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
    }
    }
    else if ((int)player[i].jumpVelo == 0){
       player[i].width = player[i].Owidth;
-     SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player[i].idleIndex) % 2 )*24,24,15,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+     RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player[i].idleIndex) % 2 )*24,24,15,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
    }
    else{
       player[i].width = player[i].Owidth;
-      SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){49,24,15,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+      RenderCopyEx(renderer,tex_player,&(SDL_Rect){49,24,15,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
    }
    if(player[i].attack && player[i].special == 1){
-      double xAttackDraw = gameWidth/2 + (player[i].attackX + camera.x - gameWidth/2) * camera.scale;
-      double yAttackDraw = gameHeight/2 + (player[i].attackY + camera.y - gameHeight/2) * camera.scale;
+      double xAttackDraw = gameWidthBase/2 + (player[i].attackX + camera.x - gameWidthBase/2) * camera.scale;
+      double yAttackDraw = gameHeightBase/2 + (player[i].attackY + camera.y - gameHeightBase/2) * camera.scale;
       double sizeattackDraw = player[0].attackSize*camera.scale;
-      SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){player[i].attackDrawInt*23,63,20,25},&(SDL_Rect){xAttackDraw,yAttackDraw,sizeattackDraw,sizeattackDraw},0,NULL,(1-player[i].attackDirection)/2);
+      RenderCopyEx(renderer,tex_player,&(SDL_Rect){player[i].attackDrawInt*23,63,20,25},&(SDL_Rect){xAttackDraw,yAttackDraw,sizeattackDraw,sizeattackDraw},0,NULL,(1-player[i].attackDirection)/2);
    }
    if(player[i].special == 5){
-      SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){(int)(player[i].arrowPull/100)*23+170,63,20,25},&(SDL_Rect){player[i].xDraw+player[i].widthDraw/2,player[i].yDraw+player[i].heightDraw/3,4*player[i].widthDraw/5,4*player[i].heightDraw/5},player[i].ProjectileAngle,&(SDL_Point){0,4*player[i].heightDraw/10},0);
+      RenderCopyEx(renderer,tex_player,&(SDL_Rect){(int)(player[i].arrowPull/100)*23+170,63,20,25},&(SDL_Rect){player[i].xDraw+player[i].widthDraw/2,player[i].yDraw+player[i].heightDraw/3,4*player[i].widthDraw/5,4*player[i].heightDraw/5},player[i].ProjectileAngle,&(SDL_Point){0,4*player[i].heightDraw/10},0);
       
    }
    if(player[i].EButtonOpacity > 1){
       SDL_SetTextureAlphaMod(tex_player,player[i].EButtonOpacity);
-      SDL_RenderCopy(renderer,tex_player,&(SDL_Rect){0,85,32,32},&(SDL_Rect){player[i].xDraw+player[i].widthDraw/8,player[i].yDraw-player[i].heightDraw/1.5,player[i].widthDraw/1.5,player[i].heightDraw/1.5});
+      RenderCopy(renderer,tex_player,&(SDL_Rect){0,85,32,32},&(SDL_Rect){player[i].xDraw+player[i].widthDraw/8,player[i].yDraw-player[i].heightDraw/1.5,player[i].widthDraw/1.5,player[i].heightDraw/1.5});
    }
    
    SDL_SetTextureAlphaMod(tex_player,255);
    // Draw grappling hook
    if(player[i].grappling){
-   double grappleDrawX = gameWidth/2 + (player[i].grappleX + camera.x - gameWidth/2) * camera.scale;
-   double grappleDrawY = gameHeight/2 + (player[i].grappleY + camera.y - gameHeight/2) * camera.scale;
-   SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){0,190,5,5},&(SDL_Rect){grappleDrawX,grappleDrawY-2,player[i].grappleLength*camera.scale,4},player[i].grappleAngle*180/PI,&(SDL_Point){0,5},0);
+   double grappleDrawX = gameWidthBase/2 + (player[i].grappleX + camera.x - gameWidthBase/2) * camera.scale;
+   double grappleDrawY = gameHeightBase/2 + (player[i].grappleY + camera.y - gameHeightBase/2) * camera.scale;
+   RenderCopyEx(renderer,tex_player,&(SDL_Rect){0,190,5,5},&(SDL_Rect){grappleDrawX,grappleDrawY-2,player[i].grappleLength*camera.scale,4},player[i].grappleAngle*180/PI,&(SDL_Point){0,5},0);
    SDL_SetRenderDrawColor(renderer,200,200,200,255);
-   SDL_RenderFillRect(renderer,&(SDL_Rect){grappleDrawX-5,grappleDrawY-5,10,10});
+   RenderFillRect(renderer,&(SDL_Rect){grappleDrawX-5,grappleDrawY-5,10,10});
 
    }
    if(player[i].grappleFailed > 50){
       SDL_SetTextureAlphaMod(tex_grappleFail,player[i].grappleFailed);
-      SDL_RenderCopy(renderer,tex_grappleFail,NULL,&(SDL_Rect){player[i].xDraw-150/2*camera.scale+player[i].widthDraw/2,player[i].yDraw-150/2*camera.scale+player[i].heightDraw/2,150*camera.scale,150*camera.scale});
+      RenderCopy(renderer,tex_grappleFail,NULL,&(SDL_Rect){player[i].xDraw-150/2*camera.scale+player[i].widthDraw/2,player[i].yDraw-150/2*camera.scale+player[i].heightDraw/2,150*camera.scale,150*camera.scale});
    }    
 }    
    }
    // Draw enemy
    for(int i = 0;i<sizeof(enemy)/sizeof(enemy[0]);i++){
       if(enemy[i].reserved && !enemy[i].killed){
-         enemy[i].xDraw = gameWidth/2 + (enemy[i].x + camera.x - gameWidth/2) * camera.scale;
-         enemy[i].yDraw = gameHeight/2 + (enemy[i].y + camera.y - gameHeight/2) * camera.scale;
+         enemy[i].xDraw = gameWidthBase/2 + (enemy[i].x + camera.x - gameWidthBase/2) * camera.scale;
+         enemy[i].yDraw = gameHeightBase/2 + (enemy[i].y + camera.y - gameHeightBase/2) * camera.scale;
          enemy[i].widthDraw = enemy[i].width*camera.scale;
          enemy[i].heightDraw = enemy[i].height*camera.scale;
          if(enemy[i].type == 1){
            if(enemy[i].attackCoolDown > 50){
-           SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){0,0,80,80},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},enemy[i].angle*180/PI -180,NULL,SDL_FLIP_NONE);
+           RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){0,0,80,80},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},enemy[i].angle*180/PI -180,NULL,SDL_FLIP_NONE);
            }
           else{
-            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){100,0,80,80},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},enemy[i].angle*180/PI -180,NULL,SDL_FLIP_NONE);
+            RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){100,0,80,80},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},enemy[i].angle*180/PI -180,NULL,SDL_FLIP_NONE);
           } 
          }
          if(enemy[i].type == 2){
            if(enemy[i].attackCoolDown > 50){
-           SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3+24*((int)enemy[i].textureAnimationInt % 7),120,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+           RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3+24*((int)enemy[i].textureAnimationInt % 7),120,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
            }
           else{
-            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,120,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+            RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,120,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
           } 
          }
          if(enemy[i].type == 3){
            if(enemy[i].attackCoolDown > 50){
-           SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3+24*((int)enemy[i].textureAnimationInt % 7),144,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+           RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3+24*((int)enemy[i].textureAnimationInt % 7),144,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
            }
           else{
-            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,144,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+            RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,144,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
           } 
          }
          if(enemy[i].type == 4){
            if(enemy[i].attackCoolDown > 50){
-           SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){2+24*((int)enemy[i].textureAnimationInt % 7),169,20,20},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+           RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){2+24*((int)enemy[i].textureAnimationInt % 7),169,20,20},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
            }
           else{
-            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){169,169,19,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+            RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){169,169,19,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
           } 
          }
          if(enemy[i].type == 5){
            if(enemy[i].attackCoolDown > 50 && !enemy[i].attackPrepare){
-           SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3+24*((int)enemy[i].textureAnimationInt % 7),192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+           RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3+24*((int)enemy[i].textureAnimationInt % 7),192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
            }
            else if(enemy[i].attackPrepare){
-            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){192,192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+            RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){192,192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
            }
           else{
-            SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+            RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
           } 
          }
       }
@@ -475,27 +476,27 @@ void FDraw_Game(){
       player[0].angleTargetTexture = 0;
      }
      SDL_SetTextureAlphaMod(tex_player,exp(player[0].arrowPull/100)*200/exp(3));
-     SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){35,89,30,30},&(SDL_Rect){enemy[player[0].enemyTarget].xDraw,enemy[player[0].enemyTarget].yDraw,7*enemy[player[0].enemyTarget].widthDraw/8,7*enemy[player[0].enemyTarget].heightDraw/8},player[0].angleTargetTexture,NULL,0); 
+     RenderCopyEx(renderer,tex_player,&(SDL_Rect){35,89,30,30},&(SDL_Rect){enemy[player[0].enemyTarget].xDraw,enemy[player[0].enemyTarget].yDraw,7*enemy[player[0].enemyTarget].widthDraw/8,7*enemy[player[0].enemyTarget].heightDraw/8},player[0].angleTargetTexture,NULL,0); 
      SDL_SetTextureAlphaMod(tex_player,255);
    }
    
    for(int i = 0;i<sizeof(projectiles)/sizeof(projectiles[0]);i++){
       if(projectiles[i].reserved){
-         projectiles[i].xDraw = gameWidth/2 + (projectiles[i].x + camera.x - gameWidth/2) * camera.scale;
-         projectiles[i].yDraw = gameHeight/2 + (projectiles[i].y + camera.y - gameHeight/2) * camera.scale;
+         projectiles[i].xDraw = gameWidthBase/2 + (projectiles[i].x + camera.x - gameWidthBase/2) * camera.scale;
+         projectiles[i].yDraw = gameHeightBase/2 + (projectiles[i].y + camera.y - gameHeightBase/2) * camera.scale;
          projectiles[i].widthDraw = projectiles[i].width*camera.scale;
          projectiles[i].heightDraw = projectiles[i].height*camera.scale;
          if(projectiles[i].projectileType == 1){
-            SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){145,68,20,13},&(SDL_Rect){projectiles[i].xDraw,
+            RenderCopyEx(renderer,tex_player,&(SDL_Rect){145,68,20,13},&(SDL_Rect){projectiles[i].xDraw,
             projectiles[i].yDraw,projectiles[i].widthDraw,projectiles[i].heightDraw},projectiles[i].angle,NULL,0);
          }
          else if(projectiles[i].projectileType == 2){
             if(!projectiles[i].fromEnemy){
-              SDL_RenderCopyEx(renderer,tex_player,&(SDL_Rect){0,120,56,56},&(SDL_Rect){projectiles[i].xDraw,
+              RenderCopyEx(renderer,tex_player,&(SDL_Rect){0,120,56,56},&(SDL_Rect){projectiles[i].xDraw,
             projectiles[i].yDraw,projectiles[i].widthDraw,projectiles[i].heightDraw},projectiles[i].angle,NULL,0); 
             }
             else{
-               SDL_RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3,214,56,56},&(SDL_Rect){projectiles[i].xDraw,
+               RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3,214,56,56},&(SDL_Rect){projectiles[i].xDraw,
             projectiles[i].yDraw,projectiles[i].widthDraw,projectiles[i].heightDraw},projectiles[i].angle,NULL,0); 
             }
             
@@ -511,13 +512,13 @@ void FDraw_Game(){
          particles[i].sizeDraw = particles[i].size*camera.scale;
          particles[i].xDraw  += camera.x;
          particles[i].yDraw  += camera.y;
-         particles[i].xDraw  = gameWidth/2 + (particles[i].xDraw - gameWidth/2) * camera.scale;
-         particles[i].yDraw  = gameHeight/2 + (particles[i].yDraw - gameHeight/2) * camera.scale;
+         particles[i].xDraw  = gameWidthBase/2 + (particles[i].xDraw - gameWidthBase/2) * camera.scale;
+         particles[i].yDraw  = gameHeightBase/2 + (particles[i].yDraw - gameHeightBase/2) * camera.scale;
          SDL_SetRenderDrawColor(renderer,particles[i].red,particles[i].green,particles[i].blue,255);
          //SDL_SetTextureColorMod(NULL,particles[i].red,particles[i].green,particles[i].blue);
          // Render Particle
-         SDL_RenderCopyEx(renderer,particles[i].texture,NULL,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw},particles[i].rotation,NULL,SDL_FLIP_NONE);
-         //SDL_RenderFillRect(renderer,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw});
+         RenderCopyEx(renderer,particles[i].texture,NULL,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw},particles[i].rotation,NULL,SDL_FLIP_NONE);
+         //RenderFillRect(renderer,&(SDL_Rect){particles[i].xDraw,particles[i].yDraw,particles[i].sizeDraw,particles[i].sizeDraw});
       }
    }
    ///////
@@ -530,8 +531,8 @@ void FDraw_Game(){
         displacement[i].heightDraw = displacement[i].height*camera.scale;
         displacement[i].xDraw  += camera.x;
         displacement[i].yDraw  += camera.y;
-        displacement[i].xDraw  = gameWidth/2 + (displacement[i].xDraw - gameWidth/2) * camera.scale;
-        displacement[i].yDraw  = gameHeight/2 + (displacement[i].yDraw - gameHeight/2) * camera.scale;
+        displacement[i].xDraw  = gameWidthBase/2 + (displacement[i].xDraw - gameWidthBase/2) * camera.scale;
+        displacement[i].yDraw  = gameHeightBase/2 + (displacement[i].yDraw - gameHeightBase/2) * camera.scale;
          
          FtextureQuad(displacement[i].xDraw,displacement[i].yDraw,displacement[i].widthDraw,displacement[i].heightDraw,tex_displacement,displacement[i].opacity,displacement[i].type);
          SDL_SetTextureAlphaMod(tex_displacement,255);
@@ -545,12 +546,12 @@ void FDraw_Game(){
          triggers[i].widthDraw = triggers[i].width*camera.scale;
          triggers[i].heightDraw = triggers[i].height*camera.scale;
       
-         triggers[i].xDraw      -= gameWidth/2;
-         triggers[i].yDraw      -= gameHeight/2;
+         triggers[i].xDraw      -= gameWidthBase/2;
+         triggers[i].yDraw      -= gameHeightBase/2;
          triggers[i].xDraw      *= camera.scale;
          triggers[i].yDraw      *= camera.scale;
-         triggers[i].xDraw      += gameWidth/2;
-         triggers[i].yDraw      += gameHeight/2;
+         triggers[i].xDraw      += gameWidthBase/2;
+         triggers[i].yDraw      += gameHeightBase/2;
          
 
          FtextureQuad(triggers[i].xDraw,triggers[i].yDraw,triggers[i].widthDraw,triggers[i].heightDraw,tex_trigger,triggers[i].opacity,0);
@@ -567,8 +568,8 @@ void FDraw_Game(){
          deathbox[i].heightDraw = deathbox[i].height*camera.scale;
          deathbox[i].xDraw  += camera.x;
          deathbox[i].yDraw  += camera.y;
-         deathbox[i].xDraw  = gameWidth/2 + (deathbox[i].xDraw - gameWidth/2) * camera.scale;
-         deathbox[i].yDraw  = gameHeight/2 + (deathbox[i].yDraw - gameHeight/2) * camera.scale;
+         deathbox[i].xDraw  = gameWidthBase/2 + (deathbox[i].xDraw - gameWidthBase/2) * camera.scale;
+         deathbox[i].yDraw  = gameHeightBase/2 + (deathbox[i].yDraw - gameHeightBase/2) * camera.scale;
          
          FtextureQuad(deathbox[i].xDraw,deathbox[i].yDraw,deathbox[i].widthDraw,deathbox[i].heightDraw,tex_skull,deathbox[i].opacity,0);
    }
@@ -817,7 +818,7 @@ void FUpdate_Data(){
             for(int j = 0;j<sizeof(enemy)/sizeof(enemy[0]);j++){
                if(enemy[j].reserved && !enemy[j].killed){
                   if(rectCollision((SDL_Rect){projectiles[i].x,projectiles[i].y,projectiles[i].width,projectiles[i].height},(SDL_Rect){enemy[j].x,enemy[j].y,enemy[j].width,enemy[j].height})){
-                     enemyHurt(j,10);
+                     enemyHurt(j,0);
                      if(projectiles[i].veloX > 0){
                         enemy[j].bumpX = 175;
                      }
@@ -842,7 +843,6 @@ void FUpdate_Data(){
 
             // Parry mechanism
             if(player[0].attack && rectCollision((SDL_Rect){projectiles[i].x,projectiles[i].y,projectiles[i].width,projectiles[i].height},(SDL_Rect){player[0].attackX,player[0].attackY,player[0].attackSize,player[0].attackSize})){
-               printf("gay");
                player[0].attack = false;
                projectiles[i].veloX *= -1;
                projectiles[i].veloY *= -1;
@@ -1130,7 +1130,7 @@ void FUpdate_Data(){
    player[0].canTake = -1;
    for(int i = 0;i<sizeof(specials)/sizeof(specials[0]);i++){
       if(specials[i].reserved){
-         if(rectCollision((SDL_Rect){player[0].x,player[0].y,player[0].width,player[0].height},(SDL_Rect){specials[i].x,specials[i].y,specials[i].size,specials[i].size})){
+         if(rectCollision((SDL_Rect){player[0].x,player[0].y,player[0].width,player[0].height},(SDL_Rect){specials[i].x,specials[i].y,specials[i].width,specials[i].height})){
             player[0].canTake = i;
             break;
          }
@@ -1299,7 +1299,7 @@ void FGameRestart(){
             scripts[i].reuseDelayTimer = 0;
          }
       }
-      for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+      for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
         if(platforms[i].reserved){
          platforms[i].x = platforms[i].spawnX;
          platforms[i].y = platforms[i].spawnY;
@@ -1409,8 +1409,8 @@ void FGameRestart(){
       player[0].sprintSpeed = (player[0].width+player[0].height)*500/40;
       player[1].sprintSpeed = (player[1].width+player[1].height)*500/40;
      
-      camera.x = -player[0].x-player[0].width/2+gameWidth/2;
-      camera.y = -player[0].y-player[0].height/2+gameHeight/2;
+      camera.x = -player[0].x-player[0].width/2+gameWidthBase/2;
+      camera.y = -player[0].y-player[0].height/2+gameHeightBase/2;
       camera.scale = 5;
       camera.freeCam = false;
       player[0].keys.left = false;

@@ -131,7 +131,7 @@ void Update_Slider(){
             }
             int offset = 0;
             if(sliders[i].iconTexture){
-             offset = sliders[i].ButtonFontWidth+sliders[i].textSize*sliders[i].ButtonFontWidth;
+                offset = sliders[i].ButtonFontWidth+sliders[i].textSize*sliders[i].ButtonFontWidth;
             }
             if(mouse.left == 1 && mouse.x > sliders[i].x+offset+sliders[i].textSize*sliders[i].ButtonFontWidth-5 && mouse.x < sliders[i].x+offset+sliders[i].textSize*sliders[i].ButtonFontWidth+sliders[i].sliderLength+10  && mouse.y > sliders[i].y && mouse.y < sliders[i].y+20){
                 // Change slider value
@@ -173,8 +173,6 @@ void Update_Knobs(){
             }
             int offset = 0;
             if(mouse.left == 1 && mouse.x > knobs[i].x && mouse.x < knobs[i].x+knobs[i].hoverWidth+25 && mouse.y > knobs[i].y && mouse.y < knobs[i].y+knobs[i].hoverHeight){
-                
-                
                 knobs[i].knobValue += knobs[i].knobCoef*(mouse.x-mouse.oldX);
                 knobs[i].knobValue = min(max(knobs[i].knobValue,knobs[i].knobMin),knobs[i].knobMax);
                 break;

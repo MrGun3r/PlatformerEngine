@@ -33,7 +33,7 @@ void DrawLight(double tint){
          
         SDL_SetTextureColorMod(lightTextures[light[i].lightInt].texture,light[i].red,light[i].green,light[i].blue);
         SDL_SetTextureAlphaMod(lightTextures[light[i].lightInt].texture,light[i].visibility);       
-        SDL_RenderCopyEx(renderer,lightTextures[light[i].lightInt].texture,NULL,&(SDL_Rect){light[i].xDraw,light[i].yDraw,light[i].widthDraw,light[i].heightDraw},light[i].rotation,NULL,SDL_FLIP_NONE);
+        RenderCopyEx(renderer,lightTextures[light[i].lightInt].texture,NULL,&(SDL_Rect){light[i].xDraw,light[i].yDraw,light[i].widthDraw,light[i].heightDraw},light[i].rotation,NULL,SDL_FLIP_NONE);
        }
    }
 
@@ -44,7 +44,7 @@ void DrawLight(double tint){
       if(light[i].reserved){   
          SDL_SetTextureColorMod(lightTextures[light[i].lightInt].texture,light[i].red,light[i].green,light[i].blue);
         SDL_SetTextureAlphaMod(lightTextures[light[i].lightInt].texture,light[i].brightness);   
-        SDL_RenderCopyEx(renderer,lightTextures[light[i].lightInt].texture,NULL,&(SDL_Rect){light[i].xDraw,light[i].yDraw,light[i].widthDraw,light[i].heightDraw},light[i].rotation,NULL,SDL_FLIP_NONE);
+        RenderCopyEx(renderer,lightTextures[light[i].lightInt].texture,NULL,&(SDL_Rect){light[i].xDraw,light[i].yDraw,light[i].widthDraw,light[i].heightDraw},light[i].rotation,NULL,SDL_FLIP_NONE);
        }
    }
 

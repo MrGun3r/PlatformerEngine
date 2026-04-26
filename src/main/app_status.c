@@ -30,7 +30,7 @@ void FDrawTransition(){
     
   }
   else{
-    while(transitionCubeSize*i+transitionCubeSize/2-(2-app.transitionInt)*transitionCubeSize/2<gameWidth+transitionCubeSize){
+    while(transitionCubeSize*i+transitionCubeSize/2-(2-app.transitionInt)*transitionCubeSize/2<gameWidthBase+transitionCubeSize){
       while(transitionCubeSize*j+transitionCubeSize/2-(2-app.transitionInt)*transitionCubeSize/2<gameHeight+transitionCubeSize){
         double cubeInterval = min(max(app.transitionInt-1-(double)i/(200/(double)transitionCubeSize*5),1),2);
         SDL_RenderFillRect(renderer,&(SDL_Rect){transitionCubeSize*i+transitionCubeSize/2-(2-cubeInterval)*transitionCubeSize/2,transitionCubeSize*j+transitionCubeSize/2-(2-cubeInterval)*transitionCubeSize/2,transitionCubeSize*(2-cubeInterval),transitionCubeSize*(2-cubeInterval)});
@@ -92,13 +92,11 @@ void FswitchAppStatus(int from, int to){
       else{
         level.campaignLevel = true;
       }
-      SetButton(false,0,"Paused",gameWidth/2 - len("Paused\0")*30/2,gameHeight/2-150,30,true,-1,-1,false);
-      SetButton(false,1,"Resume",gameWidth/2 - len("Resume\0")*15/2,gameHeight/2-80,15,true,-1,-1,false);
-  
-      SetButton(false,3,"Restart Level",50,gameHeight-50,15,true,-1,-1,false);
-      SetButton(false,4,"Next Level",gameWidth-200,gameHeight-50,15,true,-1,-1,false);
-
-      SetButton(false,2,"Exit to Menu",gameWidth/2 - len("Exit to Menu\0")*15/2,gameHeight/2-20-30,15,true,-1,-1,false);
+      SetButton(false,0,"Paused",gameWidthBase/2 - len("Paused\0")*30/2,gameHeightBase/2-150,30,true,-1,-1,false);
+      SetButton(false,1,"Resume",gameWidthBase/2 - len("Resume\0")*15/2,gameHeightBase/2-80,15,true,-1,-1,false);  
+      SetButton(false,3,"Restart Level",50,gameWidthBase-50,15,true,-1,-1,false);
+      SetButton(false,4,"Next Level",gameWidthBase-200,gameWidthBase-50,15,true,-1,-1,false);
+      SetButton(false,2,"Exit to Menu",gameWidthBase/2 - len("Exit to Menu\0")*15/2,gameHeightBase/2-20-30,15,true,-1,-1,false);
       
     }
    // Play Menu
@@ -133,8 +131,8 @@ void FswitchAppStatus(int from, int to){
    else if (to == 5){
     app.backgroundInt = FindBackgroundInt("background");
     app.backgroundOpacity = 255;
-    SetTextBox(true,0,"Set Username:",gameWidth/2 - len("Set Username:\0")*15/2-250,100,15,750);
-    SetButton(true,0,"Start",gameWidth/2 - len("Start\0")*15/2,130,15,true,-1,-1,false);
+    SetTextBox(true,0,"Set Username:",gameWidthBase/2 - len("Set Username:\0")*15/2-250,100,15,750);
+    SetButton(true,0,"Start",gameWidthBase/2 - len("Start\0")*15/2,130,15,true,-1,-1,false);
    }
    // levels list
    if(to == 2){
@@ -152,7 +150,7 @@ void FswitchAppStatus(int from, int to){
       if(i > 0 && levelsList[i-1].reserved){
         SetButton(true,i+2,levelsList[i-1].levelName,20,180+(i-app.listStartIndex)*20,10,true,500,-1,false);
         
-       if(180+(i-app.listStartIndex)*20>gameHeight-100){
+       if(180+(i-app.listStartIndex)*20>gameWidthBase-100){
         app.listLengthMax = i - app.listStartIndex;
         app.listLength = i - app.listStartIndex;
         break;
@@ -163,8 +161,8 @@ void FswitchAppStatus(int from, int to){
       }
      }
      
-     SetButton(true,1,"Prev",30,gameHeight-60,15,true,-1,-1,false);
-     SetButton(true,2,"Next",150,gameHeight-60,15,true,-1,-1,false);
+     SetButton(true,1,"Prev",30,gameHeightBase-60,15,true,-1,-1,false);
+     SetButton(true,2,"Next",150,gameHeightBase-60,15,true,-1,-1,false);
     
      return;
    }
@@ -175,7 +173,7 @@ void FswitchAppStatus(int from, int to){
     SetSlider(true,1,"Music Volume",20,210,15,true,-1,-1,false,0,100,80,100);
     SetButton(true,1,"Resolution",20,240,15,true,-1,-1,false);
     SetButton(true,3,"Show FPS",20,270,15,true,-1,-1,false);
-    SetButton(true,2,"Apply",20,gameHeight-50,10,true,-1,-1,false);
+    SetButton(true,2,"Apply",20,gameHeightBase-50,10,true,-1,-1,false);
 
     sprintf(buttons[1].value,"%dx%d",app.resolutions[app.resolutionUsed][0],app.resolutions[app.resolutionUsed][1]);
     sprintf(buttons[3].value,"%d",app.showFPS);
@@ -236,38 +234,37 @@ void FswitchAppStatus(int from, int to){
           mapData.yMax = 5000;
           editor.status = -1;       
    }
-          double sizeRatio = (double)gameWidth/1024;
-          sizeRatio = sqrt(sizeRatio);
+          
           // Buttons
-          SetButton(false,1,"Translate",gameWidth-190,50,10,true,-1,-1,true);
-          SetButton(false,2,"Resize",gameWidth-190,75,10,true,-1,-1,false);
-          SetButton(true,3,"Save Map",gameWidth-190,gameHeight-70,10,true,-1,-1,false);
-          SetButton(true,4,"Save Map As",gameWidth-190,gameHeight-50,10,true,-1,-1,false);
-          SetButton(false,5,"Delete",gameWidth-190,gameHeight-120,10,true,-1,-1,false);
-          SetButton(true,6,"Load Map",gameWidth-190,gameHeight-90,10,true,-1,-1,false);
-          SetButton(false,7,"Texture:",gameWidth-190,200,10,true,-1,-1,false);
-          SetButton(false,8,"SlopeInv",gameWidth-190,220,10,true,-1,-1,false);
-          SetButton(false,17,"Stretch",gameWidth-190,300,10,true,-1,-1,false);
-          SetButton(false,9,"Copy",gameWidth-sizeof("Copy")*8-20,gameHeight-120,10,true,-1,-1,false);
+          SetButton(false,1,"Translate",gameWidthBase-190,50,10,true,-1,-1,true);
+          SetButton(false,2,"Resize",gameWidthBase-190,75,10,true,-1,-1,false);
+          SetButton(true,3,"Save Map",gameWidthBase-190,gameHeightBase-70,10,true,-1,-1,false);
+          SetButton(true,4,"Save Map As",gameWidthBase-190,gameHeightBase-50,10,true,-1,-1,false);
+          SetButton(false,5,"Delete",gameWidthBase-190,gameHeightBase-120,10,true,-1,-1,false);
+          SetButton(true,6,"Load Map",gameWidthBase-190,gameHeightBase-90,10,true,-1,-1,false);
+          SetButton(false,7,"Texture:",gameWidthBase-190,200,10,true,-1,-1,false);
+          SetButton(false,8,"SlopeInv",gameWidthBase-190,220,10,true,-1,-1,false);
+          SetButton(false,17,"Stretch",gameWidthBase-190,300,10,true,-1,-1,false);
+          SetButton(false,9,"Copy",gameWidthBase-sizeof("Copy")*8-20,gameHeightBase-120,10,true,-1,-1,false);
           SetButton(true,10,"New",5,5,10,true,-1,-1,false);
           SetButton(true,11,"Map",5,30,10,true,-1,-1,false);
-          SetButton(false,24,"Collidable",gameWidth-190,300,10,true,-1,-1,false);
-          SetButton(false,26,"Add Node",gameWidth-190,180,10,true,-1,-1,false);
-          SetButton(false,27,"Remove Node",gameWidth-190,200,10,true,-1,-1,false);
-          SetButton(false,28,"Wrap",gameWidth-190,220,10,true,-1,-1,false);
-          SetButton(false,29,"Type",gameWidth-190,240,10,true,-1,-1,false);
-          SetButton(true,15,"+",gameWidth-220,gameHeight-15,10,true,-1,-1,false);
-          SetButton(true,16,"-",gameWidth-240,gameHeight-15,10,true,-1,-1,false);
-          SetButton(false,18,"Bg",gameWidth-190,180,10,true,-1,-1,false);
-          SetButton(false,21,"Type",gameWidth-190,180,10,true,-1,-1,false);
-          SetButton(false,22,"Displace",gameWidth-190,200,10,true,-1,-1,false);
-          SetButton(false,31,"Name",gameWidth-190,200,10,true,-1,-1,false);
-          SetButton(false,32,"Light",gameWidth-190,400,10,true,-1,-1,false);
-          SetButton(false,35,"Special",gameWidth-190,180,10,true,-1,-1,false);
-          SetButton(false,37,"Set Text",gameWidth-190,180,10,true,-1,-1,false);
-          SetButton(false,38,"Rotate",gameWidth-190,480,10,true,-1,-1,false);
-          SetButton(false,39,"Finish Animation",gameWidth-190,380,10,true,-1,-1,false);
-          SetButton(false,40,"Grapplable",gameWidth-190,540,10,true,-1,-1,false);
+          SetButton(false,24,"Collidable",gameWidthBase-190,300,10,true,-1,-1,false);
+          SetButton(false,26,"Add Node",gameWidthBase-190,180,10,true,-1,-1,false);
+          SetButton(false,27,"Remove Node",gameWidthBase-190,200,10,true,-1,-1,false);
+          SetButton(false,28,"Wrap",gameWidthBase-190,220,10,true,-1,-1,false);
+          SetButton(false,29,"Type",gameWidthBase-190,240,10,true,-1,-1,false);
+          SetButton(true,15,"+",gameWidthBase-220,gameHeightBase-15,10,true,-1,-1,false);
+          SetButton(true,16,"-",gameWidthBase-240,gameHeightBase-15,10,true,-1,-1,false);
+          SetButton(false,18,"Bg",gameWidthBase-190,180,10,true,-1,-1,false);
+          SetButton(false,21,"Type",gameWidthBase-190,180,10,true,-1,-1,false);
+          SetButton(false,22,"Displace",gameWidthBase-190,200,10,true,-1,-1,false);
+          SetButton(false,31,"Name",gameWidthBase-190,200,10,true,-1,-1,false);
+          SetButton(false,32,"Light",gameWidthBase-190,400,10,true,-1,-1,false);
+          SetButton(false,35,"Special",gameWidthBase-190,180,10,true,-1,-1,false);
+          SetButton(false,37,"Set Text",gameWidthBase-190,180,10,true,-1,-1,false);
+          SetButton(false,38,"Rotate",gameWidthBase-190,480,10,true,-1,-1,false);
+          SetButton(false,39,"Finish Animation",gameWidthBase-190,380,10,true,-1,-1,false);
+          SetButton(false,40,"Grapplable",gameWidthBase-190,540,10,true,-1,-1,false);
 
           SetButton(true,0,"",70,10,30,true,-1,40,false);
           SetButtonIcon(0,textures[FindTextureInt("stone")].texture,0,1,0,1);
@@ -288,65 +285,62 @@ void FswitchAppStatus(int from, int to){
           SetButton(true,30,"",470,10,30,true,-1,40,false);
           SetButtonIcon(30,tex_script,0,1,0,1);
           SetButton(true,33,"",520,10,30,true,-1,40,false);
-          SetButtonIcon(33,tex_enemy,0,0.41,0,0.41);
+          SetButtonIcon(33,tex_enemy,0,0.28,0,0.23);
           SetButton(true,34,"",570,10,30,true,-1,40,false);
-          SetButtonIcon(34,tex_specials,0.5625,0.75,0,0.65);
+          SetButtonIcon(34,tex_specials,0.25,0.36,0,0.65);
           SetButton(true,36,"",620,10,30,true,-1,40,false);
           SetButtonIcon(36,tex_textIcon,0,1,0,1);
           
-
           // Text Box
           SetTextBox(false,0,"Map Name:",45,150,15,450);
 
-          
           // Sliders
-          SetSlider(false,0,"Slope",gameWidth-190,180,10,true,-1,-1,false,-45,45,80,0);
-          SetSlider(false,1,"Texture x",gameWidth-190,200,10,true,-1,-1,false,0,100,50,0);
-          SetSlider(false,2,"Texture y",gameWidth-190,220,10,true,-1,-1,false,0,100,50,0);
-          SetSlider(false,14,"Opacity",gameWidth-190,300,10,true,-1,-1,false,0,255,60,255);
-          SetSlider(false,6,"Map Light",gameWidth-190,100,10,true,-1,-1,false,10,255,50,255);
-          SetSlider(false,7,"Rotation",gameWidth-190,200,10,true,-1,-1,false,0,360,50,0);
-          SetSlider(false,8,"Brightness",gameWidth-190,220,10,true,-1,-1,false,0,255,50,100);
-          SetSlider(false,9,"Visibility",gameWidth-190,240,10,true,-1,-1,false,0,255,50,255);
-          SetSlider(false,15,"Camera",gameWidth-190,160,10,true,-1,-1,false,50,600,50,300);
-          SetSlider(false,10,"Red",gameWidth-190,260,10,true,-1,-1,false,0,255,70,255);
-          SetSlider(false,11,"Green",gameWidth-190,280,10,true,-1,-1,false,0,255,70,255);
-          SetSlider(false,12,"Blue",gameWidth-190,300,10,true,-1,-1,false,0,255,70,255);
-          SetSlider(false,13,"Power",gameWidth-190,220,10,true,-1,-1,false,0,1500,50,50);
-          SetSlider(false,16,"Max Speed",gameWidth-190,220,10,true,-1,-1,false,5,400,60,20);
-          SetSlider(false,17,"Health",gameWidth-190,240,10,true,-1,-1,false,5,200,80,30);
+          SetSlider(false,0,"Slope",gameWidthBase-190,180,10,true,-1,-1,false,-45,45,80,0);
+          SetSlider(false,1,"Texture x",gameWidthBase-190,200,10,true,-1,-1,false,0,100,50,0);
+          SetSlider(false,2,"Texture y",gameWidthBase-190,220,10,true,-1,-1,false,0,100,50,0);
+          SetSlider(false,14,"Opacity",gameWidthBase-190,300,10,true,-1,-1,false,0,255,60,255);
+          SetSlider(false,6,"Map Light",gameWidthBase-190,100,10,true,-1,-1,false,10,255,50,255);
+          SetSlider(false,7,"Rotation",gameWidthBase-190,200,10,true,-1,-1,false,0,360,50,0);
+          SetSlider(false,8,"Brightness",gameWidthBase-190,220,10,true,-1,-1,false,0,255,50,100);
+          SetSlider(false,9,"Visibility",gameWidthBase-190,240,10,true,-1,-1,false,0,255,50,255);
+          SetSlider(false,15,"Camera",gameWidthBase-190,160,10,true,-1,-1,false,50,600,50,300);
+          SetSlider(false,10,"Red",gameWidthBase-190,260,10,true,-1,-1,false,0,255,70,255);
+          SetSlider(false,11,"Green",gameWidthBase-190,280,10,true,-1,-1,false,0,255,70,255);
+          SetSlider(false,12,"Blue",gameWidthBase-190,300,10,true,-1,-1,false,0,255,70,255);
+          SetSlider(false,13,"Power",gameWidthBase-190,220,10,true,-1,-1,false,0,1500,50,50);
+          SetSlider(false,16,"Max Speed",gameWidthBase-190,220,10,true,-1,-1,false,5,400,60,20);
+          SetSlider(false,17,"Health",gameWidthBase-190,240,10,true,-1,-1,false,5,200,80,30);
 
           // Knobs
-          SetKnob(false,0,"Tex Scale",gameWidth-190,240,10,true,5,250,30);
-          SetKnob(false,5,"Animation",gameWidth-190,360,10,true,0,1000,0);
+          SetKnob(false,0,"Tex Scale",gameWidthBase-190,240,10,true,5,250,30);
+          SetKnob(false,5,"Animation",gameWidthBase-190,360,10,true,0,1000,0);
           SetKnobCoef(5,0.5);
-          SetKnob(false,8,"Node ID",gameWidth-190,440,10,true,-1,50,-1);
+          SetKnob(false,8,"Node ID",gameWidthBase-190,440,10,true,-1,50,-1);
           SetKnobCoef(8,0.1);
-          SetKnob(false,10,"Object ID",gameWidth-190,300,10,true,0,300,0);
+          SetKnob(false,10,"Object ID",gameWidthBase-190,300,10,true,0,300,0);
           SetKnobCoef(10,0.1);
-          SetKnob(false,9,"Move Speed",gameWidth-190,460,10,true,0,500,0);
+          SetKnob(false,9,"Move Speed",gameWidthBase-190,460,10,true,0,500,0);
           SetKnobCoef(9,1);
-          SetKnob(false,11,"Use Delay",gameWidth-190,320,10,true,0,5000,0);
-          SetKnob(false,12,"Reuse Time",gameWidth-190,340,10,true,0,5000,0);
-          SetKnob(false,16,"Texture Move X",gameWidth-190,500,10,true,0,500,0);
-          SetKnob(false,17,"Texture Move Y",gameWidth-190,520,10,true,0,500,0);
+          SetKnob(false,11,"Use Delay",gameWidthBase-190,320,10,true,0,5000,0);
+          SetKnob(false,12,"Reuse Time",gameWidthBase-190,340,10,true,0,5000,0);
+          SetKnob(false,16,"Texture Move X",gameWidthBase-190,500,10,true,0,500,0);
+          SetKnob(false,17,"Texture Move Y",gameWidthBase-190,520,10,true,0,500,0);
 
-          SetKnob(false,3,"Border X",gameWidth-190,120,10,true,500,10000,5000);
-          SetKnob(false,4,"Border Y",gameWidth-190,140,10,true,500,10000,5000);
+          SetKnob(false,3,"Border X",gameWidthBase-190,120,10,true,500,10000,5000);
+          SetKnob(false,4,"Border Y",gameWidthBase-190,140,10,true,500,10000,5000);
           SetKnobCoef(3,10);  
           SetKnobCoef(4,10);
           
-          SetKnob(false,6,"Star Time Ms",gameWidth-190,200,10,true,0,99,0);
+          SetKnob(false,6,"Star Time Ms",gameWidthBase-190,200,10,true,0,99,0);
           SetKnobCoef(6,0.5);
-          SetKnob(false,7,"Star Time",gameWidth-190,220,10,true,0,10000,60);
-          SetKnob(false,18,"Type",gameWidth-190,260,10,true,1,5,1);
+          SetKnob(false,7,"Star Time",gameWidthBase-190,220,10,true,0,10000,60);
+          SetKnob(false,18,"Type",gameWidthBase-190,260,10,true,1,5,1);
           SetKnobCoef(18,0.1);
-          SetKnob(false,19,"Grid Unit",gameWidth-190,240,10,true,1,100,1);
+          SetKnob(false,19,"Grid Unit",gameWidthBase-190,240,10,true,1,100,1);
           SetKnobCoef(19,0);
-          SetKnob(false,13,"X:",gameWidth-190,220,10,true,0,100,0);
-          SetKnob(false,14,"Y:",gameWidth-190,250,10,true,0,100,0);
-          SetKnob(false,15,"Font:",gameWidth-190,280,10,true,10,120,10);
-
+          SetKnob(false,13,"X:",gameWidthBase-190,220,10,true,0,100,0);
+          SetKnob(false,14,"Y:",gameWidthBase-190,250,10,true,0,100,0);
+          SetKnob(false,15,"Font:",gameWidthBase-190,280,10,true,10,120,10);
 
     editor.mouseToObjectDistances[0] = 0;
     editor.mouseToObjectDistances[1] = 0;   

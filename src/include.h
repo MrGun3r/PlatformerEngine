@@ -8,12 +8,15 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <SDL2/SDL_mixer.h>
+
 // Variables
 
-#define PI 3.14159 
+#define PI 3.141592 
 #define GRAVITY 500
 #define CLAMP_MIN(x,min) if(x < min) x = min
 #define CLAMP_MAX(x,max) if(x > max) x = max
+
+
 
 #define CLAMP_MINMAX(x, min, max) do { if ((x) < (min)) (x) = (min); else if ((x) > (max)) (x) = (max);} while(0) 
 #define ROUND_TO(x,start,max) if(x > max) x = start;
@@ -22,9 +25,13 @@
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
+const float gameWidthBase = 1028;
+const float gameHeightBase = 720; 
 
 float windowWidthScale = 1;
 float windowHeightScale = 1;
+
+#include "main/rendererWrapper.c"
 
 double campaignXIsland;
 double campaignYIsland;
@@ -177,7 +184,7 @@ void ExecuteScript(int index);
 void FtexturePlatform(int platformID);
 void FtextureQuad(double x,double y,double width,double height,SDL_Texture* texture,double opacity,int rotationAngle);
 void renderText(int stringCount,char *Text,int x ,int y, int width,int height,int opacity,int shadowOpacity,int color[3]);
-void FGUIHover();
+void GUIHover();
 SDL_Texture* CreateRepeatedTexture(SDL_Renderer* renderer, SDL_Texture* originalTexture, int n);
 void DrawBackground();
 void ReadLevelCampaign();
@@ -229,10 +236,10 @@ void DrawLight(double tint);
 // Editor functions 
 void FUpdate_Editor();
 void FCheck_Select_Editor();
-void FDraw_SideBar_Editor();
+void Draw_ObjectInfo();
 void FTransformState(); // transforms an object or a camera view
-void FDrawObjects();
-void FDraw_Editor();
+void DrawObjects();
+void Draw_Editor();
 void FSaveMap(char mapName[256]);
 void addMoveNode(int x, int y);
 void addDisplacement(double x, double y, double width,double height,double type,double power,double powerType,double opacity);
@@ -244,10 +251,10 @@ void addLight(double x,double y,double width,double height,double red,double gre
 void addDeathBox(double x, double y, double width,double height,double opacity);
 void addScript(double x,double y,double width,double height);
 void addEnemy(int x,int y,int width,int height);
-void addSpecial(int x, int y,int size,int type);
+void addSpecial(int x, int y,int width,int height,int type);
 void addTextPopUp(int x, int y,double width,double height);
 void addDamagePopUp(int value,double x,double y,double size,double veloX,double veloY);
-void FInfoBox();
+void InfoBox();
 
 // In Game functions
 void FcheckPB(); 

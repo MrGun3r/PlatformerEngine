@@ -85,12 +85,25 @@ struct Profile{
    int levelsUnlocked;
 };
 
-
-
+enum ObjectType {
+      PLAYER,
+      PLATFORM,
+      TRIGGER,
+      LIGHT,
+      DISPLACEMENT,
+      MOVENODE,
+      DEATHBOX,
+      SCRIPT,
+      ENEMY,
+      SPECIAL,
+      TEXTPOPUP,
+      NONE
+};
+typedef enum ObjectType ObjectType;
 
 struct Editor{
   bool selected;
-  int typeSelected;
+  ObjectType typeSelected;
   int indexSelected;
   int movenodeSelected;
   int transform;
@@ -234,7 +247,6 @@ struct App{
    int listStartIndex;
    int listLength;
    int listLengthMax;
-
 
    int resolutions[6][2];
    int resolutionInt;
@@ -488,10 +500,12 @@ struct Special{
    double editorSelectionTime;
    double x;
    double y;
-   double size;
+   double height;
+   double width;
    double xDraw;
    double yDraw;
-   double sizeDraw;
+   double heightDraw;
+   double widthDraw;
    int type;
    bool taken;
 };
