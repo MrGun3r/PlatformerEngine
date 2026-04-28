@@ -3,7 +3,7 @@ void addEnemy(int x,int y,int width,int height){
       if(!enemy[i].reserved){
          editor.selected = true;
          editor.indexSelected = i;
-         editor.typeSelected = 8;
+         editor.typeSelected = ENEMY;
          enemy[i].reserved = true;
          enemy[i].x = x;
          enemy[i].y = y;
@@ -21,7 +21,7 @@ void addTrigger(int x,int y,double width,double height,int Type,double opacity,d
    for(int i = 1;i<sizeof(triggers)/sizeof(triggers[0]);i++){
       if(!triggers[i].reserved){
         editor.selected = true;
-        editor.typeSelected = 2;
+        editor.typeSelected = TRIGGER;
         editor.indexSelected = i;
         triggers[i].reserved = true;
         triggers[i].x = x;
@@ -49,7 +49,7 @@ void addDisplacement(double x, double y, double width,double height,double type,
    for(int i = 0;i < sizeof(displacement)/sizeof(displacement[0]);i++){
       if(!displacement[i].reserved){
          editor.selected = true;
-         editor.typeSelected = 4;
+         editor.typeSelected = DISPLACEMENT;
          editor.indexSelected = i;
 
          displacement[i].reserved = true;
@@ -80,7 +80,7 @@ void addLight(double x,double y,double width,double height,double red,double gre
    for(int i = 1;i<sizeof(light)/sizeof(light[0]);i++){
       if(!light[i].reserved){
          editor.selected = true;
-         editor.typeSelected = 3;
+         editor.typeSelected = LIGHT;
          editor.indexSelected = i;
          light[i].reserved = true;
          light[i].x = x;
@@ -118,7 +118,7 @@ void addScript(double x,double y,double width,double height){
    for(int i = 0;i<sizeof(scripts)/sizeof(scripts[0]);i++){
       if(!scripts[i].reserved){
          editor.selected = true;
-         editor.typeSelected = 7;
+         editor.typeSelected = SCRIPT;
          editor.indexSelected = i;
          scripts[i].reserved = true;
          scripts[i].x = x;
@@ -137,7 +137,7 @@ void addDeathBox(double x, double y, double width,double height,double opacity){
    for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
       if(!deathbox[i].reserved){
          editor.selected = true;
-         editor.typeSelected = 5;
+         editor.typeSelected = DEATHBOX;
          editor.indexSelected = i;
          deathbox[i].reserved = true;
          deathbox[i].x = x;
@@ -165,7 +165,7 @@ void addMoveNode(int x, int y){
    for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
       if(!movenodes[i].reserved){
          editor.selected = true;
-         editor.typeSelected = 6;
+         editor.typeSelected = MOVENODE;
          editor.indexSelected = i;
          editor.movenodeSelected = 0;
          movenodes[i].reserved = true;
@@ -179,18 +179,18 @@ void addMoveNode(int x, int y){
    editorShowButtons();
 }
 
-void addSpecial(int x, int y,int size,int type){
+void addSpecial(int x, int y,int width,int height,int type){
    for(int i = 0;i<sizeof(specials)/sizeof(specials[0]);i++){
       if(!specials[i].reserved){
          editor.selected = true;
-         editor.typeSelected = 9;
+         editor.typeSelected = SPECIAL;
          editor.indexSelected = i;
          specials[i].reserved = true;
          specials[i].x = (double)x;
          specials[i].y = (double)y;
-         specials[i].size = size;
+         specials[i].width = width;
+         specials[i].height = height;
          specials[i].type = type;
-
          break;
       }
    }
@@ -201,7 +201,7 @@ void addTextPopUp(int x, int y,double width,double height){
    for(int i = 0;i<sizeof(textpopups)/sizeof(textpopups[0]);i++){
       if(!textpopups[i].reserved){
          editor.selected = true;
-         editor.typeSelected = 10;
+         editor.typeSelected = TEXTPOPUP;
          editor.indexSelected = i;
          textpopups[i].reserved = true;
          textpopups[i].x = (double)x;
@@ -223,10 +223,10 @@ void addTextPopUp(int x, int y,double width,double height){
 
 void addPlatform(int x,int y,double width,double height,double slope,bool slopeInv,int texture,int type,double scale,double offsetX,double offsetY,bool stretch,bool collidable,double opacity,double animation
  ,double red,double green,double blue){
-   for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+   for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
       if(!platforms[i].reserved){
         editor.selected = true;
-        editor.typeSelected = 1;
+        editor.typeSelected = PLATFORM;
         editor.indexSelected = i;
         platforms[i].reserved = true;
         platforms[i].x = x;

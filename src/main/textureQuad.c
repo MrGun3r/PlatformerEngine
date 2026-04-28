@@ -31,7 +31,7 @@ SDL_Texture* CreateRepeatedTexture(SDL_Renderer* renderer, SDL_Texture* original
     for (int y = 0; y < n ; ++y) {
         for (int x = 0; x < n ; ++x) {
             SDL_Rect destRect = { x * textureWidth/n, y * textureHeight/n, textureWidth/n, textureHeight/n };
-            SDL_RenderCopy(renderer, originalTexture, NULL, &destRect);
+            RenderCopy(renderer, originalTexture, NULL, &destRect);
         }
     }
 
@@ -45,7 +45,7 @@ SDL_Texture* CreateRepeatedTexture(SDL_Renderer* renderer, SDL_Texture* original
 
 void FtexturePlatform(int platformID){
 
-  // Texturing currently uses CPU , Which is stupidily inefficient , Waiting for SDL to add Texture UV Wrapping...
+  // Texturing currently uses CPU , Which is stupidly inefficient , Waiting for SDL to add Texture UV Wrapping...
      
      setTexturePlatform(platformID);
      double textureInt = platforms[platformID].textureAnimationInt;
@@ -118,7 +118,7 @@ void FtexturePlatform(int platformID){
              vertex_4  
            };
            
-           SDL_RenderGeometry(renderer, textures[platforms[platformID].textureInt].texture, vertices, 4, (int[6]){3,2,0,2,0,1}, 6);
+           RenderGeometry(renderer, textures[platforms[platformID].textureInt].texture, vertices, 4, (int[6]){3,2,0,2,0,1}, 6);
            //SDL_RenderDrawLines(renderer,points,5); 
     
         }
@@ -155,7 +155,7 @@ void FtexturePlatform(int platformID){
            };
            
            
-           SDL_RenderGeometry(renderer, textures[platforms[platformID].textureInt].texture, vertices, 4, (int[6]){1,2,3,0,1,3}, 6);
+           RenderGeometry(renderer, textures[platforms[platformID].textureInt].texture, vertices, 4, (int[6]){1,2,3,0,1,3}, 6);
            //SDL_RenderDrawLines(renderer,points,5); 
      }
        
@@ -208,7 +208,7 @@ void FtextureQuad(double x,double y,double width,double height,SDL_Texture* text
              vertex_4  
            };
            
-           SDL_RenderGeometry(renderer, texture, vertices, 4, (int[6]){1,2,3,0,1,3}, 6);
+           RenderGeometry(renderer, texture, vertices, 4, (int[6]){1,2,3,0,1,3}, 6);
         }
         }
      

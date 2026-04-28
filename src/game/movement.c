@@ -1,5 +1,5 @@
 bool Rect_inBounds(double x, double y, double width,double height){
-   return (x+width > 0 && y+height > 0 && x < gameWidth && y < gameHeight);  
+   return (x+width > 0 && y+height > 0 && x < gameWidthBase && y < gameHeightBase);  
 }
 
 int Player_Grapple(){
@@ -115,7 +115,7 @@ void FPlayer_Special(){
           
         // player[0].ProjectileAngle = atan((player[i].y-enemy[player[i].enemyTarget].y)/(player[i].x-enemy[player[i].enemyTarget].x))*180/PI;
 
-         addProjectile(false,-1,player[0].x+player[0].width/2,player[0].y+player[0].height/3,-player[0].direction*300*cos(player[0].ProjectileAngle*PI/180),300*sin(player[0].ProjectileAngle*PI/180),2);
+         addProjectile(false,-1,player[0].x+player[0].width/2,player[0].y+player[0].height/3,player[0].direction*300,-300*sin(player[0].ProjectileAngle*PI/180),2);
          player[0].specialDelayTimer = 0;
          
          Mix_PlayChannel(-1,Sound_Throw,0);

@@ -57,8 +57,8 @@ int initVideo(){
 void FwindowResize(){
    SDL_GetWindowSize(window,&windowWidth,&windowHeight); 
    
-   windowHeightScale = (float)windowHeight/gameHeight;
-   windowWidthScale = (float)windowWidth/gameWidth;
+   windowHeightScale = (float)gameHeight/gameHeightBase;
+   windowWidthScale = (float)gameWidth/gameWidthBase;
    
 
    if(app.status == 1){
@@ -69,10 +69,10 @@ void FwindowResize(){
 
 void gameResolutionChange(){
    SDL_GetWindowSize(window,&windowWidth,&windowHeight);
-   windowHeightScale = (float)windowHeight/gameHeight;
-   windowWidthScale = (float)windowWidth/gameWidth; 
    gameWidth = app.resolutions[app.resolutionInt][0];
    gameHeight = app.resolutions[app.resolutionInt][1];
+   windowHeightScale = (float)gameHeight/gameHeightBase;
+   windowWidthScale = (float)gameWidth/gameWidthBase;
    FswitchAppStatus(app.status,app.status);
    SDL_DestroyTexture(resultLayer);
    SDL_DestroyTexture(lightLayer);

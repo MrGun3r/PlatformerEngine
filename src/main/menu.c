@@ -5,7 +5,7 @@ void FDraw_Menu(){
 
    // Draw HUD
    
-   FGUIHover();
+   GUIHover();
    renderButtons();
    renderSliders();
    renderTextBox();
@@ -47,10 +47,10 @@ void FUpdate_Data_Menu(){
    }
    for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
     if(buttons[i].reserved){
-      int yMin = buttons[i].y;
-      int yMax = buttons[i].y+buttons[i].hoverHeight;
-      int xMin = buttons[i].x;
-      int xMax = buttons[i].x+buttons[i].hoverWidth;
+      int yMin = (buttons[i].y);
+      int yMax = (buttons[i].y+buttons[i].hoverHeight);
+      int xMin = (buttons[i].x);
+      int xMax = (buttons[i].x+buttons[i].hoverWidth);
      
       if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax && mouse.left == -1){
         Mix_PlayChannel(-1,Sound_buttonClick,0);
@@ -78,7 +78,6 @@ void FUpdate_Data_Menu(){
          appendTransition(app.status,0);
          break; 
          }
-         
         }
         if(app.status == 4){
          // play button
