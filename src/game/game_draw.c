@@ -13,7 +13,7 @@ void Draw_Objects() {
       light[i].yDraw  = gameHeightBase/2 + (light[i].yDraw - gameHeightBase/2) * camera.scale;
    }
 
-   
+   Draw_Platforms();
    Draw_DamagePopups();
    Draw_Specials();
    Draw_Players();
