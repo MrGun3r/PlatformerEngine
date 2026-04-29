@@ -5,7 +5,8 @@
       sprintf(Heightvalue,"height:%d\0",(int)obj[idx].height); \
       sprintf(upperText,"%s %d\0",(label),idx);
    
-void InfoBox(){
+
+void Editor_DrawInfoBox(){
    char* infoText = malloc(100);
    for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
     if(buttons[i].reserved && buttons[i].hoverOpacity>1 && !buttons[i].highlight){
@@ -32,7 +33,8 @@ void InfoBox(){
       }
    }
 }
-void renderCameraInfo() {
+void Editor_renderCameraInfo() {
+   
    char posX[10]; 
    char posY[10];
    char CameraposX[15]; 
@@ -55,9 +57,9 @@ void renderCameraInfo() {
       renderText(TextLength,editor.alertText,5,60,TextLength*12,17,255,255,(int[3]){255,255,255});
    }
 }
-void Draw_ObjectInfo(){
+void Editor_Draw_ObjectInfo(){
    // draw info box
-   InfoBox();
+   Editor_DrawInfoBox();
 
    if(editor.selected){
    // Info texts that will be drawn (x , y , width , height , top text)

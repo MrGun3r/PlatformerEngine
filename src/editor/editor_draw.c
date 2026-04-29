@@ -5,7 +5,7 @@
 
 
 
-void DrawLoadSave(){  
+void Editor_DrawLoadSave(){  
    SDL_SetRenderDrawColor(renderer,100,100,100,200);
    RenderFillRect(renderer,&(SDL_Rect){30,100,windowWidth-180,150});
    if(editor.status == 0){
@@ -19,7 +19,7 @@ void DrawLoadSave(){
    }
    
 }
-void Draw_GUIBackground() {
+void Editor_Draw_GUIBackground() {
 
    SDL_SetRenderDrawColor(renderer,100,100,100,255);
    RenderFillRect(renderer,&(SDL_Rect){0,0,gameWidthBase,50});
@@ -37,7 +37,7 @@ void Draw_GUIBackground() {
    RenderDrawRect(renderer,&(SDL_Rect){60,5,gameWidthBase-275,40});
    RenderDrawRect(renderer,&(SDL_Rect){gameWidthBase-195,gameHeightBase-20,190,15});
 }
-void Draw_Borders() {
+void Editor_Draw_Borders() {
    SDL_SetRenderDrawColor(renderer,200,0,0,100);
    double xMin =  max(min(gameWidthBase/2 + (mapData.xMin + camera.x - gameWidthBase/2)*camera.scale,gameWidthBase),0);
    double yMin =  max(min(gameHeightBase/2 + (mapData.yMin + camera.y - gameHeightBase/2)*camera.scale,gameHeightBase),0);
@@ -54,22 +54,22 @@ void Draw_Editor(){
    /// Draw the background 
    DrawBackground();
    /// Draw every object available
-   DrawObjects();
+   Editor_DrawObjects();
    /// Draw the lights 
    DrawLight(app.backgroundOpacity);
 
    // Draw the save / load text
    if(editor.status >= 0){
-    DrawLoadSave();
+    Editor_DrawLoadSave();
    }
 
    // Draw map borders
-   Draw_Borders();
+   Editor_Draw_Borders();
    // Draw the GUI background
-   Draw_GUIBackground();
+   Editor_Draw_GUIBackground();
 
    // Draw Object info (xy coords , size , etc)
-   Draw_ObjectInfo();
+   Editor_Draw_ObjectInfo();
    // update the gui hover mecanism
    GUIHover();
    // render GUI elements
@@ -79,5 +79,5 @@ void Draw_Editor(){
    renderTextBox();
 
    /// Render camera editor info
-   renderCameraInfo();
+   Editor_renderCameraInfo();
 }

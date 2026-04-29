@@ -11,7 +11,6 @@ void FSaveMap(char mapName[256]){
       for(int i = 0;i<sizeof(platforms)/sizeof(platforms[1]);i++){
          if(platforms[i].reserved){
             char* platformData = malloc(2000);
- 
             sprintf(platformData,"%d:%d,%d,%d,%d,%f,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d;\n\0",i,(int)platforms[i].x,(int)platforms[i].y,(int)platforms[i].width,(int)platforms[i].height,platforms[i].slope,(int)platforms[i].slopeInv,(int)platforms[i].textureScale,textures[(int)platforms[i].textureInt].textureName,(int)platforms[i].textureStretch,platforms[i].type,(int)platforms[i].textureOffsetX,(int)platforms[i].textureOffsetY,platforms[i].collidable,(int)platforms[i].opacity,(int)platforms[i].red,(int)platforms[i].green,(int)platforms[i].blue,(int)platforms[i].textureAnimationTime,(int)platforms[i].moveNodeInt,(int)platforms[i].moveSpeed,(int)platforms[i].textureRotation,platforms[i].NofinishAnimation,(int)platforms[i].textureOffsetX_Move,(int)platforms[i].textureOffsetY_Move,(int)platforms[i].grapplable);
             fputs(platformData,file);
             free(platformData);
@@ -256,8 +255,6 @@ int FSetDataMap(char* path,int pathSize){
          free(textpopups[i].textContent);
       }
      } 
-      
-      
    }
 
    
@@ -271,6 +268,10 @@ int FSetDataMap(char* path,int pathSize){
      int IndexData = 0;
      int ID = 0;
      for(int i = 0;i<256;i++){ 
+      if (buffer[i] == '/') {
+         // End reading
+         break;
+      }
       if(buffer[i] == ';'){
          char *importBufferShortened = malloc(importBufferSize+1);
          SDL_memcpy(importBufferShortened,importBuffer,importBufferSize+1);
@@ -340,6 +341,7 @@ int FSetDataMap(char* path,int pathSize){
          }
          if(DataImport == 0){
             ID = atoi(importBufferShortened);
+            //printf("platform %d loaded\n",ID);
          }
          else if(DataImport >= 3 && DataImport <= 11){
             ID = atoi(&importBufferShortened[1]);
@@ -376,7 +378,7 @@ int FSetDataMap(char* path,int pathSize){
       app.backgroundOpacity = atoi(FGetDataMap(level.absolutePath,"m",7,len(level.absolutePath)));
    }
    int checkPointsCount = 0;
-   for(int i = 1;i<sizeof(platforms)/sizeof(platforms[0]);i++){
+   for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
        if(platforms[i].reserved && platforms[i].type == 2){
          checkPointsCount++;
        }
