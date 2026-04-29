@@ -296,6 +296,7 @@ void FWindow_Loop();
 
 // Include Headers and Logistics
 #include "init.c"
+#include "macros.c"
 #include "editor/addObject.c"
 #include "main/input_listener.c"
 #include "main/renderGUI.c"

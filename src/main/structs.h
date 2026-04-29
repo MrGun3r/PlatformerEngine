@@ -539,8 +539,10 @@ struct Particle{
    double yDraw;
    double veloX;
    double veloY;
-   double size;
-   double sizeDraw;
+   double width;
+   double height;
+   double widthDraw;
+   double heightDraw;
    double red;
    double green;
    double blue;

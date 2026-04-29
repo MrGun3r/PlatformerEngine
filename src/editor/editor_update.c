@@ -61,7 +61,7 @@
                editor.selected = true; \
                editor.typeSelected = MOVENODE; \
                editor.indexSelected = i; \
-               Select_Movenode_UI_Update(j); \
+               Editor_Select_Movenode_UI_Update(j); \
                 \
                return; \
                } \
@@ -69,7 +69,7 @@
          } \
       } \
 
-void Update_Selection_Time_Player() {
+void Editor_Update_Selection_Time_Player() {
    if(player[0].editorSelectionTime <= 1000){
       player[0].editorSelectionTime += 1000*app.deltaTime;
    }
@@ -124,23 +124,23 @@ void (*editor_buttons[])(void) = {
     toggleGrapplable_button,        // 40
 };
 
-void FCheck_Select_Editor(){
+void Check_Select_Editor(){
    
    if(editor.unSelect){
       // If mouse is outside of editor canvas , do nothing
       if ((mouse.y <= 100 && mouse.x > 0 && mouse.x < gameWidthBase-200) || (mouse.x > gameWidthBase-200)) { return;}
       
       UPDATE_CHECK_SELECT_PLAYER
-      UPDATE_CHECK_SELECT(platforms,PLATFORM,Select_Platform_UI_Update())
-      UPDATE_CHECK_SELECT(triggers,TRIGGER,Select_Trigger_UI_Update())
-      UPDATE_CHECK_SELECT(displacement,DISPLACEMENT,Select_Displacement_UI_Update())
-      UPDATE_CHECK_SELECT(deathbox,DEATHBOX,Select_Deathbox_UI_Update())
-      UPDATE_CHECK_SELECT(light,LIGHT,Select_Light_UI_Update())
+      UPDATE_CHECK_SELECT(platforms,PLATFORM,Editor_Select_Platform_UI_Update())
+      UPDATE_CHECK_SELECT(triggers,TRIGGER,Editor_Select_Trigger_UI_Update())
+      UPDATE_CHECK_SELECT(displacement,DISPLACEMENT,Editor_Select_Displacement_UI_Update())
+      UPDATE_CHECK_SELECT(deathbox,DEATHBOX,Editor_Select_Deathbox_UI_Update())
+      UPDATE_CHECK_SELECT(light,LIGHT,Editor_Select_Light_UI_Update())
       UPDATE_CHECK_SELECT_MOVENODES
-      UPDATE_CHECK_SELECT(scripts,SCRIPT,Select_Scripts_UI_Update())
-      UPDATE_CHECK_SELECT(enemy,ENEMY,Select_Enemy_UI_Update(i))
+      UPDATE_CHECK_SELECT(scripts,SCRIPT,Editor_Select_Scripts_UI_Update())
+      UPDATE_CHECK_SELECT(enemy,ENEMY,Editor_Select_Enemy_UI_Update(i))
       UPDATE_CHECK_SELECT(specials,SPECIAL, )
-      UPDATE_CHECK_SELECT(textpopups,TEXTPOPUP,Select_Textpopup_UI_Update())
+      UPDATE_CHECK_SELECT(textpopups,TEXTPOPUP,Editor_Select_Textpopup_UI_Update())
       
       // If we reach here , it means no object was selected
       editor.selected = false;
@@ -149,21 +149,21 @@ void FCheck_Select_Editor(){
    editor.unSelect = true;
    return;
 }
-void Update_Objects() {
+void Editor_Update_Objects() {
    switch (editor.typeSelected)
    {
-    case NONE: setValuesMapSettings();  break;
-    case PLATFORM:  setValuesPlatforms();    break;
-    case TRIGGER:  setValuesTriggers();     break;
-    case LIGHT:  setValuesLight();        break;
-    case DISPLACEMENT:  setValuesDisplacement(); break;
-    case DEATHBOX:  setValuesDeathBox();     break;
-    case SCRIPT:  setValuesScript();       break;
-    case ENEMY:  setValuesEnemy();        break;
-    case TEXTPOPUP: setValuesTextPopup();    break;
+    case NONE: Editor_setValuesMapSettings();  break;
+    case PLATFORM:  Editor_setValuesPlatforms();    break;
+    case TRIGGER:  Editor_setValuesTriggers();     break;
+    case LIGHT:  Editor_setValuesLight();        break;
+    case DISPLACEMENT:  Editor_setValuesDisplacement(); break;
+    case DEATHBOX:  Editor_setValuesDeathBox();     break;
+    case SCRIPT:  Editor_setValuesScript();       break;
+    case ENEMY:  Editor_setValuesEnemy();        break;
+    case TEXTPOPUP: Editor_setValuesTextPopup();    break;
    }
 }
-void Update_Camera() {
+void Editor_Update_Camera() {
    camera.scale += (camera.scaleReal - camera.scale)*app.deltaTime*5;
    
    if(mouse.wheel == 1){
@@ -185,7 +185,7 @@ void Update_Camera() {
      editor.mouseToObjectDistanceBool = false;
    }
 }
-void Update_Platform_Animation() {
+void Editor_Update_Platform_Animation() {
 
    for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){
          if(platforms[i].reserved){
@@ -204,7 +204,7 @@ void Update_Platform_Animation() {
          }
    }
 }
-void Update_Buttons() {
+void Editor_Update_Buttons() {
    for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
       if(buttons[i].reserved){
          int yMin = (buttons[i].y);
@@ -219,7 +219,7 @@ void Update_Buttons() {
       }
    }
 }
-void Set_ButtonValues(){
+void Editor_Set_ButtonValues(){
    switch(editor.typeSelected) {
       case NONE:
          update_settingsButtons(); break;
@@ -235,14 +235,14 @@ void Set_ButtonValues(){
          update_specialButtons(); break;
    }
 }
-void Update_UI_Values() {
+void Editor_Update_UI_Values() {
    /// This function restricts UI value updates to only when mouse is clicked
    
    if(mouse.left == -1){      
       if(editor.status < 0){
-         FCheck_Select_Editor(); 
+         Check_Select_Editor(); 
       }
-      Set_ButtonValues();
+      Editor_Set_ButtonValues();
       Set_KnobValues();
       Set_SlidersValues();
       editorShowButtons();     
@@ -264,7 +264,7 @@ void FUpdate_Editor(){
       }
 
       // Update Selection Timer for each object
-      Update_Selection_Time_Player();
+      Editor_Update_Selection_Time_Player();
       UPDATE_SELECTION_TIME(platforms)
       UPDATE_SELECTION_TIME(deathbox)
       UPDATE_SELECTION_TIME(light)
@@ -283,22 +283,23 @@ void FUpdate_Editor(){
       SET_TO_NODE(platforms)
 
       // Update Camera (Makes it smoother)
-      Update_Camera();
+      Editor_Update_Camera();
       // Change texture platform (Animate)
-      Update_Platform_Animation();      
+      Editor_Update_Platform_Animation();      
+
+      /// Update the sliders and knobs interaction with user input
+      /// UI values <= User input 
+      Editor_Update_Buttons();
 
       /// Update objects according to UI values (sliders and knobs and text boxes)
       /// Object values <= UI values 
-      Update_Objects();
+      Editor_Update_Objects();
 
       // This applies the visual UI values to their real values
       // UI (Data) Values <= UI (visual) values
       // These visuals are coming from user input
-      Update_UI_Values();
+      Editor_Update_UI_Values();
 
-      /// Update the sliders and knobs interaction with user input
-      /// UI values <= User input 
-      Update_Buttons();
       Update_Slider();
       Update_Knobs();
       Update_TextBox();  

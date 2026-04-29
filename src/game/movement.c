@@ -312,6 +312,23 @@ void FPlayer_Movement(){
     if(player[0].y > mapData.yMax){
         FGameRestart();
     }
+   
+   
+   /// Get keystrokes from text file
+   if(mapData.PBTimer>0){
+      if(level.Started){
+         FapplyMovementGhost();
+      } 
+    
+      if(mapData.ghostEnd){
+         player[1].keys.up = false;
+         player[1].keys.left = false;
+         player[1].keys.right = false;
+         player[1].keys.down = false;
+         player[1].keys.shift = false;
+      }
+   }
+
    for(int i = 0;i<sizeof(player)/sizeof(player[0]);i++){
       if(i > 0 && !mapData.ghostInGame){
          continue;
@@ -547,24 +564,8 @@ void FPlayer_Movement(){
       player[i].accY = 0;
    }
    
-   }
-
-
-   if(mapData.PBTimer>0){
-    if(level.Started){
-      FapplyMovementGhost();
-    }
-    
-   if(mapData.ghostEnd){
-         player[1].keys.up = false;
-         player[1].keys.left = false;
-         player[1].keys.right = false;
-         player[1].keys.down = false;
-         player[1].keys.shift = false;
-   }
-   }
+   }  
 }
-
 void FapplyMovementGhost(){
    if(mapData.ghostInGame){
       if(mapData.PBTimer <= level.timer && mapData.PBTimer > 0){

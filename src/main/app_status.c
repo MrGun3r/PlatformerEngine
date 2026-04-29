@@ -86,16 +86,18 @@ void FswitchAppStatus(int from, int to){
 
    app.status = to;
    if(to == 0){
+
       if(from == 2){
         level.campaignLevel = false;
       }
       else{
         level.campaignLevel = true;
       }
+      
       SetButton(false,0,"Paused",gameWidthBase/2 - len("Paused\0")*30/2,gameHeightBase/2-150,30,true,-1,-1,false);
       SetButton(false,1,"Resume",gameWidthBase/2 - len("Resume\0")*15/2,gameHeightBase/2-80,15,true,-1,-1,false);  
       SetButton(false,3,"Restart Level",50,gameWidthBase-50,15,true,-1,-1,false);
-      SetButton(false,4,"Next Level",gameWidthBase-200,gameWidthBase-50,15,true,-1,-1,false);
+      SetButton(false,4,"Next Level",gameWidthBase-200,gameHeightBase-50,15,true,-1,-1,false);
       SetButton(false,2,"Exit to Menu",gameWidthBase/2 - len("Exit to Menu\0")*15/2,gameHeightBase/2-20-30,15,true,-1,-1,false);
       
     }

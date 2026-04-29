@@ -6,7 +6,8 @@ void addParticle(SDL_Texture* texture,double x,double y,double veloX,double velo
             particles[i].y = y;
             particles[i].veloX = veloX;
             particles[i].veloY = veloY;
-            particles[i].size = size;
+            particles[i].width = size;
+            particles[i].height = size;
             particles[i].red = red;
             particles[i].green = green;
             particles[i].blue = blue;

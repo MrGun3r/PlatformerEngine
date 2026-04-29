@@ -1,4 +1,4 @@
-void setValuesPlatforms() {
+void Editor_setValuesPlatforms() {
     int index = editor.indexSelected;
     platforms[index].textureOffsetX      = sliders[1].sliderValue;
     platforms[index].textureOffsetY      = sliders[2].sliderValue;
@@ -21,7 +21,7 @@ void setValuesPlatforms() {
     }
 }
 
-void setValuesMapSettings() {
+void Editor_setValuesMapSettings() {
     mapData.xMin        = -knobs[3].knobValue;
     mapData.xMax        =  knobs[3].knobValue;
     mapData.yMin        = -knobs[4].knobValue;
@@ -33,7 +33,7 @@ void setValuesMapSettings() {
     editor.GameScale    =  sliders[15].sliderValue / 100;
 }
 
-void setValuesTriggers() {
+void Editor_setValuesTriggers() {
     int index = editor.indexSelected;
     triggers[index].opacity    = sliders[14].sliderValue;
     triggers[index].Value1     = knobs[8].knobValue;
@@ -43,7 +43,7 @@ void setValuesTriggers() {
     triggers[index].reuseDelay = knobs[12].knobValue;
 }
 
-void setValuesLight() {
+void Editor_setValuesLight() {
     int index = editor.indexSelected;
     light[index].rotation    = sliders[7].sliderValue;
     light[index].brightness  = sliders[8].sliderValue;
@@ -55,7 +55,7 @@ void setValuesLight() {
     light[index].blue        = sliders[12].sliderValue;
 }
 
-void setValuesDisplacement() {
+void Editor_setValuesDisplacement() {
     int index = editor.indexSelected;
     displacement[index].power      = sliders[13].sliderValue;
     displacement[index].opacity    = sliders[14].sliderValue;
@@ -63,27 +63,27 @@ void setValuesDisplacement() {
     displacement[index].moveSpeed  = knobs[9].knobValue;
 }
 
-void setValuesDeathBox() {
+void Editor_setValuesDeathBox() {
     int index = editor.indexSelected;
     deathbox[index].opacity    = sliders[14].sliderValue;
     deathbox[index].moveNodeInt= knobs[8].knobValue;
     deathbox[index].moveSpeed  = knobs[9].knobValue;
 }
 
-void setValuesScript() {
+void Editor_setValuesScript() {
     int index = editor.indexSelected;
     scripts[index].useDelay   = knobs[11].knobValue;
     scripts[index].reuseDelay = knobs[12].knobValue;
 }
 
-void setValuesEnemy() {
+void Editor_setValuesEnemy() {
     int index = editor.indexSelected;
     enemy[index].maxSpeed  = sliders[16].sliderValue;
     enemy[index].maxHealth = sliders[17].sliderValue;
     enemy[index].type      = knobs[18].knobValue;
 }
 
-void setValuesTextPopup() {
+void Editor_setValuesTextPopup() {
     int index = editor.indexSelected;
     textpopups[index].xPopup = knobs[13].knobValue;
     textpopups[index].yPopup = knobs[14].knobValue;

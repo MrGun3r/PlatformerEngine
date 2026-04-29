@@ -1,30 +1,7 @@
 
-#define DRAW_OBJECTS(obj, type, under_condition,draw_function) \
-   for (int i = 0;i<sizeof(obj)/sizeof(obj[0]);i++){ \
-      if(obj[i].reserved  && under_condition){ \
-         /* Camera offsetted data ! */ \
-         obj[i].xDraw = obj[i].x; \
-         obj[i].yDraw = obj[i].y; \
-         obj[i].widthDraw = obj[i].width*camera.scale; \
-         obj[i].heightDraw = obj[i].height*camera.scale; \
-         obj[i].xDraw  += camera.x; \
-         obj[i].yDraw  += camera.y; \
-         obj[i].xDraw  = gameWidthBase/2 + (obj[i].xDraw - gameWidthBase/2) * camera.scale; \
-         obj[i].yDraw  = gameHeightBase/2 + (obj[i].yDraw - gameHeightBase/2) * camera.scale; \
-         draw_function; \
-         if(editor.selected && editor.typeSelected == type && editor.indexSelected == i){  \
-         SDL_SetRenderDrawColor(renderer,0,255,0,255); \
-         RenderDrawRect(renderer,&(SDL_Rect){obj[editor.indexSelected].xDraw, \
-                                                 obj[editor.indexSelected].yDraw, \
-                                                 obj[editor.indexSelected].widthDraw, \
-                                                 obj[editor.indexSelected].heightDraw}); \
-         } \
-      } \
-   } \
-
 /// ----------------------------------------------
 /// ---------------------------------------------- 
-void drawTriggers(int i) {
+void Editor_drawTriggers(int i) {
       FtextureQuad(triggers[i].xDraw,triggers[i].yDraw,triggers[i].widthDraw,triggers[i].heightDraw,tex_trigger,min(triggers[i].opacity+25,255),0);
       
       if(triggers[i].triggerType == 0 && platforms[(int)triggers[i].Value3].reserved){
@@ -40,12 +17,12 @@ void drawTriggers(int i) {
          RenderDrawLine(renderer,triggers[i].xDraw+triggers[i].widthDraw/2,triggers[i].yDraw+triggers[i].heightDraw/2,displacement[(int)triggers[i].Value3].xDraw+displacement[(int)triggers[i].Value3].widthDraw/2,displacement[(int)triggers[i].Value3].yDraw+displacement[(int)triggers[i].Value3].heightDraw/2);
       }
 }
-void drawLights(int i) {
+void Editor_drawLights(int i) {
    SDL_SetTextureAlphaMod(tex_bulb,50);
    RenderCopy(renderer,tex_bulb,NULL,&(SDL_Rect){light[i].xDraw+light[i].widthDraw/2-min(30,light[i].widthDraw)/2,light[i].yDraw+light[i].heightDraw/2-min(30,light[i].heightDraw)/2,min(30,light[i].widthDraw),min(30,light[i].heightDraw)});
    SDL_SetTextureAlphaMod(tex_bulb,255);
 }
-void drawMovenodes() {
+void Editor_drawMovenodes() {
    SDL_SetTextureAlphaMod(tex_movenode,100);
    // Draw movenodes
    for(int i = 0;i<sizeof(movenodes)/sizeof(movenodes[0]);i++){
@@ -76,10 +53,10 @@ void drawMovenodes() {
    }
    SDL_SetTextureAlphaMod(tex_movenode,255);
 }
-void drawScripts(int i) {
+void Editor_drawScripts(int i) {
    FtextureQuad(scripts[i].xDraw,scripts[i].yDraw,scripts[i].widthDraw,scripts[i].heightDraw,tex_script,50,0);
 }
-void drawEnemies(int i) {
+void Editor_drawEnemies(int i) {
    SDL_Rect src;
    switch(enemy[i].type) {
         case 1: src = (SDL_Rect){0,   0,  80, 80}; break;
@@ -93,13 +70,13 @@ void drawEnemies(int i) {
         &(SDL_Rect){enemy[i].xDraw, enemy[i].yDraw, enemy[i].widthDraw, enemy[i].heightDraw},
         0, NULL, SDL_FLIP_NONE);
 }
-void drawSpecials(int i) {
+void Editor_drawSpecials(int i) {
    RenderCopyEx(renderer,tex_specials,&(SDL_Rect){5+150*(specials[i].type - 1),0,125,125},&(SDL_Rect){specials[i].xDraw,specials[i].yDraw,specials[i].widthDraw,specials[i].heightDraw},0,NULL,SDL_FLIP_NONE);
 }
-void drawTextpopups(int i) {
+void Editor_drawTextpopups(int i) {
    FtextureQuad(textpopups[i].xDraw,textpopups[i].yDraw,textpopups[i].widthDraw,textpopups[i].heightDraw,tex_textIcon,150,0);
 }
-void drawPlayer() {
+void Editor_drawPlayer() {
    player[0].widthDraw = player[0].width;
    player[0].heightDraw = player[0].height;
    player[0].widthDraw  *= camera.scale;
@@ -113,10 +90,10 @@ void drawPlayer() {
       RenderDrawRect(renderer,&(SDL_Rect){player[0].xDraw,player[0].yDraw,player[0].widthDraw,player[0].heightDraw});
    }
 }
-void drawDisplacements(int i) {
+void Editor_drawDisplacements(int i) {
    FtextureQuad(displacement[i].xDraw,displacement[i].yDraw,displacement[i].widthDraw,displacement[i].heightDraw,tex_displacement,min(displacement[i].opacity+25,255),displacement[i].type);
 }
-void drawDeathboxes(int i) {
+void Editor_drawDeathboxes(int i) {
    FtextureQuad(deathbox[i].xDraw,
                 deathbox[i].yDraw,
                 deathbox[i].widthDraw,
@@ -128,30 +105,30 @@ void drawDeathboxes(int i) {
 /// ----------------------------------------------
 /// ---------------------------------------------- 
 
-void DrawObjects(){
+void Editor_DrawObjects(){
    
    // Draw Player
-   drawPlayer();
+   Editor_drawPlayer();
    // Draw Platforms
-   DRAW_OBJECTS(platforms,PLATFORM,!platforms[i].collidable,FtexturePlatform(i))
-   DRAW_OBJECTS(platforms,PLATFORM,platforms[i].collidable,FtexturePlatform(i))   
+   DRAW_OBJECTS_EDITOR(platforms,PLATFORM,!platforms[i].collidable,FtexturePlatform(i))
+   DRAW_OBJECTS_EDITOR(platforms,PLATFORM,platforms[i].collidable,FtexturePlatform(i))   
    // Draw triggers
-   DRAW_OBJECTS(triggers,TRIGGER,1,drawTriggers(i);)
+   DRAW_OBJECTS_EDITOR(triggers,TRIGGER,1,Editor_drawTriggers(i);)
    // Draw lights
-   DRAW_OBJECTS(light,LIGHT,1,drawLights(i);)
+   DRAW_OBJECTS_EDITOR(light,LIGHT,1,Editor_drawLights(i);)
    // Draw displacements
-   DRAW_OBJECTS(displacement,DISPLACEMENT,1,drawDisplacements(i);)
+   DRAW_OBJECTS_EDITOR(displacement,DISPLACEMENT,1,Editor_drawDisplacements(i);)
    // Draw movenodes
-   drawMovenodes();
+   Editor_drawMovenodes();
    // Draw deathboxes
-   DRAW_OBJECTS(deathbox,DEATHBOX,1,drawDeathboxes(i);)
+   DRAW_OBJECTS_EDITOR(deathbox,DEATHBOX,1,Editor_drawDeathboxes(i);)
    // Draw scripts
-   DRAW_OBJECTS(scripts,SCRIPT,1,drawScripts(i);)
+   DRAW_OBJECTS_EDITOR(scripts,SCRIPT,1,Editor_drawScripts(i);)
    // Draw enemies
-   DRAW_OBJECTS(enemy,ENEMY,1,drawEnemies(i);)
+   DRAW_OBJECTS_EDITOR(enemy,ENEMY,1,Editor_drawEnemies(i);)
    // Draw specials
-   DRAW_OBJECTS(specials,SPECIAL,1,drawSpecials(i);)
+   DRAW_OBJECTS_EDITOR(specials,SPECIAL,1,Editor_drawSpecials(i);)
    // Draw textpopups
-   DRAW_OBJECTS(textpopups,TEXTPOPUP,1,drawTextpopups(i);)
+   DRAW_OBJECTS_EDITOR(textpopups,TEXTPOPUP,1,Editor_drawTextpopups(i);)
 
 }

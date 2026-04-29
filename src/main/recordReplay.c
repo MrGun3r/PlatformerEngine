@@ -80,6 +80,7 @@ void FcheckPB(){
       if(buffer[0] == 'm'){
         int count = 0;
         for(int i = 0;i<256;i++){
+         printf("%c",buffer[i]);
          if(buffer[i] == ';'){
             TempBuffer[tempBufferSize]  = ';';
             TempBuffer[tempBufferSize+1]  = '\n';

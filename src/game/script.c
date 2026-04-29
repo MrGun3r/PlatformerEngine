@@ -149,6 +149,7 @@ void CompileScript(int index){
     
     i++;
   }
+  printf("Compiled successfully : %s\n",script);
   free(buffer);
 
   
