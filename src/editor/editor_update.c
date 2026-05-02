@@ -77,52 +77,7 @@ void Editor_Update_Selection_Time_Player() {
 
 #include "editor_select_update.c"
 #include "editor_object_update.c"
-#include "editor_buttons.c"
 #include "editor_buttons_update.c"
-
-void (*editor_buttons[])(void) = {
-    createNewPlatform_button,       // 0
-    enableTranslateObjects_button,  // 1
-    enableResizeObjects_button,     // 2
-    saveMap_button,                 // 3
-    saveMapAs_button,               // 4
-    deleteObject_button,            // 5
-    loadMap_button,                 // 6
-    changePlatformTexture_button,   // 7
-    toggleSlopeInv_button,          // 8
-    copyObject_button,              // 9
-    NULL,                           // 10 (nothing)
-    openMapSettings_button,         // 11
-    addTrigger_button,              // 12
-    addFinishLine_button,           // 13
-    addCheckpoint_button,           // 14
-    zoomIn_button,                  // 15
-    zoomOut_button,                 // 16
-    toggleTextureStretch_button,    // 17
-    changeBackground_button,        // 18
-    addLight_button,                // 19
-    addDisplacement_button,         // 20
-    cycleDisplacementDirection_button, // 21
-    cycleDisplacementType_button,   // 22
-    addDeathBox_button,             // 23
-    toggleCollidable_button,        // 24
-    addMoveNode_button,             // 25
-    addNode_button,                 // 26
-    removeNode_button,              // 27
-    toggleWrapNodes_button,         // 28
-    cycleTriggerType_button,        // 29
-    addScript_button,               // 30
-    changeScriptName_button,        // 31
-    changeLightTexture_button,      // 32
-    addEnemy_button,                // 33
-    addSpecial_button,              // 34
-    cycleSpecialType_button,        // 35
-    addTextPopUp_button,            // 36
-    setPopUpText_button,            // 37
-    cycleTextureRotation_button,    // 38
-    toggleFinishAnimation_button,   // 39
-    toggleGrapplable_button,        // 40
-};
 
 void Check_Select_Editor(){
    
@@ -204,21 +159,7 @@ void Editor_Update_Platform_Animation() {
          }
    }
 }
-void Editor_Update_Buttons() {
-   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
-      if(buttons[i].reserved){
-         int yMin = (buttons[i].y);
-         int yMax = (buttons[i].y+buttons[i].hoverHeight);
-         int xMin = (buttons[i].x);
-         int xMax = (buttons[i].x+buttons[i].hoverWidth);      
-         if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax && (mouse.left == -1 || mouse.right == -1)){
-            
-            // If we press on a button , call the function that corresponds to it
-            editor_buttons[i]();
-         }
-      }
-   }
-}
+
 void Editor_Set_ButtonValues(){
    switch(editor.typeSelected) {
       case NONE:
@@ -238,7 +179,7 @@ void Editor_Set_ButtonValues(){
 void Editor_Update_UI_Values() {
    /// This function restricts UI value updates to only when mouse is clicked
    
-   if(mouse.left == -1){      
+   if(mouse.left == -1 || mouse.right == -1){      
       if(editor.status < 0){
          Check_Select_Editor(); 
       }
@@ -289,7 +230,7 @@ void FUpdate_Editor(){
 
       /// Update the sliders and knobs interaction with user input
       /// UI values <= User input 
-      Editor_Update_Buttons();
+      Update_Buttons();
 
       /// Update objects according to UI values (sliders and knobs and text boxes)
       /// Object values <= UI values 

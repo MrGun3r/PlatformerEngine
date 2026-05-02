@@ -70,6 +70,7 @@ void Draw_Editor(){
 
    // Draw Object info (xy coords , size , etc)
    Editor_Draw_ObjectInfo();
+   
    // update the gui hover mecanism
    GUIHover();
    // render GUI elements

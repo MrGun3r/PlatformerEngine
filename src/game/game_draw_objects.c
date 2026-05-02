@@ -16,11 +16,6 @@ void (*Player_Draw_Functions[])(int) = {
 
 void Draw_Player(int i) {
     
-    /// Normal and Ghost player opacities
-    SDL_SetTextureAlphaMod(tex_player,255);     
-    if(i > 0){
-        SDL_SetTextureAlphaMod(tex_player,100);
-    }
     
     //// Draw player trails
     //// 
@@ -33,7 +28,11 @@ void Draw_Player(int i) {
         } 
     }
 
-    SDL_SetTextureAlphaMod(tex_player,255);
+    /// Normal and Ghost player opacities
+    SDL_SetTextureAlphaMod(tex_player,255);     
+    if(i > 0){
+        SDL_SetTextureAlphaMod(tex_player,100);
+    }
     
     /// Different player states
     /// Last is true because we need to always draw the player
@@ -117,7 +116,6 @@ void Draw_Players() {
             player[i].heightDraw *= camera.scale;
             player[i].xDraw = gameWidthBase/2 + (player[i].x + camera.x - gameWidthBase/2) * camera.scale;
             player[i].yDraw = gameHeightBase/2 + (player[i].y + camera.y - gameHeightBase/2) * camera.scale;
-            printf("Drawing %d player\n",i);
             Draw_Player(i);
         }
     }

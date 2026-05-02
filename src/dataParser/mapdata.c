@@ -137,6 +137,7 @@ void FlistLevels(){
 
 char* FGetDataMap(char* path,char* type,int dataType,int fileNameSize){
    FILE *fileMap = fopen(path,"r");
+   if(!fileMap){printf("Couldnt find file %s\n",path);}
    char buffer[256];
    char tempBuffer[256];
    int tempBufferSize = 0;
@@ -174,6 +175,60 @@ char* FGetDataMap(char* path,char* type,int dataType,int fileNameSize){
    fclose(fileMap);
    if(!typeFound){return NULL;}
    return exportBuffer;
+}
+
+int GetPlayerMovementData(char* path, float*** data) {
+   FILE *fileMap = fopen(path,"r");
+   int movementIndex = 0;
+   *data = malloc(15*sizeof(float*));
+   for(int i = 0;i<15;i++){
+      (*data)[i] = malloc(10*sizeof(float));
+   }
+   int dataMultiplier = 1;
+   bool startReading = false;
+   bool startReadingValue = false;
+   bool finished = false;
+   char buffer[256];
+   int dataIndex = 0;
+   char valueBuffer[256];
+   int valueBufferIndex = 0;
+   while(fgets(buffer,256,fileMap) && !finished){   
+      
+      if(movementIndex >= 15*dataMultiplier){dataMultiplier++;
+                                             *data = realloc(*data,15*dataMultiplier*sizeof(float*));
+                                             for(int i = 15*(dataMultiplier-1);i<15*dataMultiplier;i++){
+                                                (*data)[i] = malloc(10*sizeof(float));
+                                             }
+                                             }
+      for(int i = 0;i<256;i++){
+         if(buffer[i] == '\0') {finished = true;break;}
+         else if(buffer[i] == '\n') {break;}
+         else if(buffer[i] == '/'){startReading = true;continue;}
+         else if(!startReading){continue;}
+         else if(buffer[i] == ':'){startReadingValue = true;continue;}
+         else if(buffer[i] == ',' || buffer[i] == ';')
+                                   {
+                                   (*data)[movementIndex][dataIndex] = atof(valueBuffer);
+                                   valueBuffer[0] = '\0';
+                                   valueBufferIndex = 0;
+                                   dataIndex++;
+                                   if(buffer[i] == ';'){
+                                    dataIndex = 0;
+                                    startReadingValue = false;
+                                    movementIndex++;
+                                   }}
+
+         else {
+            if(startReadingValue){valueBuffer[valueBufferIndex] = buffer[i];
+                                  valueBuffer[valueBufferIndex+1] = '\0';
+                                  valueBufferIndex++;}
+              }
+      }
+   }
+   fclose(fileMap);
+   printf("{%f %f %f %f %f %f %f}\n",(*data)[1][0],(*data)[1][1],(*data)[1][2],(*data)[1][3],(*data)[1][4],(*data)[1][5],(*data)[1][6]);
+   return (movementIndex - 1);
+   
 }
 
 int FSetDataMap(char* path,int pathSize){
@@ -257,12 +312,10 @@ int FSetDataMap(char* path,int pathSize){
      } 
    }
 
-   
- 
    char buffer[256];
    char importBuffer[256];
-   while(fgets(buffer,256,fileMap)){
-     
+   bool finished = false;
+   while(fgets(buffer,256,fileMap) && !finished){
      int importBufferSize = 0;
      int DataImport = -1;
      int IndexData = 0;
@@ -270,6 +323,7 @@ int FSetDataMap(char* path,int pathSize){
      for(int i = 0;i<256;i++){ 
       if (buffer[i] == '/') {
          // End reading
+         finished = true;
          break;
       }
       if(buffer[i] == ';'){
@@ -288,8 +342,7 @@ int FSetDataMap(char* path,int pathSize){
          char *importBufferShortened = malloc(importBufferSize+1);
          SDL_memcpy(importBufferShortened,importBuffer,importBufferSize+1);
          importBufferShortened[importBufferSize] = '\0';
-         
-   
+
          importBufferSize = 0;
          if(importBufferShortened[0] == 'p'){
             // player
@@ -341,7 +394,7 @@ int FSetDataMap(char* path,int pathSize){
          }
          if(DataImport == 0){
             ID = atoi(importBufferShortened);
-            //printf("platform %d loaded\n",ID);
+            printf("platform %d loaded\n",ID);
          }
          else if(DataImport >= 3 && DataImport <= 11){
             ID = atoi(&importBufferShortened[1]);
@@ -374,8 +427,12 @@ int FSetDataMap(char* path,int pathSize){
    }
    fclose(fileMap);
    if(app.status == 1){
-      app.backgroundInt = FindBackgroundInt(FGetDataMap(level.absolutePath,"m",6,len(level.absolutePath)));
-      app.backgroundOpacity = atoi(FGetDataMap(level.absolutePath,"m",7,len(level.absolutePath)));
+      char* backgroundIntText = FGetDataMap(level.absolutePath,"m",6,len(level.absolutePath));
+      app.backgroundInt = FindBackgroundInt(backgroundIntText);
+      char* backgroundOpacityText = FGetDataMap(level.absolutePath,"m",7,len(level.absolutePath));
+      app.backgroundOpacity = atoi(backgroundOpacityText);
+      free(backgroundOpacityText);
+      free(backgroundIntText);
    }
    int checkPointsCount = 0;
    for(int i = 0;i<sizeof(platforms)/sizeof(platforms[0]);i++){

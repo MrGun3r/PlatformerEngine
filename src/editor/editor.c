@@ -111,7 +111,7 @@ char* displacement_powerTypes[] = {
       "Accelerate"
 };
 
-
+#include "editor_buttons.c"
 #include "editor_utils.c"
 #include "editor_draw.c"
 #include "editor_state.c"

@@ -1,4 +1,5 @@
-
+#ifndef EDITOR_BUTTONS
+#define EDITOR_BUTTONS
 /// This should define button functions ( Action listeners )
 
 void createNewPlatform_button() {
@@ -68,6 +69,7 @@ void changePlatformTexture_button() {
 void toggleSlopeInv_button() {
     platforms[editor.indexSelected].slopeInv = !platforms[editor.indexSelected].slopeInv;
 }
+
 void loadMap_button() {
     SetTextBox(false, 0, "Map Name:", 45, 150, 15, 450);
     textbox[0].textContentSize = 0;
@@ -283,8 +285,13 @@ void addTextPopUp_button() {
 
 void setPopUpText_button() {
     SetTextBox(false, 0, "Text:", 45, 150, 15, 450);
-    int textLength = len(textpopups[editor.indexSelected].textContent);
-    SDL_memcpy(textbox[0].textContent, textpopups[editor.indexSelected].textContent, textLength);
+    int textLength = 0;
+    if(textpopups[editor.indexSelected].textContent != NULL) {
+        textLength = len(textpopups[editor.indexSelected].textContent);
+    }
+    if(textLength > 0){
+        SDL_memcpy(textbox[0].textContent, textpopups[editor.indexSelected].textContent, textLength);
+    }
     textbox[0].textContentSize = textLength;
     textbox[0].textContent[textLength] = '\0';
     editor.status = 2;
@@ -305,3 +312,6 @@ void toggleFinishAnimation_button() {
 void toggleGrapplable_button() {
     platforms[editor.indexSelected].grapplable = !platforms[editor.indexSelected].grapplable;
 }
+
+
+#endif

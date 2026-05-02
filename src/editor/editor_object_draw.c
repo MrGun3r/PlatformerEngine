@@ -42,7 +42,6 @@ void Editor_drawMovenodes() {
            char nodeNumber[5];
            sprintf(nodeNumber,"%d\0",j);
            renderText(2,nodeNumber,movenodes[i].positionsDraw[j][0]+11*camera.scale,movenodes[i].positionsDraw[j][1]+8*camera.scale,10*camera.scale,10*camera.scale,100,100,(int[3]){255,255,255});
-         
            
            if(editor.selected && editor.typeSelected == MOVENODE && editor.indexSelected == i && editor.movenodeSelected == j){ 
             SDL_SetRenderDrawColor(renderer,0,255,0,255);

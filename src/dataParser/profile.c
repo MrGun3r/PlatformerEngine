@@ -2,12 +2,12 @@
 void SetUsernameProfile(){
     FILE *textfile = fopen("profiles/player.txt","w");
     char profileData[256];
-    sprintf(profileData,"%s,0,250,0;",textbox[0].textContent); 
+    sprintf(profileData,"%s,0,250,main;",textbox[0].textContent); 
     fputs(profileData,textfile);
     fclose(textfile);
     CheckUsernameProfile();
     
-    appendTransition(app.status,4);
+    appendTransition(startMenu);
 }
 
 void FSaveProfile(){
@@ -21,6 +21,7 @@ void FSaveProfile(){
     bool levelsAdded = false;
     while(fgets(buffer,256,textfile)){
         for(int i = 0;i<255;i++){
+            if(buffer[i] == '\n'){break;}
             if(type == 2 && !coinsAdded){
                 char coins[256];
                 sprintf(coins,",%d\0",profile.coins);
@@ -30,7 +31,7 @@ void FSaveProfile(){
             }
             if(type == 3 && !levelsAdded){
                 char levelsUnlocked[256];
-                sprintf(levelsUnlocked,",%d\0",profile.levelsUnlocked);
+                sprintf(levelsUnlocked,",%s\0",profile.currentLevel);
                 SDL_memcpy(&(tempBuffer[tempBufferSize]),levelsUnlocked,len(levelsUnlocked));
                 tempBufferSize+=len(levelsUnlocked);
                 levelsAdded = true;
@@ -80,14 +81,9 @@ void ReadLevelCampaign(){
         }
     returnArray[returnArraySize] = '\0';
     fclose(textfile);
-    
-    int levelNumber = atoi(returnArray);
-    printf("%d\n",levelNumber);
-    char* NextLevel = malloc(300*sizeof(char));
-    NextLevel = campaignLevel[levelNumber];
-    
-    SDL_memcpy(level.absolutePath,NextLevel,len(NextLevel)+1);
-    free(NextLevel);
+    sprintf(level.absolutePath,"%s.txt",returnArray);
+    printf("%s\n",level.absolutePath);
+    return;
    }  
 }
 
@@ -115,9 +111,9 @@ bool CheckUsernameProfile(){
             profile.coins = atoi(tempBuffer);
         }
         else if (tempBufferType == 3){
-            
-            profile.levelsUnlocked = atoi(tempBuffer);
-            printf("current level :%d\n",profile.levelsUnlocked);
+            printf("%s\n",tempBuffer);
+            SDL_memcpy(profile.currentLevel,tempBuffer,4);
+            printf("current level :%s\n",profile.currentLevel);
         }
         if(buffer[i] == ';'){
             break;

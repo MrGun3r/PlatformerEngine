@@ -44,7 +44,7 @@ void update_specialButtons() {
     char* specialType = malloc(100*sizeof(char));
     specialType = specialTypes_Array[specials[editor.indexSelected].type-1];
     sprintf(buttons[35].value,specialType,len(specialType));
-
+    free(specialType);
 }
 
 void update_settingsButtons() {

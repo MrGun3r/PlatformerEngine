@@ -1,8 +1,7 @@
-void FInput_Listener(){
-   SDL_Event event;
-   player[0].keys.escapeRelease = false;
-   mouse.oldX = mouse.x;
-   mouse.oldY = mouse.y;
+#define CLEAR_KEY(key) \
+   if(key == -1) {key = 0;} \
+
+void clearInputs() {
    if(mouse.left == -1){
       mouse.left = 0;
    }
@@ -10,6 +9,25 @@ void FInput_Listener(){
       mouse.right = 0;
    }
    mouse.wheel = 0;
+   CLEAR_KEY(player[0].keys.up)
+   CLEAR_KEY(player[0].keys.down)
+   CLEAR_KEY(player[0].keys.left)
+   CLEAR_KEY(player[0].keys.right)
+   CLEAR_KEY(player[0].keys.e)
+   CLEAR_KEY(player[0].keys.enter)
+   CLEAR_KEY(player[0].keys.shift)
+   CLEAR_KEY(player[0].keys.c)
+   CLEAR_KEY(player[0].keys.escape)
+   CLEAR_KEY(player[0].keys.r)
+}
+
+void FInput_Listener(){
+   SDL_Event event;
+   player[0].keys.escapeRelease = false;
+   mouse.oldX = mouse.x;
+   mouse.oldY = mouse.y;
+
+   clearInputs();
 
    while(SDL_PollEvent(&event)){
       // Quit
@@ -44,42 +62,42 @@ void FInput_Listener(){
          switch(event.key.keysym.sym){
             case SDLK_UP:
             if(!player[0].keys.up){app.inputChange = true;}
-             player[0].keys.up = true;
+             player[0].keys.up = 1;
              break;
             case SDLK_SPACE:
             if(!player[0].keys.up){app.inputChange = true;}
-             player[0].keys.up = true;
+             player[0].keys.up = 1;
              break;
             case SDLK_DOWN:
             if(!player[0].keys.down){app.inputChange = true;}
-             player[0].keys.down = true;
+             player[0].keys.down = 1;
              break;
             case SDLK_LEFT:
             if(!player[0].keys.left){app.inputChange = true;}
-             player[0].keys.left = true;
+             player[0].keys.left = 1;
              break;
             case SDLK_RIGHT:
             if(!player[0].keys.right){app.inputChange = true;}
-             player[0].keys.right = true;
+             player[0].keys.right = 1;
              break;
             case SDLK_LSHIFT:
             if(!player[0].keys.shift){app.inputChange = true;}
-             player[0].keys.shift = true;
+             player[0].keys.shift = 1;
              break;
             case SDLK_r:
-             player[0].keys.r = true;
+             player[0].keys.r = 1;
              break;
             case SDLK_ESCAPE:
-             player[0].keys.escape = true;
+             player[0].keys.escape = 1;
              break;
             case SDLK_c:
-             player[0].keys.c = true;
+             player[0].keys.c = 1;
              break;
             case SDLK_e:
-             player[0].keys.e = true;
+             player[0].keys.e = 1;
              break;
             case 13:
-             player[0].keys.enter = true;
+             player[0].keys.enter = 1;
              break;
    
         } 
@@ -89,69 +107,42 @@ void FInput_Listener(){
          switch(event.key.keysym.sym){
             case SDLK_UP:
             if(player[0].keys.up){app.inputChange = true;}
-             player[0].keys.up = false;
+             player[0].keys.up = -1;
              break;
             case SDLK_SPACE:
             if(!player[0].keys.up){app.inputChange = true;}
-             player[0].keys.up = false;
+             player[0].keys.up = -1;
              break;
             case SDLK_DOWN:
             if(player[0].keys.down){app.inputChange = true;}
-             player[0].keys.down = false;
+             player[0].keys.down = -1;
              break;
             case SDLK_LEFT:
             if(player[0].keys.left){app.inputChange = true;}
-             player[0].keys.left = false;
+             player[0].keys.left = -1;
              break;
             case SDLK_RIGHT:
             if(player[0].keys.right){app.inputChange = true;}
-             player[0].keys.right = false;
+             player[0].keys.right = -1;
              break;
             case SDLK_LSHIFT:
             if(player[0].keys.shift){app.inputChange = true;}
-             player[0].keys.shift = false;
+             player[0].keys.shift = -1;
              break;
             case SDLK_r:
-             player[0].keys.r = false;
+             player[0].keys.r = -1;
              break;
             case SDLK_c:
-             player[0].keys.c = false;
+             player[0].keys.c = -1;
              break;
             case SDLK_e:
-             player[0].keys.e = false;
+             player[0].keys.e = -1;
              break;
             case SDLK_ESCAPE:
-             app.textboxSelected = -1;
-             player[0].keys.escape = false;
-             if(app.status == 0){ 
-                  level.Paused = !level.Paused;
-             }
-             else if(app.status == 1){
-               if(editor.status >= 0){
-                  editor.status = -1;
-               }
-               else {
-                  appendTransition(app.status,4);
-               }
-               editorShowButtons();
-             }
-             else if(app.status == 2){
-               FswitchAppStatus(app.status,7);
-               app.fetchedList = false;
-             }
-             else if (app.status == 6){
-               FswitchAppStatus(app.status,4);
-               app.resolutionInt = app.resolutionUsed;
-             }
-             else if(app.status == 7){
-               FswitchAppStatus(app.status,4);
-             }
-             else if(app.status == 8){
-               appendTransition(app.status,7);
-             }
+             player[0].keys.escape = -1;
              break;
             case 13:
-             player[0].keys.enter = false;
+             player[0].keys.enter = -1;
              break;
         } 
       }

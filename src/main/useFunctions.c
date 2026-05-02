@@ -5,6 +5,7 @@ double max(double a, double b){
    return a > b ? a : b;
 }
 int len(char* a){
+   if(a == NULL) {return 0;}
    for(int i = 0;i<256;i++){
       if (a[i] == '\0'){
          return i;
@@ -14,14 +15,15 @@ int len(char* a){
 }
 
 bool FCompareStrings(char* a,char* b){
-  for(int i = 0;i<255;i++){
+   if(a == NULL || b == NULL){return false;}
+   for(int i = 0;i<255;i++){
    if(a[i] == '\0' && b[i] == '\0'){
       return true;
    }
    if(a[i] != b[i]){
       return false;
    }
-  }
+   }
 
 }
 char* FlowerCase(char* text,int textSize){

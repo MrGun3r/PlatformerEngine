@@ -1,1 +1,1 @@
-player,0,700,10;
+big guy,0,250,main;

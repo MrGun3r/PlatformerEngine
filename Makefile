@@ -11,4 +11,4 @@ else
 	endif
 endif
 all: main.c    
-	gcc main.c $(CFLAGS) -lSDL2main -g -lSDL2 -lSDL2_image -lSDL2_mixer -o game 
+	gcc main.c $(CFLAGS) -lSDL2main -g -lSDL2 -lSDL2_image -lSDL2_mixer -o game -w

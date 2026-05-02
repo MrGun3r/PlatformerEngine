@@ -75,6 +75,7 @@ int CommandNumbers(int index){
 
 
 void CompileScript(int index){
+
   char* script = scriptfiles[index].script;
   // Load 2d array for script
   scriptfiles[index].commandsNumber = CommandNumbers(index);
@@ -108,6 +109,7 @@ void CompileScript(int index){
         }
         else{
           printf("Unknown value to change: %s\n",buffer);
+          free(buffer);
           return;
         }
         bufferSize = 0;
@@ -167,7 +169,8 @@ void FLoadScripts(){
   {
     while ((pp = readdir (p))!=NULL) {
       int length = strlen(pp->d_name);
-      if (FCompareStrings(FlowerCase(&(pp->d_name[length-4]),4),".txt\0")) {
+      char* file_type_lowercased = FlowerCase(&(pp->d_name[length-4]),4);
+      if (FCompareStrings(file_type_lowercased,".txt\0")) {
          char tempName[256];
          int tempNameSize = 0;
          for(int i = 0;i<sizeof(pp->d_name);i++){
@@ -198,7 +201,7 @@ void FLoadScripts(){
          fclose(file);    
          index++;     
       }
-      
+      free(file_type_lowercased);
     }
     (void) closedir (p);
   }

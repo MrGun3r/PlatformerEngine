@@ -9,7 +9,6 @@ void FLoadTextures(){
    }
    for(int i = 0;i<sizeof(lightTextures)/sizeof(lightTextures[0]);i++){
       lightTextures[i].texture = NULL;
-      
    }
  // Load Textures
   DIR *p;
@@ -20,7 +19,8 @@ void FLoadTextures(){
   {
     while ((pp = readdir (p))!=NULL) {
       int length = strlen(pp->d_name);
-      if (FCompareStrings(FlowerCase(&(pp->d_name[length-4]),4),".png\0")) {
+      char* file_type_lowercased = FlowerCase(&(pp->d_name[length-4]),4);
+      if (FCompareStrings(file_type_lowercased,".png\0")) {
          char tempName[256];
          int tempNameSize = 0;
          for(int i = 0;i<sizeof(pp->d_name);i++){
@@ -43,6 +43,7 @@ void FLoadTextures(){
          index++;
          SDL_FreeSurface(texture_Surface);
       }
+      free(file_type_lowercased);
     }
     (void) closedir (p);
   }
@@ -54,7 +55,8 @@ void FLoadTextures(){
   {
     while ((pp = readdir (p))!=NULL) {
       int length = strlen(pp->d_name);
-      if (FCompareStrings(FlowerCase(&(pp->d_name[length-4]),4),".png\0")) {
+      char* file_type_lowercased = FlowerCase(&(pp->d_name[length-4]),4);
+      if (FCompareStrings(file_type_lowercased,".png\0")) {
          char tempName[256];
          int tempNameSize = 0;
          for(int i = 0;i<sizeof(pp->d_name);i++){
@@ -74,6 +76,7 @@ void FLoadTextures(){
          index++;
          SDL_FreeSurface(texture_Surface);
       }
+      free(file_type_lowercased);
     }
     (void) closedir (p);
   }
@@ -82,6 +85,7 @@ void FLoadTextures(){
 /////////
  
 }
+
 void FLoadBackgrounds(){
    
   for(int i = 0;i<sizeof(backgrounds)/sizeof(backgrounds[0]);i++){
@@ -176,7 +180,8 @@ void FLoadBackgrounds(){
   {
     while ((pp = readdir (p))!=NULL) {
       int length = strlen(pp->d_name);
-      if (FCompareStrings(FlowerCase(&(pp->d_name[length-4]),4),".png\0")) {
+      char* file_type_lowercased = FlowerCase(&(pp->d_name[length-4]),4);
+      if (FCompareStrings(file_type_lowercased,".png\0")) {
          char tempName[256];
          int tempNameSize = 0;
          for(int i = 0;i<sizeof(pp->d_name);i++){
@@ -197,13 +202,13 @@ void FLoadBackgrounds(){
          index++;
          SDL_FreeSurface(texture_Surface);
       }
+      free(file_type_lowercased);
     }
     (void) closedir (p);
   }
   backgrounds[0].reserved = true;
   SDL_memcpy(backgrounds[0].textureName,"None\0",5);
 }
-
 
 int FindTextureInt(char* textureName){
    for(int i = 1;i<sizeof(textures)/sizeof(textures[0]);i++){

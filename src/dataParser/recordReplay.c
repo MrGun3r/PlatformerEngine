@@ -54,10 +54,6 @@ void FcheckPB(){
       FSaveProfile();
       level.coinsReceivedOpacity = 1000;
    }
-   if(mapData.PBTimer < 0){
-      profile.levelsUnlocked++;
-      FSaveProfile();
-   }
    if(level.timer >= mapData.PBTimer && mapData.PBTimer > 0){
     level.tempFileMade = false;
     fclose(fileMap);

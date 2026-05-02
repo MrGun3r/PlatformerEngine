@@ -1,3 +1,6 @@
+#ifndef INCLUDE_H
+#define INCLUDE_H
+
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -30,8 +33,6 @@ const float gameHeightBase = 720;
 
 float windowWidthScale = 1;
 float windowHeightScale = 1;
-
-#include "main/rendererWrapper.c"
 
 double campaignXIsland;
 double campaignYIsland;
@@ -163,6 +164,7 @@ void FdeltaTime();
 
 // Map Data Read/Write
 int FSetDataMap(char* path,int pathSize);
+int GetPlayerMovementData(char* path, float*** data);
 char* FGetDataMap(char* fileName,char* type,int dataType,int fileNameSize);
 void FSetValue(char* importBuffer,int importBufferSize,int data,int ID,int dataType);
 
@@ -190,7 +192,7 @@ void DrawBackground();
 void ReadLevelCampaign();
 
 // GUI
-void SetButton(bool reserved,int i,char* Text,double x,double y,int textFont,bool hoverable,int hoverWidth,int hoverHeight,bool highlight);
+void SetButton(bool reserved,int i,char* Text,double x,double y,int textFont,bool hoverable,int hoverWidth,int hoverHeight,bool highlight,void (*button_func)(void),bool enableTransition);
 void SetButtonIcon(int i,SDL_Texture* texture,double u1,double u2,double v1,double v2);
 void SetSlider(bool reserved,int i,char* Text,double x,double y,int textFont,bool hoverable,int hoverWidth,int hoverHeight,bool highlight,double sliderMin,double sliderMax,double sliderLength,double defaultValue);
 void SetTextBox(bool reserved,int i,char* textName,double x,double y,double font,double hoverLength);
@@ -229,7 +231,7 @@ void findLevelCampaign();
 
 // App change state
 void FswitchAppStatus(int from, int to);
-void appendTransition(int from ,int to);
+void appendTransition(void (*transitionFunction)(void));
 void FDrawTransition();
 void DrawLight(double tint);
 
@@ -295,27 +297,49 @@ void FwindowResize();
 void FWindow_Loop();
 
 // Include Headers and Logistics
-#include "init.c"
+#include "init/init.c"
 #include "macros.c"
-#include "editor/addObject.c"
-#include "main/input_listener.c"
-#include "main/renderGUI.c"
-#include "main/textureQuad.c"
-#include "main/mapdata.c"
-#include "game/collision.c"
+
+
+#include "functions/app_status.h"
+
+#include "dataParser/mapdata.c"
+#include "dataParser/recordReplay.c"
+#include "dataParser/profile.c"
+
+#include "input/input_listener.c"
+#include "input/text.c"
+
+
+/// Define button functions
+
+#include "editor/editor_buttons.h"
+#include "game/game_buttons.h"
+#include "main/main_buttons.h"
+
+#include "UI/renderGUI.c"
+#include "UI/initUI.c"
+#include "UI/GUIElements.c"
+
+#include "main/elements.c"
 #include "main/menu.c"
-#include "main/app_status.c"
-#include "game/movement.c"
-#include "game/game.c"
-#include "main/recordReplay.c"
+#include "functions/app_status.c"
+#include "main/draw.c"
+#include "main/sounds.c"
+
+#include "render/rendererWrapper.c"
+#include "render/textureQuad.c"
+#include "render/initTexture.c"
+
+#include "editor/addObject.c"
 #include "editor/editor.c"
 #include "editor/transformObject.c"
-#include "main/GUIElements.c"
-#include "main/text.c"
-#include "main/draw.c"
-#include "main/initTexture.c"
+
+#include "game/collision.c"
+#include "game/movement.c"
+#include "game/game.c"
 #include "game/particles.c"
-#include "main/profile.c"
 #include "game/script.c"
-#include "main/sounds.c"
 #include "game/objectMovement.c"
+
+#endif

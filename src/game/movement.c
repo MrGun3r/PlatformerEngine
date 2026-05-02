@@ -304,14 +304,14 @@ void FEnemy_Movement(){
    }
 }
 void FPlayer_Movement(){
-    if(!level.Started){
+   if(!level.Started){
       if(player[0].keys.left || player[0].keys.right){
          level.Started = true;
       }
-    }
-    if(player[0].y > mapData.yMax){
-        FGameRestart();
-    }
+   }
+   if(player[0].y > mapData.yMax){
+       FGameRestart();
+   }
    
    
    /// Get keystrokes from text file
@@ -328,7 +328,6 @@ void FPlayer_Movement(){
          player[1].keys.shift = false;
       }
    }
-
    for(int i = 0;i<sizeof(player)/sizeof(player[0]);i++){
       if(i > 0 && !mapData.ghostInGame){
          continue;
@@ -389,9 +388,9 @@ void FPlayer_Movement(){
       player[i].animationIndex += 20*app.deltaTime;
       player[i].direction = -1;
       if(!player[i].grappling){
-        player[i].accX = 500*(-(player[i].width+player[i].height)/40-3.0f/5.0f*(player[i].keys.shift))*player[i].playerControl;
+        player[i].accX = 500*(-(player[i].width+player[i].height)/40-3.0f/5.0f*(player[i].keys.shift == 1))*player[i].playerControl;
       if(SDL_abs(player[i].veloX) > 10){
-         player[i].stepSoundCount += (1000 - 500*(!player[i].keys.shift))*app.deltaTime;
+         player[i].stepSoundCount += (1000 - 500*(!player[i].keys.shift == 1))*app.deltaTime;
       } 
       }
       else{
@@ -409,9 +408,9 @@ void FPlayer_Movement(){
       player[i].animationIndex += 20*app.deltaTime;
       player[i].direction = 1;
       if(!player[i].grappling){
-        player[i].accX = 500*((player[i].width+player[i].height)/40+3.0f/5.0f*(player[i].keys.shift))*player[i].playerControl;
+        player[i].accX = 500*((player[i].width+player[i].height)/40+3.0f/5.0f*(player[i].keys.shift == 1))*player[i].playerControl;
       if(SDL_abs(player[i].veloX) > 10){
-         player[i].stepSoundCount += (1000 - 500*(!player[i].keys.shift))*app.deltaTime;
+         player[i].stepSoundCount += (1000 - 500*(!player[i].keys.shift == 1))*app.deltaTime;
       } 
       }
       else {
@@ -513,8 +512,8 @@ void FPlayer_Movement(){
    double player_slope_speed_change = 0;
    if(player[i].onPlatform){player_slope_speed_change = sin(fabs(platforms[player[i].platformIndex].steepness));}
    
-   if (fabs(player[i].veloX) >= (1-0.999*player_slope_speed_change)*(player[i].walkingSpeed+player[i].sprintSpeed*(player[i].keys.shift))){
-      player[i].veloX = ( (1-0.999*player_slope_speed_change)*(player[i].walkingSpeed+player[i].sprintSpeed*(player[i].keys.shift))*(1-2*(player[i].veloX < 0)));
+   if (fabs(player[i].veloX) >= (1-0.999*player_slope_speed_change)*(player[i].walkingSpeed+player[i].sprintSpeed*(player[i].keys.shift == 1))){
+      player[i].veloX = ( (1-0.999*player_slope_speed_change)*(player[i].walkingSpeed+player[i].sprintSpeed*(player[i].keys.shift == 1))*(1-2*(player[i].veloX < 0)));
    }
    if(player[i].grappling){
      // CLAMP_MINMAX(player[i].grappleAngularVelo,-10,10);
@@ -568,47 +567,40 @@ void FPlayer_Movement(){
 }
 void FapplyMovementGhost(){
    if(mapData.ghostInGame){
+
       if(mapData.PBTimer <= level.timer && mapData.PBTimer > 0){
          mapData.ghostEnd = true;
          return;
       }
-      char type[20];
-      sprintf(type,"i%d",mapData.ghostCurrentIndex);
-      char* msPress = FGetDataMap(level.absolutePath,type,0,level.absolutePathSize);
-      mapData.ghostNextInput = atoi(msPress);
-      
-      if(level.timer < mapData.ghostNextInput-1){return;}
-      if(msPress){
-         mapData.ghostCurrentIndex++;
+      if(mapData.ghostCurrentIndex > player[1].playerMovementIndex){
+         player[1].keys.up = false;
+         player[1].keys.left = false;
+         player[1].keys.right = false;
+         player[1].keys.down = false;
+         return;
       }
-      else{return;}
-      mapData.tickDifference = ((int)level.timer - mapData.ghostNextInput);
-      char* up = FGetDataMap(level.absolutePath,type,1,level.absolutePathSize);
-      char* left = FGetDataMap(level.absolutePath,type,2,level.absolutePathSize);
-      char* right = FGetDataMap(level.absolutePath,type,3,level.absolutePathSize);
-      char* down = FGetDataMap(level.absolutePath,type,4,level.absolutePathSize);
-      char* shift = FGetDataMap(level.absolutePath,type,5,level.absolutePathSize);
-      char* pX =  FGetDataMap(level.absolutePath,type,6,level.absolutePathSize);
-      char* pY =  FGetDataMap(level.absolutePath,type,7,level.absolutePathSize);
-      char* pvX =  FGetDataMap(level.absolutePath,type,8,level.absolutePathSize);
-      char* pvY =  FGetDataMap(level.absolutePath,type,9,level.absolutePathSize);
+      printf("%f of index %d\n with inputs {%d %d %d %d}\n",(double)mapData.ghostNextInput,mapData.ghostCurrentIndex,player[1].keys.up 
+               ,player[1].keys.left 
+               ,player[1].keys.right 
+               ,player[1].keys.down);
       
-      player[1].keys.up = (bool)atoi(up);
-      player[1].keys.left = (bool)atoi(left);
-      player[1].keys.right = (bool)atoi(right);
-      player[1].keys.down = (bool)atoi(down);
-      player[1].keys.shift = (bool)atoi(shift);
-      player[1].x = (float)atoi(pX);
-      player[1].y = (float)atoi(pY);
-      player[1].veloX = (float)atof(pvX);
-      player[1].veloY = (float)atof(pvY);  
+      if(level.timer < (double)mapData.ghostNextInput){return;}
+      
+      // Need new value 
 
-      free(up);
-      free(left);
-      free(right);
-      free(down);
-      free(shift);
-      free(msPress);
+      mapData.tickDifference = ((int)level.timer - mapData.ghostNextInput);
+      mapData.ghostNextInput = (int)player[1].playerMovement[mapData.ghostCurrentIndex + 1][0];
+
+      player[1].keys.up = (bool)player[1].playerMovement[mapData.ghostCurrentIndex][1];
+      player[1].keys.left = (bool)player[1].playerMovement[mapData.ghostCurrentIndex][2];
+      player[1].keys.right = (bool)player[1].playerMovement[mapData.ghostCurrentIndex][3];
+      player[1].keys.down = (bool)player[1].playerMovement[mapData.ghostCurrentIndex][4];
+      player[1].keys.shift = (bool)player[1].playerMovement[mapData.ghostCurrentIndex][5];
+      player[1].x = (float)player[1].playerMovement[mapData.ghostCurrentIndex][6];
+      player[1].y = (float)player[1].playerMovement[mapData.ghostCurrentIndex][7];
+      player[1].veloX = (float)player[1].playerMovement[mapData.ghostCurrentIndex][8];
+      player[1].veloY = (float)player[1].playerMovement[mapData.ghostCurrentIndex][9];
+      mapData.ghostCurrentIndex++;
    }
 }
 

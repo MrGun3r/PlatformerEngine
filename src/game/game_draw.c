@@ -66,13 +66,10 @@ void FDraw_Game(){
 void FDisplayHUD(){
    // Pause menu
    if(level.Paused){
-    buttons[0].reserved = true;
-    buttons[1].reserved = true;
-    buttons[2].reserved = true;
-    if(level.campaignLevel){
-     buttons[5].reserved = true;
-    }
-    
+      buttons[0].reserved = true;
+      buttons[1].reserved = true;
+      buttons[2].reserved = true;
+   
    SDL_SetRenderDrawColor(renderer,200,200,200,150);
    RenderFillRect(renderer,&(SDL_Rect){gameWidthBase/2 - 150,gameHeightBase/2 - 150,300,300});
    }
@@ -80,7 +77,6 @@ void FDisplayHUD(){
     buttons[0].reserved = false;
     buttons[1].reserved  = false;
     buttons[2].reserved  = false; 
-    buttons[5].reserved = false;
    }
 
    // level ending

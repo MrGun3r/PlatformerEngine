@@ -82,7 +82,7 @@ struct Profile{
    char username[256];
    int coins;
    int experience;
-   int levelsUnlocked;
+   char currentLevel[256];
 };
 
 enum ObjectType {
@@ -99,7 +99,21 @@ enum ObjectType {
       TEXTPOPUP,
       NONE
 };
+
+enum GameScene {
+      INGAME,
+      EDITOR,
+      LEVEL_LIST,
+      NONE_SCENE,
+      MAIN_MENU,
+      INTRO_MENU,
+      SETTINGS,
+      MENU_2,
+      CAMPAIGN_LEVEL
+};
+
 typedef enum ObjectType ObjectType;
+typedef enum GameScene GameScene;
 
 struct Editor{
   bool selected;
@@ -202,17 +216,17 @@ struct Enemy{
 };
 
 struct KeyboardBind{
-   bool up;
-   bool down;
-   bool left;
-   bool right;
-   bool shift;
-   bool r;
-   bool c;
-   bool e;
-   bool escape;
-   bool escapeRelease;
-   bool enter;
+   short up;
+   short down;
+   short left;
+   short right;
+   short shift;
+   short r;
+   short c;
+   short e;
+   short escape;
+   short escapeRelease;
+   short enter;
 };
 
 struct Camera{
@@ -227,8 +241,10 @@ struct Camera{
 
 struct App{
    double backgroundMoving;
-   int status;
-   int statusTo;
+   GameScene status;
+   void (*transitionFunction)(void);
+   void (*escapeFunction)(void);
+   bool transitionEnabled;
    double deltaTime;
    double WINDOW_TICKS;
    bool WINDOW_LOOP;
@@ -268,6 +284,7 @@ struct App{
    char levelGoTo[256];
    bool statusChanged;
 
+   int lastButtonIndex;
 }app;
 
 struct Damage{
@@ -282,7 +299,6 @@ struct Damage{
   double sizeDraw;
   int number;
   double opacity;
-
 };
 
 struct Button{
@@ -306,6 +322,8 @@ struct Button{
   char value[256];
   bool hoverSound;
 
+  void (*button_func)(void);
+  bool transitionEnable;
 };
 
 struct Knob{
@@ -454,6 +472,9 @@ struct Players {
     
     double specialDelay;
     double specialDelayTimer;
+    // ghost movement
+    float** playerMovement;
+    int playerMovementIndex;
    // Attack slash
     bool attack;
     double attackX;
@@ -567,7 +588,6 @@ struct textPopup{
    double font;
    
    double showProgress;
-
 
    char* textContent;
 };

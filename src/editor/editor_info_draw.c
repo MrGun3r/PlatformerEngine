@@ -10,7 +10,7 @@ void Editor_DrawInfoBox(){
    char* infoText = malloc(100);
    for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
     if(buttons[i].reserved && buttons[i].hoverOpacity>1 && !buttons[i].highlight){
-       SDL_memcpy(infoText,infoTextMessages[i],len(&infoTextMessages[i][0])+1);     
+      SDL_memcpy(infoText,infoTextMessages[i],len(&infoTextMessages[i][0])+1);     
       renderText(len(infoText),infoText,gameWidthBase-190,gameHeightBase-16,7*len(infoText),10,255,200,(int[3]){200,200,200});
       free(infoText);
       return;
@@ -26,12 +26,13 @@ void Editor_DrawInfoBox(){
    }
    for(int i = 0 ;i<sizeof(sliders)/sizeof(sliders[0]);i++){
       if(sliders[i].reserved && sliders[i].hoverOpacity>1 && !sliders[i].highlight){
-       SDL_memcpy(infoText,sliderInfoText[i],len(&sliderInfoText[i][0]) +1 );
+      SDL_memcpy(infoText,sliderInfoText[i],len(&sliderInfoText[i][0]) +1 );
       renderText(len(infoText),infoText,gameWidthBase-190,gameHeightBase-16,7*len(infoText),10,255,200,(int[3]){200,200,200});
       free(infoText);
       return;
       }
    }
+   free(infoText);
 }
 void Editor_renderCameraInfo() {
    

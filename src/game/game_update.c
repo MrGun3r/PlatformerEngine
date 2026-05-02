@@ -256,9 +256,7 @@ void Update_Platforms() {
                 }
                 else{    
                   level.transitionToLevel = true;
-                  profile.levelsUnlocked++;
                   FSaveProfile();
-                  appendTransition(0,8);
                 }
                 
                 
@@ -291,7 +289,12 @@ void Update_Platforms() {
 void Update_Player_Record() {
    if(app.inputChange && !level.Finished && level.Started){
       char keyInputChange[200];
-      sprintf(keyInputChange,"i%d:%d,%d,%d,%d,%d,%d,%d,%d,%f,%f;\n\0",mapData.fileadditionIndex,(int)level.timer,player[0].keys.up,player[0].keys.left,player[0].keys.right,player[0].keys.down,player[0].keys.shift,(int)player[0].x,(int)player[0].y,player[0].veloX,player[0].veloY);
+      sprintf(keyInputChange,"i%d:%d,%d,%d,%d,%d,%d,%d,%d,%f,%f;\n\0",mapData.fileadditionIndex,(int)level.timer,player[0].keys.up == 1,
+                                                                                                                 player[0].keys.left == 1,
+                                                                                                                 player[0].keys.right == 1,
+                                                                                                                 player[0].keys.down == 1,
+                                                                                                                 player[0].keys.shift == 1,
+                                                                                                                 (int)player[0].x,(int)player[0].y,player[0].veloX,player[0].veloY);
       mapData.fileadditionIndex++;
       SDL_memcpy(&level.keyInputs[level.keyInputsSize],keyInputChange,len(keyInputChange));  
       level.keyInputsSize += len(keyInputChange);

@@ -1,32 +1,5 @@
 
-void Update_Buttons(){
-   for(int i = 0;i<sizeof(buttons)/sizeof(buttons[0]);i++){
-      if(buttons[i].reserved){
-      int yMin = buttons[i].y;
-      int yMax = buttons[i].y+buttons[i].hoverHeight;
-      int xMin = buttons[i].x;
-      int xMax = buttons[i].x+buttons[i].hoverWidth;   
-       
-      if(mouse.x >= xMin && mouse.x <= xMax && mouse.y >= yMin && mouse.y <= yMax && mouse.left == -1){
-         if(i == 1){
-            level.Paused = false;
-         }  
-         else if(i == 2){
-            appendTransition(app.status,4);
-         }
-         else if(i == 3){
-            FGameRestart();
-         }
-         else if(i == 4){
-            profile.levelsUnlocked++;
-            FSaveProfile();
-            appendTransition(0,8);
-            
-         }   
-      }
-      }
-   }
-}
+
 
 
 
@@ -67,9 +40,9 @@ void enemyHurt(int i , double damage){
    
 }
 
+#include "game_buttons.c"
 #include "game_update.c"
 #include "game_draw.c"
-
 
 void addProjectile(bool fromEnemy,int enemyIndex,double x, double y, double veloX,double veloY,int type){
    for(int i = 0;i<sizeof(projectiles)/sizeof(projectiles[0]);i++){
@@ -93,17 +66,13 @@ void addProjectile(bool fromEnemy,int enemyIndex,double x, double y, double velo
    }
 }
 
-
 void FGameRestart(){
    
-   if(level.newRecord){
-      level.newRecord = false;
-   }
+   
    if(mapData.PBTimer>0){
-        mapData.ghostInGame = true; 
+      mapData.ghostInGame = true; 
    }
 
-   
       for(int i = 0;i<sizeof(scripts)/sizeof(scripts[0]);i++){
          if(scripts[i].reserved){
             scripts[i].used = false;
@@ -269,4 +238,9 @@ void FGameRestart(){
       player[1].keys.right = false;
       player[1].keys.down = false;
       player[1].keys.shift = false;
+
+      if(level.newRecord){
+         if(mapData.PBTimer>0){player[1].playerMovementIndex = GetPlayerMovementData(level.absolutePath,&player[1].playerMovement);}
+         level.newRecord = false;
+      }
 }

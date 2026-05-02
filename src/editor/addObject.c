@@ -209,10 +209,11 @@ void addTextPopUp(int x, int y,double width,double height){
          textpopups[i].width = width;
          textpopups[i].height = height;
          textpopups[i].textContent = malloc(200*sizeof(char));
+         memset(textpopups[i].textContent, '\0', 200 * sizeof(char));
+         textpopups[i].textContent[0] = '\0';
          textpopups[i].xPopup = 0;
          textpopups[i].yPopup = 0;
          textpopups[i].font = 10;
-
          break;
       }
    }
