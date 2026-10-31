@@ -13,7 +13,7 @@ Definitions:
 .type = 2 => Platform position change
  {2,index,platform.x,platform.y,platform.width,platform.height}
 
-Values with NULL can discarded 
+Values with NULL are discarded 
 
 
 

@@ -31,7 +31,7 @@ void transform_player() {
   else if (editor.transform == 0){
     transformObject(&player[0].width,NULL);
     CLAMP_MIN(player[0].width,5);
-    player[0].height = player[0].width*10/9;
+    player[0].height = player[0].width*31/19;
     player[0].Owidth = player[0].width;
   }
 }

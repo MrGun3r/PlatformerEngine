@@ -9,10 +9,16 @@ void Draw_Player_Dead(int i) {
     }
 }
 
+void Draw_Player_Snap(int i) {
+    SDL_RendererFlip flip1 = (1 - player[i].direction)/2;
+    player[i].width = player[i].Owidth;
+    RenderCopyEx(renderer,tex_player,&(SDL_Rect){3,105,19,31},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+}
+
 void Draw_Player_Groundpound(int i) {
     SDL_RendererFlip flip1 = (1 - player[i].direction)/2;
     player[i].width = player[i].Owidth;
-    RenderCopyEx(renderer,tex_player,&(SDL_Rect){168,0,16,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+    RenderCopyEx(renderer,tex_player,&(SDL_Rect){3,139,19,31},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
 
 }
 void Draw_Player_Attack(int i) {
@@ -20,7 +26,7 @@ void Draw_Player_Attack(int i) {
     
     int attackInt = (int)(player[i].specialDelayTimer*2/(double)player[i].specialDelay);
     player[i].width = player[i].Owidth; 
-    RenderCopyEx(renderer,tex_player,&(SDL_Rect){191+25*attackInt,2,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);  
+    RenderCopyEx(renderer,tex_player,&(SDL_Rect){3+22*(attackInt % 2),207,19,31},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);  
 }
 void Draw_Player_HangWall(int i) {
     SDL_RendererFlip flip1 = (1 - player[i].direction)/2;
@@ -30,30 +36,36 @@ void Draw_Player_HangWall(int i) {
     }
     else {flip1 = SDL_FLIP_NONE;}
     player[i].width = player[i].Owidth;
-    RenderCopyEx(renderer,tex_player,&(SDL_Rect){73,27,16,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+    RenderCopyEx(renderer,tex_player,&(SDL_Rect){3,173,19,31},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
 
 }
 void Draw_Player_Movement(int i) {
     SDL_RendererFlip flip1 = (1 - player[i].direction)/2;
     
-    if(SDL_abs(player[i].veloX)>=(player[i].width+player[i].height)*200/40){
-        player[i].width = player[i].Owidth + 3;
-        RenderCopyEx(renderer,tex_player,&(SDL_Rect){1+((int)(player[i].animationIndex) % 6 )*24,47,18,16},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+    if(SDL_abs(player[i].veloX) >= (player[i].width+player[i].height)*200/40){
+        // Running
+        RenderCopyEx(renderer,tex_player,&(SDL_Rect){3+((int)(player[i].animationIndex) % 4 )*22,37,19,31},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
     }
     else{
-        player[i].width = player[i].Owidth;
-        RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player[i].animationIndex) % 6 )*24,2,15,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+        // Walking
+        RenderCopyEx(renderer,tex_player,&(SDL_Rect){3+((int)(player[i].animationIndex) % 4 )*22,3,19,31},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
     }
 }
 void Draw_Player_Idle(int i){
     SDL_RendererFlip flip1 = (1 - player[i].direction)/2;
     
     player[i].width = player[i].Owidth;
-    RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player[i].idleIndex) % 2 )*24,24,15,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+    RenderCopyEx(renderer,tex_player,&(SDL_Rect){3,3,19,31},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
 }
 void Draw_Player_Jump(int i){
     SDL_RendererFlip flip1 = (1 - player[i].direction)/2;
     
     player[i].width = player[i].Owidth;
-    RenderCopyEx(renderer,tex_player,&(SDL_Rect){49,24,15,18},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+    if (player[i].jumpVelo + player[i].veloY >= 0) {
+        RenderCopyEx(renderer,tex_player,&(SDL_Rect){25,71,19,31},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+    }
+    else {
+        RenderCopyEx(renderer,tex_player,&(SDL_Rect){3,71,19,31},&(SDL_Rect){player[i].xDraw,player[i].yDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,flip1);
+    }
+    
 }

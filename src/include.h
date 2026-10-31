@@ -41,8 +41,8 @@ double campaignHeightIsland;
 
 /// Window size (Actual window size , Window Size will be resizable as desired)
 
-int windowWidth = 800;
-int windowHeight = 600;
+int windowWidth = 1024;
+int windowHeight = 720;
 
 /// Game Size (Meaning The size of the textures layers , Game size will have decrete values to chosen)
 int gameWidth;
@@ -60,8 +60,8 @@ char* campaignLevel[] = {
 
 int delayTimers_forSpecials[] = {
       300,
-      0,
-      0,
+      500,
+      500,
       500,
       500,
       200,
@@ -148,6 +148,8 @@ Mix_Chunk* Sound_woosh = NULL;
 Mix_Chunk* Sound_pickup = NULL;
 Mix_Chunk* Sound_enemyDash = NULL;
 Mix_Chunk* Sound_Throw = NULL;
+Mix_Chunk* Sound_skid = NULL;
+Mix_Chunk* Sound_groundPound = NULL;
 
 
 

@@ -40,10 +40,10 @@ void FAppInit_Values(){
 };
 memcpy(app.resolutions, resolutions, sizeof(resolutions));
 
-   app.resolutionInt = 2;
-   app.resolutionUsed = 2;
-   gameWidth = app.resolutions[1][0];
-   gameHeight = app.resolutions[1][1];
+   app.resolutionInt = 5;
+   app.resolutionUsed = 5;
+   gameWidth = app.resolutions[5][0];
+   gameHeight = app.resolutions[5][1];
    
    windowHeightScale = (float)gameHeight/gameHeightBase;
    windowWidthScale = (float)gameWidth/gameWidthBase;
@@ -201,9 +201,7 @@ void quitSDL() {
 
    Mix_CloseAudio();   // SDL_mixer
    Mix_Quit();
-
    IMG_Quit();
-
    SDL_Quit();
 }
 

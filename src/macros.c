@@ -22,7 +22,6 @@
       } \
    } \
 
-
 #define DRAW_OBJECTS(obj, under_condition,draw_function) \
    for (int i = 0;i<sizeof(obj)/sizeof(obj[0]);i++){ \
       if(obj[i].reserved  && under_condition){ \
@@ -37,8 +36,4 @@
          obj[i].yDraw  = gameHeightBase/2 + (obj[i].yDraw - gameHeightBase/2) * camera.scale; \
          draw_function; \
       } \
-   } \
-
-
-
-
+   } 

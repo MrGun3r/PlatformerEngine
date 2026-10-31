@@ -19,6 +19,8 @@ void FLoadSounds(){
     Sound_pickup = Mix_LoadWAV("assets/sound/pickup.wav");
     Sound_enemyDash = Mix_LoadWAV("assets/sound/enemyDash.wav");
     Sound_Throw = Mix_LoadWAV("assets/sound/Throw.wav");
+    Sound_skid = Mix_LoadWAV("assets/sound/skid.wav");
+    Sound_groundPound = Mix_LoadWAV("assets/sound/groundPound.wav");
 }
 
 

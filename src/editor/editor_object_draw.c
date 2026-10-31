@@ -58,11 +58,11 @@ void Editor_drawScripts(int i) {
 void Editor_drawEnemies(int i) {
    SDL_Rect src;
    switch(enemy[i].type) {
-        case 1: src = (SDL_Rect){0,   0,  80, 80}; break;
-        case 2: src = (SDL_Rect){3,  120, 16, 18}; break;
-        case 3: src = (SDL_Rect){3,  144, 16, 18}; break;
-        case 4: src = (SDL_Rect){2,  169, 19, 20}; break;
-        case 5: src = (SDL_Rect){3,  192, 16, 22}; break;
+        case FLYER: src = (SDL_Rect) {3,   79,  19, 16}; break;
+        case RUNNER: src = (SDL_Rect){3,   22, 19, 16}; break;
+        case WALKER: src = (SDL_Rect){3,    3, 19, 16}; break;
+        case DASHER: src = (SDL_Rect){3,  41, 19, 16}; break;
+        case GUNNER: src = (SDL_Rect){3,  60, 19, 16}; break;
         default: return;
    }
    RenderCopyEx(renderer, tex_enemy, &src,
@@ -83,7 +83,7 @@ void Editor_drawPlayer() {
    player[0].xDraw = gameWidthBase/2 + (player[0].x + camera.x - gameWidthBase/2) * camera.scale;
    player[0].yDraw = gameHeightBase/2 + (player[0].y + camera.y  - gameHeightBase/2) * camera.scale;
 
-   RenderCopyEx(renderer,tex_player,&(SDL_Rect){2,24,15,18},&(SDL_Rect){player[0].xDraw,player[0].yDraw,player[0].widthDraw,player[0].heightDraw},0,NULL,SDL_FLIP_NONE);
+   RenderCopyEx(renderer,tex_player,&(SDL_Rect){3,3,19,31},&(SDL_Rect){player[0].xDraw,player[0].yDraw,player[0].widthDraw,player[0].heightDraw},0,NULL,SDL_FLIP_NONE);
    if(editor.selected && editor.typeSelected == PLAYER){
       SDL_SetRenderDrawColor(renderer,0,255,0,255);
       RenderDrawRect(renderer,&(SDL_Rect){player[0].xDraw,player[0].yDraw,player[0].widthDraw,player[0].heightDraw});

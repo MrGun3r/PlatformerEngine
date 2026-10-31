@@ -26,7 +26,6 @@ void writeText(SDL_Event* event){
          }  
         }
         else if(((int)event->key.keysym.sym>= 48 && (int)event->key.keysym.sym<=57) ){
-         
          sliders[app.sliderTextBoxSelected].value[valueTextSize] = (char)event->key.keysym.sym;
          sliders[app.sliderTextBoxSelected].value[valueTextSize+1] = '\0';
         }
@@ -47,7 +46,6 @@ void writeText(SDL_Event* event){
          }  
         }
         else if(((int)event->key.keysym.sym>= 48 && (int)event->key.keysym.sym<=57) ){
-         
          knobs[app.knobTextBoxSelected].value[valueTextSize] = (char)event->key.keysym.sym;
          knobs[app.knobTextBoxSelected].value[valueTextSize+1] = '\0';
          

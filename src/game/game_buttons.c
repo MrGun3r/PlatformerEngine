@@ -18,7 +18,6 @@ void exit_level() {
             free(player[1].playerMovement[i]);
         }
         free(player[1].playerMovement);
-        printf("freed %d\n",num_of_playerMovement);
     }
     
     startMenu();

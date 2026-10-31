@@ -138,45 +138,49 @@ void FEnemy_Movement(){
          double distance = sqrt(pow(enemy[i].x-player[0].x,2)+pow(enemy[i].y-player[0].y,2));         
          if(distance <= 300){
             enemy[i].textureAnimationInt += 5*SDL_log(fabs(enemy[i].veloX) + 1)*app.deltaTime;
-         if(enemy[i].type == 1){
-          enemy[i].angle  = atan((enemy[i].y - player[0].y)/(enemy[i].x - player[0].x));
-         if(enemy[i].x < player[0].x){
-            enemy[i].angle += PI;
-         }
+         
+         switch (enemy[i].type)
+         {
+         case FLYER:
+            {enemy[i].angle  = atan((enemy[i].y - player[0].y)/(enemy[i].x - player[0].x));
+            if(enemy[i].x < player[0].x){
+                enemy[i].angle += PI;
+            }
 
-         enemy[i].accX = -500*cos(enemy[i].angle);
-         enemy[i].accY = -500*sin(enemy[i].angle);
+            enemy[i].accX = -500*cos(enemy[i].angle);
+            enemy[i].accY = -500*sin(enemy[i].angle);
          
-          enemy[i].veloX += (enemy[i].accX)*app.deltaTime;
-          enemy[i].veloY += (enemy[i].accY)*app.deltaTime;
-          enemy[i].veloX *= pow(0.8-0.7*fabs(cos(enemy[i].angle)),app.deltaTime);
-          enemy[i].veloY *= pow(0.8-0.7*fabs(sin(enemy[i].angle)),app.deltaTime);
-          enemy[i].bumpX *= pow(0.2,app.deltaTime);
-          if(SDL_abs(enemy[i].veloX) > enemy[i].maxSpeed){
-            if(enemy[i].veloX>0){
-              enemy[i].veloX = enemy[i].maxSpeed;
+            enemy[i].veloX += (enemy[i].accX)*app.deltaTime;
+            enemy[i].veloY += (enemy[i].accY)*app.deltaTime;
+            enemy[i].veloX *= pow(0.8-0.7*fabs(cos(enemy[i].angle)),app.deltaTime);
+            enemy[i].veloY *= pow(0.8-0.7*fabs(sin(enemy[i].angle)),app.deltaTime);
+            enemy[i].bumpX *= pow(0.2,app.deltaTime);
+            if(SDL_abs(enemy[i].veloX) > enemy[i].maxSpeed){
+               if(enemy[i].veloX>0){
+                  enemy[i].veloX = enemy[i].maxSpeed;
+               }
+               else{
+                  enemy[i].veloX = -enemy[i].maxSpeed;
+               } 
             }
-            else{
-               enemy[i].veloX = -enemy[i].maxSpeed;
-            } 
-          }
-          if(SDL_abs(enemy[i].veloY) > enemy[i].maxSpeed){
-            if(enemy[i].veloY>0){
-              enemy[i].veloY = enemy[i].maxSpeed;
-            }
-            else{
-               enemy[i].veloY = -enemy[i].maxSpeed;
-            }
+            if(SDL_abs(enemy[i].veloY) > enemy[i].maxSpeed){
+               if(enemy[i].veloY>0){
+                  enemy[i].veloY = enemy[i].maxSpeed;
+               }
+               else{
+                  enemy[i].veloY = -enemy[i].maxSpeed;
+               }
             
-          } 
+            } 
          
-         enemy[i].veloX *= pow(0.8,app.deltaTime);
-          enemy[i].veloY *= pow(0.8,app.deltaTime);
-         enemy[i].x += (enemy[i].veloX+enemy[i].bumpX)*app.deltaTime;
-          enemy[i].y += (enemy[i].veloY)*app.deltaTime;
-         }  
-         else if (enemy[i].type == 2){
-            enemy[i].direction = -1;
+            enemy[i].veloX *= pow(0.8,app.deltaTime);
+            enemy[i].veloY *= pow(0.8,app.deltaTime);
+            enemy[i].x += (enemy[i].veloX+enemy[i].bumpX)*app.deltaTime;
+            enemy[i].y += (enemy[i].veloY)*app.deltaTime;}
+            break;
+         
+         case RUNNER:
+           { enemy[i].direction = -1;
             if(player[0].x - enemy[i].x > 0){
                enemy[i].direction = 1;
             }
@@ -197,11 +201,10 @@ void FEnemy_Movement(){
             enemy[i].bumpX *= pow(0.1,app.deltaTime);
             enemy[i].x += (enemy[i].veloX + enemy[i].bumpX)*app.deltaTime;
             enemy[i].y += (enemy[i].veloY + enemy[i].jumpVelo)*app.deltaTime;
-            
+            break;
          }
-         else if(enemy[i].type == 3){
-            
-            enemy[i].veloY += (enemy[i].accY + GRAVITY)*app.deltaTime;
+         case WALKER:
+            {enemy[i].veloY += (enemy[i].accY + GRAVITY)*app.deltaTime;
             enemy[i].veloX = enemy[i].maxSpeed*enemy[i].direction;
             enemy[i].bumpX *= pow(0.1,app.deltaTime);
             enemy[i].x += (enemy[i].veloX + enemy[i].bumpX)*app.deltaTime;
@@ -212,11 +215,12 @@ void FEnemy_Movement(){
             }
             if(enemy[i].x < platforms[platformIndex].x && enemy[i].direction == -1){
                enemy[i].direction = 1;
-            }
-         }
-         else if(enemy[i].type == 4){
+            }}
+            break;
+         case GUNNER:
+            {
             enemy[i].attackDelayTimer += 1000*app.deltaTime;
-           // printf("%f\n",enemy[i].attackDelayTimer);
+            // printf("%f\n",enemy[i].attackDelayTimer);
             if(enemy[i].attackDelayTimer > 3000){
                enemy[i].attackDelayTimer = 0;
                double projectileAngle  = atan((player[0].y-enemy[i].y)/(player[0].x-enemy[i].x));
@@ -234,7 +238,8 @@ void FEnemy_Movement(){
 
 
 
-            enemy[i].veloY += (enemy[i].accY + GRAVITY)*app.deltaTime;            
+            enemy[i].veloY += (enemy[i].accY + GRAVITY)*app.deltaTime;
+            printf("%f\n",enemy[i].veloY);
             enemy[i].bumpX *= pow(0.1,app.deltaTime);
             if(enemy[i].x > player[0].x){
                enemy[i].direction = -1;
@@ -258,10 +263,10 @@ void FEnemy_Movement(){
             }
             enemy[i].x += (enemy[i].veloX + enemy[i].bumpX)*app.deltaTime;
             enemy[i].y += (enemy[i].veloY)*app.deltaTime;
-            
+            break;
          }
-         else if(enemy[i].type == 5){
-            enemy[i].attackDelayTimer += 1000*app.deltaTime;
+         case DASHER:
+            {enemy[i].attackDelayTimer += 1000*app.deltaTime;
             if(!enemy[i].attackPrepare){
             enemy[i].angleToPlayer = atan((player[0].y-enemy[i].y)/(player[0].x-enemy[i].x));
             if(player[0].x-enemy[i].x < 0){
@@ -295,10 +300,12 @@ void FEnemy_Movement(){
 
             enemy[i].x += (enemy[i].veloX + enemy[i].dashX + enemy[i].bumpX)*app.deltaTime;
             enemy[i].y += (enemy[i].veloY + enemy[i].dashY)*app.deltaTime;
-            }
-            
-         }
+            }}
+            break;
 
+         default:
+            break;
+         }
       }
    }
    }
@@ -360,6 +367,8 @@ void FPlayer_Movement(){
       } 
    }
 
+
+   // Up and Down movement
    if(player[i].keys.down){
       if(!player[i].onPlatform && !player[i].grappling){
          player[i].drawTrails = true;
@@ -383,9 +392,11 @@ void FPlayer_Movement(){
       if(i == 0){
         Mix_PlayChannel(-1,Sound_Jump,0); 
       }
-   } 
+   }
+
+   /// Left right movement
    if (player[i].keys.left){
-      player[i].animationIndex += 20*app.deltaTime;
+      player[i].animationIndex += 10*app.deltaTime;
       player[i].direction = -1;
       if(!player[i].grappling){
         player[i].accX = 500*(-(player[i].width+player[i].height)/40-3.0f/5.0f*(player[i].keys.shift == 1))*player[i].playerControl;
@@ -405,7 +416,7 @@ void FPlayer_Movement(){
           
    }
    else if (player[i].keys.right){
-      player[i].animationIndex += 20*app.deltaTime;
+      player[i].animationIndex += 10*app.deltaTime;
       player[i].direction = 1;
       if(!player[i].grappling){
         player[i].accX = 500*((player[i].width+player[i].height)/40+3.0f/5.0f*(player[i].keys.shift == 1))*player[i].playerControl;
@@ -426,17 +437,12 @@ void FPlayer_Movement(){
    else {player[i].accX = 0;player[i].grappleAngularAcc = 0;}
 
 
-   // If grappling transform the movement
-   
-   
-   
-   
-   
-   
+
+   //// Do special 
    if(player[i].keys.c){
       FPlayer_Special();
    }
-   if(!player[i].keys.c){
+   else {
       if(player[i].special == 5 && player[i].arrowPull > 10 && player[i].specialDelayTimer >= player[0].specialDelay){
          addProjectile(false,-1,player[i].x+player[i].width/2,player[i].y+player[i].height/3,player[i].arrowPull*3*cos(player[i].ProjectileAngle*PI/180),player[i].arrowPull*3*sin(player[i].ProjectileAngle*PI/180),1);
          player[0].specialDelayTimer = 0;
@@ -448,7 +454,8 @@ void FPlayer_Movement(){
          player[i].veloY =  player[i].grappleLength*player[i].grappleAngularVelo*cos(player[i].grappleAngle);
       }
    }
-   
+
+   /// Pickup item
    if(player[i].canTake >= 0 && player[i].keys.e && !specials[player[i].canTake].taken){
       specials[player[i].canTake].taken = true;
       Mix_PlayChannel(-1,Sound_pickup,0);
@@ -474,7 +481,7 @@ void FPlayer_Movement(){
      if (player[i].keys.up && player[i].jumpBool){
       player[i].jumpBool = false;
       player[i].veloY = 0;
-      player[i].jumpVelo = -175;
+      player[i].jumpVelo = -225;
       if(i == 0){
        Mix_PlayChannel(-1,Sound_JumpWall,0);  
       }
@@ -488,6 +495,8 @@ void FPlayer_Movement(){
    /////
    
    if(level.Started){
+
+      // Grappling movement change
       if(!player[i].grappling){
         player[i].veloX += (player[i].accX+player[i].displacementAccelX)*app.deltaTime;
       if(!player[i].groundPound){
@@ -496,11 +505,8 @@ void FPlayer_Movement(){
       }
       else{
          double gravityGrapplePullDown = GRAVITY/player[i].grappleLength*cos(player[i].grappleAngle);
-         
         player[i].grappleAngularVelo += (player[i].grappleAngularAcc+gravityGrapplePullDown)*app.deltaTime;
       }
-      
-      
    }
    /////
    
@@ -522,10 +528,6 @@ void FPlayer_Movement(){
    ////
    player[i].groundPoundX *= pow(0.2,app.deltaTime);
    if(level.Started && !player[i].dead){
-     
-      
-      
-      
       if(!player[i].grappling){
          player[i].x += (player[i].veloX + player[i].groundPoundX + (player[i].wallveloX)*(!player[i].onWall) + player[i].displacementVeloX)*app.deltaTime;
       }
@@ -550,9 +552,6 @@ void FPlayer_Movement(){
      if(player[i].grappling){
       player[i].grappleAngle+=player[i].grappleAngularVelo*app.deltaTime;
      }
-     
-     
-
    }
    ///// 
    player[i].displacementVeloX  *= pow(0.05,app.deltaTime);
@@ -563,7 +562,20 @@ void FPlayer_Movement(){
       player[i].accY = 0;
    }
    
-   }  
+   /// Skid movement
+   if (player[i].accX*player[i].veloX < 0 && (SDL_abs(player[i].veloX) > 100) && player[i].onPlatform) {
+      player[i].skidMovement = true;
+      player[i].skidMovementTimer += 1000*app.deltaTime;
+      if (player[i].skidMovementTimer > 20.0) {
+         Mix_PlayChannel(-1,Sound_skid,0);
+         player[i].skidMovementTimer = 0;
+      }
+   }
+   else {
+      player[i].skidMovement = false;
+      player[i].skidMovementTimer = 0;
+   }
+   }
 }
 void FapplyMovementGhost(){
    if(mapData.ghostInGame){
@@ -572,21 +584,17 @@ void FapplyMovementGhost(){
          mapData.ghostEnd = true;
          return;
       }
-      if(mapData.ghostCurrentIndex > player[1].playerMovementIndex){
+      if(mapData.ghostCurrentIndex >= player[1].playerMovementIndex - 1){
          player[1].keys.up = false;
          player[1].keys.left = false;
          player[1].keys.right = false;
          player[1].keys.down = false;
          return;
       }
-      printf("%f of index %d\n with inputs {%d %d %d %d}\n",(double)mapData.ghostNextInput,mapData.ghostCurrentIndex,player[1].keys.up 
-               ,player[1].keys.left 
-               ,player[1].keys.right 
-               ,player[1].keys.down);
-      
+
       if(level.timer < (double)mapData.ghostNextInput){return;}
       
-      // Need new value 
+      // Need new value
 
       mapData.tickDifference = ((int)level.timer - mapData.ghostNextInput);
       mapData.ghostNextInput = (int)player[1].playerMovement[mapData.ghostCurrentIndex + 1][0];

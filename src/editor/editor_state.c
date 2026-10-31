@@ -137,7 +137,9 @@ void editorShowButtons(){
          break;
 
       case SPECIAL:
+         
          reserve_buttons((int[]){1,2,5,9,35}, 5);
+         printf("free here ?\n");
          break;
 
       case TEXTPOPUP:

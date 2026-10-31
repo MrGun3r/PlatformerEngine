@@ -168,10 +168,10 @@ void initEditorUI()
     SetKnob(false, 6, "Star Time Ms", gameWidthBase - 190, 200, 10, true, 0, 99, 0);
     SetKnobCoef(6, 0.5);
     SetKnob(false, 7, "Star Time", gameWidthBase - 190, 220, 10, true, 0, 10000, 60);
-    SetKnob(false, 18, "Type", gameWidthBase - 190, 260, 10, true, 1, 5, 1);
+    SetKnob(false, 18, "Type", gameWidthBase - 190, 260, 10, true, 0, 4, 0);
     SetKnobCoef(18, 0.1);
     SetKnob(false, 19, "Grid Unit", gameWidthBase - 190, 240, 10, true, 1, 100, 1);
-    SetKnobCoef(19, 0);
+    SetKnobCoef(19, 0.1);
     SetKnob(false, 13, "X:", gameWidthBase - 190, 220, 10, true, 0, 100, 0);
     SetKnob(false, 14, "Y:", gameWidthBase - 190, 250, 10, true, 0, 100, 0);
     SetKnob(false, 15, "Font:", gameWidthBase - 190, 280, 10, true, 10, 120, 10);
@@ -185,12 +185,13 @@ void initEditor() {
     editor.gridMove = 1;
     editor.StarTime = 60;
     editor.StarTimeMs = 0;
+    editor.transform = 1;
     player[0].x = 0;
     player[0].y = 0;
     player[0].spawnX = 0;
     player[0].spawnY = 0;
-    player[0].width = 18;
-    player[0].height = 20;
+    player[0].width = 21;
+    player[0].height = 41;
     camera.x = gameWidth / 2;
     camera.y = gameHeight / 2;
     camera.scaleReal = 1;

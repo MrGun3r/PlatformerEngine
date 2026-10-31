@@ -112,6 +112,16 @@ enum GameScene {
       CAMPAIGN_LEVEL
 };
 
+enum EnemyType {
+      FLYER,
+      RUNNER,
+      WALKER,
+      DASHER,
+      GUNNER
+};
+
+
+typedef enum EnemyType EnemyType;
 typedef enum ObjectType ObjectType;
 typedef enum GameScene GameScene;
 
@@ -172,7 +182,7 @@ struct Level{
 
 struct Enemy{
    bool reserved;
-   int type;
+   EnemyType type;
    double x;
    double y;
    double spawnX;
@@ -441,6 +451,9 @@ struct Players {
     double displacementVeloY;
     double displacementAccelX;
     double displacementAccelY;
+
+    bool skidMovement;
+    double skidMovementTimer;
     
     bool drawTrails;
     double playerTrails[5][5];
@@ -513,9 +526,8 @@ struct Players {
     double grappleAngularAcc;
     double grappleLength;
     double grappleFailed;
-
-
 };
+
 struct Special{
    bool reserved;
    double editorSelectionTime;

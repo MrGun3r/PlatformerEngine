@@ -92,7 +92,7 @@ void FLoadBackgrounds(){
       backgrounds[i].texture = NULL;
    }
 
-   surface_player = IMG_Load("assets/player/player.png");
+   surface_player = IMG_Load("assets/player/playerTemp.png");
    surface_font = IMG_Load("assets/fonts/font.png");
    surface_trigger = IMG_Load("assets/editor/flag.png");
    surface_bulb = IMG_Load("assets/editor/bulb.png");

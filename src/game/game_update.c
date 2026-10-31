@@ -1,3 +1,6 @@
+
+#include "game_update_player.c"
+
 void Update_Camera() {
    if(!camera.freeCam){
      camera.x += (-player[0].x-player[0].width/2+gameWidthBase/2 - camera.x)*10*app.deltaTime;
@@ -33,6 +36,7 @@ void Update_Movement() {
       // DeathBox Movement
       for(int i = 0;i<sizeof(deathbox)/sizeof(deathbox[0]);i++){
          if(deathbox[i].reserved){
+            
             deathboxMovement(i);
          }
       }
@@ -82,7 +86,7 @@ void Update_Enemy() {
          if(enemy[i].attackCoolDown <= 200){
             enemy[i].attackCoolDown += 200*app.deltaTime;
          }
-         if(enemy[i].type == 2){
+         if(enemy[i].type == FLYER || enemy[i].type == DASHER){
             enemy[i].onPlatform = false;
          }
 
@@ -369,6 +373,8 @@ void Update_Triggers() {
       }
 }
 void Update_Player() {
+   Player_Check_Hit(0);
+
    if(player[0].special == 1){
       if(player[0].specialDelayTimer >= player[0].specialDelay){
          player[0].attack = false;
@@ -611,6 +617,7 @@ void Update_Specials() {
       }
    }
 }
+
 void FUpdate_Data(){
 
    Update_Camera();
@@ -642,7 +649,6 @@ void FUpdate_Data(){
    Update_Triggers();
    Update_Projectiles();
    Update_Platforms();
-   
 
    // Scripts
    Update_Scripts();

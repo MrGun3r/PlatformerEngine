@@ -8,9 +8,10 @@ void (*Player_Draw_Functions[])(int) = {
     Draw_Player_Groundpound,
     Draw_Player_Attack,
     Draw_Player_HangWall,
+    Draw_Player_Snap,
+    Draw_Player_Jump,
     Draw_Player_Movement,
     Draw_Player_Idle,
-    Draw_Player_Jump
 };
 
 
@@ -24,12 +25,12 @@ void Draw_Player(int i) {
             double playerTrailXDraw = gameWidthBase/2 + (player[i].playerTrails[j][0] + camera.x - gameWidthBase/2) * camera.scale;
             double playerTrailYDraw = gameHeightBase/2 + (player[i].playerTrails[j][1] + camera.y - gameHeightBase/2) * camera.scale;
             SDL_SetTextureAlphaMod(tex_player,player[i].playerTrails[j][2]);
-            RenderCopyEx(renderer,tex_player,&(SDL_Rect){2+((int)(player[0].playerTrails[j][3]))*24,2,15,18},&(SDL_Rect){playerTrailXDraw,playerTrailYDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,(int)player[0].playerTrails[j][4]); 
-        } 
+            RenderCopyEx(renderer,tex_player,&(SDL_Rect){3,139,19,31},&(SDL_Rect){playerTrailXDraw,playerTrailYDraw,player[i].widthDraw,player[i].heightDraw},0,NULL,(int)player[0].playerTrails[j][4]); 
+        }
     }
 
     /// Normal and Ghost player opacities
-    SDL_SetTextureAlphaMod(tex_player,255);     
+    SDL_SetTextureAlphaMod(tex_player,255);
     if(i > 0){
         SDL_SetTextureAlphaMod(tex_player,100);
     }
@@ -41,10 +42,12 @@ void Draw_Player(int i) {
         player[i].groundPound || player[i].keys.down,
         player[i].attack && player[i].specialDelayTimer < player[i].specialDelay,
         player[i].onWall,
-        ((int)player[i].accX != 0) && ((int)player[i].jumpVelo == 0),
-        (int)player[i].jumpVelo == 0,
+        player[i].skidMovement,
+        (int)player[i].jumpVelo != 0,
+        ((int)player[i].accX != 0),
         true
     };
+
     
 
     for(int k = 0;k<sizeof(playerStates)/sizeof(playerStates[0]);k++){
@@ -58,15 +61,15 @@ void Draw_Player(int i) {
         double xAttackDraw = gameWidthBase/2 + (player[i].attackX + camera.x - gameWidthBase/2) * camera.scale;
         double yAttackDraw = gameHeightBase/2 + (player[i].attackY + camera.y - gameHeightBase/2) * camera.scale;
         double sizeattackDraw = player[0].attackSize*camera.scale;
-        RenderCopyEx(renderer,tex_player,&(SDL_Rect){player[i].attackDrawInt*23,63,20,25},&(SDL_Rect){xAttackDraw,yAttackDraw,sizeattackDraw,sizeattackDraw},0,NULL,(1-player[i].attackDirection)/2);
+        RenderCopyEx(renderer,tex_player,&(SDL_Rect){3+player[i].attackDrawInt*22,241,19,31},&(SDL_Rect){xAttackDraw,yAttackDraw,sizeattackDraw,sizeattackDraw},0,NULL,(1-player[i].attackDirection)/2);
     }
     if(player[i].special == 5){
-        RenderCopyEx(renderer,tex_player,&(SDL_Rect){(int)(player[i].arrowPull/100)*23+170,63,20,25},&(SDL_Rect){player[i].xDraw+player[i].widthDraw/2,player[i].yDraw+player[i].heightDraw/3,4*player[i].widthDraw/5,4*player[i].heightDraw/5},player[i].ProjectileAngle,&(SDL_Point){0,4*player[i].heightDraw/10},0);
+        RenderCopyEx(renderer,tex_player,&(SDL_Rect){(int)(player[i].arrowPull/100)*22+47,207,19,31},&(SDL_Rect){player[i].xDraw+player[i].widthDraw/2,player[i].yDraw+player[i].heightDraw/3,4*player[i].widthDraw/5,4*player[i].heightDraw/5},player[i].ProjectileAngle,&(SDL_Point){0,4*player[i].heightDraw/10},0);
     }
     
     if(player[i].EButtonOpacity > 1){
         SDL_SetTextureAlphaMod(tex_player,player[i].EButtonOpacity);
-        RenderCopy(renderer,tex_player,&(SDL_Rect){0,85,32,32},&(SDL_Rect){player[i].xDraw+player[i].widthDraw/8,player[i].yDraw-player[i].heightDraw/1.5,player[i].widthDraw/1.5,player[i].heightDraw/1.5});
+        RenderCopy(renderer,tex_player,&(SDL_Rect){91,3,19,31},&(SDL_Rect){player[i].xDraw+player[i].widthDraw/8,player[i].yDraw-player[i].heightDraw/1.5,player[i].widthDraw/1.5,player[i].heightDraw/1.5});
     }
     
     SDL_SetTextureAlphaMod(tex_player,255);
@@ -87,16 +90,16 @@ void Draw_Player(int i) {
 
 void Draw_Projectile(int i) {
     if(projectiles[i].projectileType == 1){
-        RenderCopyEx(renderer,tex_player,&(SDL_Rect){145,68,20,13},&(SDL_Rect){projectiles[i].xDraw,
+        RenderCopyEx(renderer,tex_player,&(SDL_Rect){113,37,19,31},&(SDL_Rect){projectiles[i].xDraw,
         projectiles[i].yDraw,projectiles[i].widthDraw,projectiles[i].heightDraw},projectiles[i].angle,NULL,0);
         }
     else if(projectiles[i].projectileType == 2){
         if(!projectiles[i].fromEnemy){
-            RenderCopyEx(renderer,tex_player,&(SDL_Rect){0,120,56,56},&(SDL_Rect){projectiles[i].xDraw,
+            RenderCopyEx(renderer,tex_player,&(SDL_Rect){91,37,19,31},&(SDL_Rect){projectiles[i].xDraw,
             projectiles[i].yDraw,projectiles[i].widthDraw,projectiles[i].heightDraw},projectiles[i].angle,NULL,0); 
         }
         else{
-            RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3,214,56,56},&(SDL_Rect){projectiles[i].xDraw,
+            RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){69,60,19,16},&(SDL_Rect){projectiles[i].xDraw,
                 projectiles[i].yDraw,projectiles[i].widthDraw,projectiles[i].heightDraw},projectiles[i].angle,NULL,0); 
         }        
     }
@@ -134,49 +137,53 @@ void Draw_Enemies() {
             enemy[i].yDraw = gameHeightBase/2 + (enemy[i].y + camera.y - gameHeightBase/2) * camera.scale;
             enemy[i].widthDraw = enemy[i].width*camera.scale;
             enemy[i].heightDraw = enemy[i].height*camera.scale;
-            if(enemy[i].type == 1){
+            switch (enemy[i].type)
+            {
+            case FLYER:
                 if(enemy[i].attackCoolDown > 50){
-                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){0,0,80,80},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},enemy[i].angle*180/PI -180,NULL,SDL_FLIP_NONE);
+                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3 + 22*(((int)enemy[i].textureAnimationInt) % 2),79,19,16},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},enemy[i].angle*180/PI -180,NULL,(1-enemy[i].direction)/2);
                 }
                 else{
-                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){100,0,80,80},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},enemy[i].angle*180/PI -180,NULL,SDL_FLIP_NONE);
-                } 
-            }
-            if(enemy[i].type == 2){
+                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){47,79,19,16},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},enemy[i].angle*180/PI -180,NULL,(1-enemy[i].direction)/2);
+                }
+                break;
+            case RUNNER:
                 if(enemy[i].attackCoolDown > 50){
-                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3+24*((int)enemy[i].textureAnimationInt % 7),120,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3 + 22*(((int)enemy[i].textureAnimationInt) % 2),22,19,16},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
                 }
                 else{
-                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,120,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
-                } 
-            }
-            if(enemy[i].type == 3){
+                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){47,22,19,16},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+                }
+                break;
+
+            case WALKER:
                 if(enemy[i].attackCoolDown > 50){
-                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3+24*((int)enemy[i].textureAnimationInt % 7),144,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3 + 22*(((int)enemy[i].textureAnimationInt) % 2),3,19,16},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
                 }
                 else{
-                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,144,16,18},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
-                } 
-            }
-            if(enemy[i].type == 4){
+                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){47,3,19,16},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+                }
+                break;
+
+            case DASHER:
                 if(enemy[i].attackCoolDown > 50){
-                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){2+24*((int)enemy[i].textureAnimationInt % 7),169,20,20},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3 + 22*(((int)enemy[i].textureAnimationInt) % 2),41,19,16},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
                 }
                 else{
-                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){169,169,19,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
-                } 
-            }
-            if(enemy[i].type == 5){
-                if(enemy[i].attackCoolDown > 50 && !enemy[i].attackPrepare){
-                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3+24*((int)enemy[i].textureAnimationInt % 7),192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){47,41,19,16},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
                 }
-                else if(enemy[i].attackPrepare){
-                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){192,192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+                break;
+
+            case GUNNER:
+                if(enemy[i].attackCoolDown > 50){
+                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){3 + 22*(((int)enemy[i].textureAnimationInt) % 2),60,19,16},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
                 }
                 else{
-                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){170,192,16,22},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
-                } 
+                    RenderCopyEx(renderer,tex_enemy,&(SDL_Rect){47,60,19,16},&(SDL_Rect){enemy[i].xDraw,enemy[i].yDraw,enemy[i].widthDraw,enemy[i].heightDraw},0,NULL,(1-enemy[i].direction)/2);
+                }
+                break;
             }
+
         }
     }
 }
@@ -200,8 +207,9 @@ void Draw_DamagePopups() {
             damagepopups[i].sizeDraw = damagepopups[i].size*camera.scale;
             
             char* buffer = malloc(20*sizeof(char));
-            int numSize = len(buffer);
+            
             SDL_itoa(damagepopups[i].number,buffer,10);
+            int numSize = len(buffer);
             int colors[3] = {0,0,0};
             if(damagepopups[i].number < 0){
                 colors[0] = 255;
@@ -242,7 +250,7 @@ void Draw_Triggers() {
 }
         
 void Draw_Deathboxes() {
-    DRAW_OBJECTS(displacement,true,
+    DRAW_OBJECTS(deathbox,true,
         FtextureQuad(deathbox[i].xDraw,deathbox[i].yDraw,deathbox[i].widthDraw,deathbox[i].heightDraw,tex_skull,deathbox[i].opacity,0);
     )
 }
